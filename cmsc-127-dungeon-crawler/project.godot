@@ -14,6 +14,10 @@ config/name="cmsc 127 dungeon crawler"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg")
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
