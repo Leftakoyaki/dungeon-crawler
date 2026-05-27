@@ -2,84 +2,85 @@ extends Control
 
 var selected_class: String = ""
 
-# Keep your original references and add the new UI references from main
-@onready var mage_btn:     Button = $MarginContainer/VBoxContainer/ClassCards/MageCard/SelectMage
-@onready var warrior_btn:  Button = $MarginContainer/VBoxContainer/ClassCards/WarriorCard/SelectWarrior
-@onready var archer_btn:   Button = $MarginContainer/VBoxContainer/ClassCards/ArcherCard/SelectArcher
-@onready var mage_stats:   Label  = $MarginContainer/VBoxContainer/ClassCards/MageCard/StatsLabel
-@onready var warrior_stats: Label = $MarginContainer/VBoxContainer/ClassCards/WarriorCard/StatsLabel
-@onready var archer_stats: Label  = $MarginContainer/VBoxContainer/ClassCards/ArcherCard/StatsLabel
-@onready var mage_name:    Label  = $MarginContainer/VBoxContainer/ClassCards/MageCard/NameLabel
-@onready var warrior_name: Label  = $MarginContainer/VBoxContainer/ClassCards/WarriorCard/NameLabel
-@onready var archer_name:  Label  = $MarginContainer/VBoxContainer/ClassCards/ArcherCard/NameLabel
-@onready var selected_label: Label = $MarginContainer/VBoxContainer/SelectedLabel
-@onready var passive_label:  Label = $MarginContainer/VBoxContainer/PassiveLabel
-@onready var confirm_btn:    Button = $MarginContainer/VBoxContainer/ConfirmButton
-@onready var back_btn:       Button = $MarginContainer/VBoxContainer/BackButton
+# Buttons
+@onready var mage_btn: TextureButton = $SelectMage
+@onready var berserker_btn: TextureButton = $SelectBerserker
+@onready var archer_btn: TextureButton = $SelectArcher
 
-# Keep your original animation nodes
+# We now only have one label for stats
+@onready var stats_label: Label = $StatsLabel
+
+@onready var selected_label: Label = $SelectedLabel
+@onready var passive_label: Label = $PassiveLabel
+@onready var confirm_btn: Button = $ConfirmButton
+@onready var back_btn: Button = $BackButton
+
+# Sprites
 @onready var mage_sprite: AnimatedSprite2D = $Animations/MageSprite
-@onready var warrior_sprite: AnimatedSprite2D = $Animations/WarriorSprite
+@onready var berserker_sprite: AnimatedSprite2D = $Animations/BerserkerSprite
 @onready var archer_sprite: AnimatedSprite2D = $Animations/ArcherSprite
-
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		print("Click detected! State: ", event.pressed) # This will show up in the Output console
 		GameState.update_cursor(event.pressed)
-
 func _ready() -> void:
 	mage_btn.pressed.connect(func(): _select_class("MAGE"))
-	warrior_btn.pressed.connect(func(): _select_class("WARRIOR"))
+	berserker_btn.pressed.connect(func(): _select_class("BERSERKER"))
 	archer_btn.pressed.connect(func(): _select_class("ARCHER"))
 	confirm_btn.pressed.connect(_on_confirm_pressed)
 	back_btn.pressed.connect(_on_back_pressed)
-	
+
+	# Mouse hover effects
+	mage_btn.mouse_entered.connect(func(): mage_btn.modulate = Color(0.5, 0.5, 0.5))
+	mage_btn.mouse_exited.connect(func(): mage_btn.modulate = Color(1.0, 1.0, 1.0))
+	berserker_btn.mouse_entered.connect(func(): berserker_btn.modulate = Color(0.5, 0.5, 0.5))
+	berserker_btn.mouse_exited.connect(func(): berserker_btn.modulate = Color(1.0, 1.0, 1.0))
+	archer_btn.mouse_entered.connect(func(): archer_btn.modulate = Color(0.5, 0.5, 0.5))
+	archer_btn.mouse_exited.connect(func(): archer_btn.modulate = Color(1.0, 1.0, 1.0))
+
 	confirm_btn.disabled = true
 	selected_label.text = "No class selected."
 	passive_label.text = ""
 	
-	_populate_class_stats()
-	
-	# Keep your original sprite initialization
-	mage_sprite.play("idle")
-	warrior_sprite.play("idle")
-	archer_sprite.play("idle")
+	# Stats hidden at start
+	stats_label.visible = false
 
-func _populate_class_stats() -> void:
-	var classes := DatabaseManager.get_all_classes()
-	for cls in classes:
-		var stats_text := "HP: %d   ATK: %d" % [cls["base_hp"], cls["base_atk"]]
-		match cls["class_name"]:
-			"MAGE":
-				mage_stats.text = stats_text
-				mage_name.text = cls["class_name"]
-			"WARRIOR":
-				warrior_stats.text = stats_text
-				warrior_name.text = cls["class_name"]
-			"ARCHER":
-				archer_stats.text = stats_text
-				archer_name.text = cls["class_name"]
+	mage_sprite.play("idle")
+	berserker_sprite.play("idle")
+	archer_sprite.play("idle")
 
 func _select_class(cls: String) -> void:
 	selected_class = cls
 	var data := DatabaseManager.get_class_data(cls)
+	
+	# Update text
 	selected_label.text = "Selected: %s" % cls
 	passive_label.text = data.get("passive_description", "")
-	confirm_btn.disabled = false
+	# Update the single stats label with HP and ATK
+	stats_label.text = "HP: %d    ATK: %d" % [data["base_hp"], data["base_atk"]]
 	
-	# Keep your animation trigger logic
+	confirm_btn.disabled = false
+	stats_label.visible = true
+
+	# Reset animations
 	mage_sprite.play("idle")
-	warrior_sprite.play("idle")
+	berserker_sprite.play("idle")
 	archer_sprite.play("idle")
 	
+	# Play run animation
 	match cls:
 		"MAGE": mage_sprite.play("run")
-		"WARRIOR": warrior_sprite.play("run")
+		"BERSERKER": berserker_sprite.play("run")
 		"ARCHER": archer_sprite.play("run")
 
 func _on_confirm_pressed() -> void:
-	if selected_class.is_empty(): return
+	if selected_class.is_empty():
+		return
 	var success := DatabaseManager.start_new_game(selected_class)
-	if success: get_tree().change_scene_to_file("res://scenes/Map.tscn")
+	if success:
+		get_tree().change_scene_to_file("res://scenes/Map.tscn")
+	else:
+		push_error("ClassSelect: start_new_game failed for '%s'." % selected_class)
 
 func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
