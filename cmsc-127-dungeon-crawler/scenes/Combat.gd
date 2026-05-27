@@ -45,7 +45,6 @@ var waves_done: int         = 0
 @onready var flee_btn:        Button        = $ActionRow/FleeButton
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		print("Click detected! State: ", event.pressed) # This will show up in the Output console
 		GameState.update_cursor(event.pressed)
 
 # ─────────────────────────────────────────────────────────────────────────────
