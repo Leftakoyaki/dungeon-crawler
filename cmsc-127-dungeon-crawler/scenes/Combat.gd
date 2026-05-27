@@ -16,6 +16,8 @@ extends Control
 # DAMAGE_BUFF potion: sets GameState.atk_buff_multiplier, consumed on next hit.
 # ─────────────────────────────────────────────────────────────────────────────
 
+signal replace_popup_closed
+
 # ─── Combat state ─────────────────────────────────────────────────────────────
 var enemy_current_hp: int   = 0
 var combat_data: Dictionary = {}
@@ -76,6 +78,7 @@ func _ready() -> void:
 # ─── Turn management ─────────────────────────────────────────────────────────
 
 func _begin_player_turn() -> void:
+	log_label.text = ""
 	_set_skill_buttons_enabled(true)
 	use_potion_btn.disabled = false
 	flee_btn.disabled       = false
@@ -234,7 +237,8 @@ func _on_skill_used(skill: Dictionary) -> void:
 
 func _on_wave_cleared() -> void:
 	waves_done += 1
-
+	await _roll_drops()
+	await get_tree().create_timer(0.6).timeout
 	if waves_done < waves_total:
 		# More waves — reset enemy, update label, continue
 		var next_wave: int = waves_done + 1
@@ -261,11 +265,10 @@ func _on_victory() -> void:
 	flee_btn.disabled       = true
 
 	DatabaseManager.mark_node_cleared(GameState.current_node_id)
-	_roll_drops()
 	DatabaseManager.combat_ended.emit("victory")
 
 	var node: Dictionary = combat_data["node"]
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(1.2).timeout
 	if node["stage_type"] == "BOSS":
 		get_tree().change_scene_to_file("res://scenes/WinScreen.tscn")
 	else:
@@ -378,21 +381,125 @@ func _on_flee_pressed() -> void:
 		log_label.text = "Couldn't escape!"
 		_end_player_turn()
 
+# ─── Drop system ─────────────────────────────────────────────────────────────
 
-# ─── Drop rolls ───────────────────────────────────────────────────────────────
+var pending_pot_id: int = -1
+var pending_pot_name: String = ""
+
 
 func _roll_drops() -> void:
 	var monster: Dictionary = combat_data["monster"]
 	if randf() < float(monster["pot_drop_chance"]):
 		var pot_id := randi_range(1, 4)
-		if DatabaseManager.add_to_inventory(pot_id):
+		var result := DatabaseManager.add_to_inventory(pot_id)
+		if result["success"]:
 			var potion := DatabaseManager.get_potion(pot_id)
 			log_label.text += "\nDrop: %s!" % potion.get("pot_name", "Potion")
+		elif result["reason"] == "FULL":
+			var potion := DatabaseManager.get_potion(pot_id)
+			pending_pot_id   = pot_id
+			pending_pot_name = potion.get("pot_name", "Potion")
+			log_label.text  += "\nDrop: %s (Inventory Full)!" % pending_pot_name
+			_open_replace_inventory_ui(pot_id)
+			await replace_popup_closed
 	if randf() < float(monster["upg_point_chance"]):
 		DatabaseManager.add_upg_pts(1)
 		log_label.text += "\nDrop: +1 Upgrade Point!"
 
 
+# ─── Replace UI (dynamic popup) ──────────────────────────────────────────────
+
+func _open_replace_inventory_ui(pot_id: int) -> void:
+	var inventory := DatabaseManager.get_inventory()
+
+	_set_skill_buttons_enabled(false)
+	use_potion_btn.disabled = true
+	flee_btn.disabled = true
+
+	var popup := Panel.new()
+	popup.name = "ReplacePotionPopup"
+
+	popup.size = Vector2(320, 60 + inventory.size() * 50 + 60)
+	popup.position = (get_viewport_rect().size - popup.size) * 0.5
+	popup.z_index = 20
+
+	var vbox := VBoxContainer.new()
+	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 8)
+	popup.add_child(vbox)
+
+	# ── Title shows incoming potion ───────────────────────────────────────────
+	var title := Label.new()
+	title.text = "Your inventory is full!\nItem Drop: %s" % pending_pot_name
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	# ── Inventory buttons ─────────────────────────────────────────────────────
+	for i in range(inventory.size()):
+		var item: Dictionary = inventory[i]
+
+		var btn := Button.new()
+		btn.text = "Replace: " + item["pot_name"]
+		btn.custom_minimum_size = Vector2(0, 40)
+
+		var captured_index: int = i
+		btn.pressed.connect(func():
+			popup.queue_free()
+			_set_skill_buttons_enabled(true)
+			use_potion_btn.disabled = false
+			flee_btn.disabled = false
+			_replace_item(captured_index)
+			replace_popup_closed.emit()
+		)
+
+		vbox.add_child(btn)
+
+	# ── Discard option ────────────────────────────────────────────────────────
+	var discard_btn := Button.new()
+	discard_btn.text = "Discard new potion"
+	discard_btn.custom_minimum_size = Vector2(0, 40)
+
+	discard_btn.pressed.connect(func():
+		popup.queue_free()
+		_set_skill_buttons_enabled(true)
+		use_potion_btn.disabled = false
+		flee_btn.disabled = false
+		log_label.text += "\nDiscarded %s." % pending_pot_name
+		replace_popup_closed.emit()
+	)
+
+	vbox.add_child(discard_btn)
+
+	add_child(popup)
+
+
+# ─── Replace logic ───────────────────────────────────────────────────────────
+
+func _replace_item(slot_index: int) -> void:
+	var inv := DatabaseManager.get_inventory()
+
+	if slot_index >= inv.size():
+		return
+
+	var inv_id: int = int(inv[slot_index]["inv_id"])
+
+	var old_potion := DatabaseManager.get_potion(inv[slot_index]["pot_id"])
+	var new_potion := DatabaseManager.get_potion(pending_pot_id)
+
+	DatabaseManager.remove_from_inventory(inv_id)
+	DatabaseManager.add_to_inventory(pending_pot_id)
+	log_label.text = ""
+	log_label.text += "Replaced %s with %s!" % [
+		old_potion.get("pot_name", "Potion"),
+		new_potion.get("pot_name", "Potion")
+	]
+
+	pending_pot_id = -1
+	pending_pot_name = ""
+	
+	await get_tree().create_timer(1.0).timeout
+	log_label.text = ""
+	
 # ─── UI refresh ───────────────────────────────────────────────────────────────
 
 func _refresh_ui() -> void:
