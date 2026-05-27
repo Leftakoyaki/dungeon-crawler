@@ -119,15 +119,20 @@ func _build_skill_buttons() -> void:
 	var skills := DatabaseManager.get_player_skills()
 	for skill in skills:
 		var btn := Button.new()
+		# Show effective SP cost — MAGE Arcane Affinity reduces SKILL cost by 1
+		var display_sp: int = int(skill["sp_cost"])
+		if GameState.player_class == "MAGE" and skill["atk_type"] == "SKILL":
+			display_sp = max(display_sp - 1, 1)
 		btn.text = "%s\n[%s]  SP:%d  x%.1f" % [
 			skill["skill_name"],
 			skill["atk_type"],
-			skill["sp_cost"],
+			display_sp,
 			skill["dmg_multiplier"]
 		]
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.custom_minimum_size   = Vector2(0, 70)
-		btn.pressed.connect(func(): _on_skill_used(skill))
+		# .bind() evaluates skill NOW (current loop value), avoiding closure-capture bug
+		btn.pressed.connect(_on_skill_used.bind(skill))
 		skill_container.add_child(btn)
 
 
@@ -306,7 +311,7 @@ func _refresh_ui() -> void:
 	var monster: Dictionary = combat_data.get("monster", {})
 
 	if not player.is_empty():
-		player_name_label.text = "%s  (%s)" % [GameState.player_class, combat_data.get("node", {}).get("stage_type", "")]
+		player_name_label.text = GameState.player_class
 		player_hp_bar.max_value = int(player["max_hp"])
 		player_hp_bar.value     = int(player["current_hp"])
 		player_hp_label.text    = "HP  %d / %d" % [player["current_hp"], player["max_hp"]]
