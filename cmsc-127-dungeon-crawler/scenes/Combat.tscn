@@ -1,135 +1,127 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://db6l1u0noj56s"]
 
-[ext_resource type="Script" path="res://scenes/Combat.gd" id="1_combat"]
+[ext_resource type="Script" uid="uid://dixbpi4sqmk3t" path="res://scenes/Combat.gd" id="1_combat"]
 
-[node name="Combat" type="Control"]
+[node name="Combat" type="Control" unique_id=1189174108]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_combat")
 
-; ── Full-screen background ────────────────────────────────────────────────────
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=2096978472]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.08, 0.08, 0.12, 1.0)
+color = Color(0.08, 0.08, 0.12, 1)
 
-; ── Battle area — top 55% of screen ──────────────────────────────────────────
-; Replace PlayerSprite and EnemySprite ColorRects with Sprite2D when art is ready.
-[node name="BattleArea" type="HBoxContainer" parent="."]
+[node name="BattleArea" type="HBoxContainer" parent="." unique_id=1016628240]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 0.55
 offset_left = 20.0
 offset_right = -20.0
 theme_override_constants/separation = 0
 
-; ── Player side (left) ────────────────────────────────────────────────────────
-[node name="PlayerSide" type="VBoxContainer" parent="BattleArea"]
+[node name="PlayerSide" type="VBoxContainer" parent="BattleArea" unique_id=502215876]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="PlayerSprite" type="ColorRect" parent="BattleArea/PlayerSide"]
+[node name="PlayerSprite" type="ColorRect" parent="BattleArea/PlayerSide" unique_id=355010074]
+custom_minimum_size = Vector2(130, 180)
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(130, 180)
 color = Color(0.18, 0.32, 0.72, 0.85)
 
-[node name="PlayerNameLabel" type="Label" parent="BattleArea/PlayerSide"]
+[node name="PlayerNameLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=301208981]
 layout_mode = 2
 text = "PLAYER"
 
-[node name="PlayerHPBar" type="ProgressBar" parent="BattleArea/PlayerSide"]
-layout_mode = 2
+[node name="PlayerHPBar" type="ProgressBar" parent="BattleArea/PlayerSide" unique_id=195024685]
 custom_minimum_size = Vector2(0, 18)
-max_value = 100
-value = 100
+layout_mode = 2
+value = 100.0
 show_percentage = false
 
-[node name="PlayerHPLabel" type="Label" parent="BattleArea/PlayerSide"]
+[node name="PlayerHPLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=169866779]
 layout_mode = 2
 text = "HP  -- / --"
 
-[node name="PlayerSPBar" type="ProgressBar" parent="BattleArea/PlayerSide"]
-layout_mode = 2
+[node name="PlayerSPBar" type="ProgressBar" parent="BattleArea/PlayerSide" unique_id=1402635213]
 custom_minimum_size = Vector2(0, 18)
-max_value = 4
-value = 4
+layout_mode = 2
+max_value = 4.0
+value = 4.0
 show_percentage = false
 
-[node name="PlayerSPLabel" type="Label" parent="BattleArea/PlayerSide"]
+[node name="PlayerSPLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=605202014]
 layout_mode = 2
 text = "SP  -- / --"
 
-[node name="UltLabel" type="Label" parent="BattleArea/PlayerSide"]
+[node name="UltLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=651561641]
 layout_mode = 2
 text = "ULT  0 / 2"
 
-; ── Centre spacer ─────────────────────────────────────────────────────────────
-[node name="BattleSpacer" type="Control" parent="BattleArea"]
+[node name="BattleSpacer" type="Control" parent="BattleArea" unique_id=781307588]
 layout_mode = 2
 size_flags_horizontal = 3
 
-; ── Enemy side (right) ────────────────────────────────────────────────────────
-[node name="EnemySide" type="VBoxContainer" parent="BattleArea"]
+[node name="EnemySide" type="VBoxContainer" parent="BattleArea" unique_id=323495566]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="EnemySprite" type="ColorRect" parent="BattleArea/EnemySide"]
+[node name="EnemySprite" type="ColorRect" parent="BattleArea/EnemySide" unique_id=788115517]
+custom_minimum_size = Vector2(130, 180)
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(130, 180)
 color = Color(0.72, 0.18, 0.18, 0.85)
 
-[node name="EnemyNameLabel" type="Label" parent="BattleArea/EnemySide"]
+[node name="EnemyNameLabel" type="Label" parent="BattleArea/EnemySide" unique_id=1059054721]
 layout_mode = 2
 text = "ENEMY"
 
-[node name="EnemyHPBar" type="ProgressBar" parent="BattleArea/EnemySide"]
-layout_mode = 2
+[node name="EnemyHPBar" type="ProgressBar" parent="BattleArea/EnemySide" unique_id=2007045030]
 custom_minimum_size = Vector2(0, 18)
-max_value = 100
-value = 100
+layout_mode = 2
+value = 100.0
 show_percentage = false
 
-[node name="EnemyHPLabel" type="Label" parent="BattleArea/EnemySide"]
+[node name="EnemyHPLabel" type="Label" parent="BattleArea/EnemySide" unique_id=913656561]
 layout_mode = 2
 text = "HP  -- / --"
 
-; ── Combat log — 55%–70% ──────────────────────────────────────────────────────
-[node name="LogPanel" type="PanelContainer" parent="."]
+[node name="LogPanel" type="PanelContainer" parent="." unique_id=1975683170]
+layout_mode = 0
 anchor_top = 0.55
 anchor_right = 1.0
-anchor_bottom = 0.70
+anchor_bottom = 0.7
 offset_left = 20.0
 offset_right = -20.0
 
-[node name="VBox" type="VBoxContainer" parent="LogPanel"]
+[node name="VBox" type="VBoxContainer" parent="LogPanel" unique_id=1522002272]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="WaveLabel" type="Label" parent="LogPanel/VBox"]
+[node name="WaveLabel" type="Label" parent="LogPanel/VBox" unique_id=1596351919]
 layout_mode = 2
-text = ""
 
-[node name="LogLabel" type="Label" parent="LogPanel/VBox"]
+[node name="LogLabel" type="Label" parent="LogPanel/VBox" unique_id=642963809]
 layout_mode = 2
 autowrap_mode = 3
-text = ""
 
-; ── Skill buttons — 70%–87% ───────────────────────────────────────────────────
-; Buttons are added here dynamically by Combat.gd._build_skill_buttons()
-; When sprites are ready, wrap each skill in a Panel styled like a card.
-[node name="SkillContainer" type="HBoxContainer" parent="."]
-anchor_top = 0.70
+[node name="SkillContainer" type="HBoxContainer" parent="." unique_id=551761558]
+layout_mode = 0
+anchor_top = 0.7
 anchor_right = 1.0
 anchor_bottom = 0.87
 offset_left = 20.0
 offset_right = -20.0
 theme_override_constants/separation = 10
 
-; ── Action row — 87%–100% ─────────────────────────────────────────────────────
-[node name="ActionRow" type="HBoxContainer" parent="."]
+[node name="ActionRow" type="HBoxContainer" parent="." unique_id=1100912841]
+layout_mode = 0
 anchor_top = 0.87
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -138,12 +130,12 @@ offset_right = -20.0
 offset_bottom = -10.0
 theme_override_constants/separation = 16
 
-[node name="UsePotionButton" type="Button" parent="ActionRow"]
+[node name="UsePotionButton" type="Button" parent="ActionRow" unique_id=167692522]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Use Potion"
 
-[node name="FleeButton" type="Button" parent="ActionRow"]
+[node name="FleeButton" type="Button" parent="ActionRow" unique_id=146232279]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Flee"
