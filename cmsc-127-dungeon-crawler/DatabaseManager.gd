@@ -352,29 +352,25 @@ func _seed_dungeon_floor() -> void:
 	var nodes := [
 		{"node_id": 1,  "stage_type": "START",  "is_cleared": 0},
 		{"node_id": 2,  "stage_type": "NORMAL", "monster_id": 1, "is_cleared": 0},
-		{"node_id": 3,  "stage_type": "NORMAL", "monster_id": 2, "is_cleared": 0},
-		{"node_id": 4,  "stage_type": "EVENT",  "is_cleared": 0},
+		{"node_id": 3,  "stage_type": "EVENT",  "is_cleared": 0},
+		{"node_id": 4,  "stage_type": "NORMAL", "monster_id": 3, "is_cleared": 0},
 		{"node_id": 5,  "stage_type": "REST",   "is_cleared": 0},
 		{"node_id": 6,  "stage_type": "ELITE",  "monster_id": 4, "is_cleared": 0},
-		{"node_id": 7,  "stage_type": "NORMAL", "monster_id": 3, "is_cleared": 0},
-		{"node_id": 8,  "stage_type": "REST",   "is_cleared": 0},
-		{"node_id": 9,  "stage_type": "EVENT",  "is_cleared": 0},
-		{"node_id": 10, "stage_type": "BOSS",   "monster_id": 6, "is_cleared": 0},
+		{"node_id": 7,  "stage_type": "REST",   "is_cleared": 0},
+		{"node_id": 8, "stage_type": "BOSS",   "monster_id": 6, "is_cleared": 0},
 	]
 	for row in nodes:
 		db.insert_row("Dungeon_Floor", row)
 
 	# Pass 2: set child pointers (node 10 is terminal — no update needed)
 	var paths := [
-		{"node_id": 1, "left": 2,  "right": 3},
-		{"node_id": 2, "left": 4,  "right": 5},
-		{"node_id": 3, "left": 4,  "right": 5},
-		{"node_id": 4, "left": 6,  "right": 7},
-		{"node_id": 5, "left": 6,  "right": 7},
-		{"node_id": 6, "left": 8,  "right": 9},
-		{"node_id": 7, "left": 8,  "right": 9},
-		{"node_id": 8, "left": 10, "right": null},
-		{"node_id": 9, "left": 10, "right": null},
+		{"node_id": 1, "left": 3,  "right": 2},
+		{"node_id": 2, "left": 5,  "right": 4},
+		{"node_id": 3, "left": 6,  "right": null},
+		{"node_id": 4, "left": 7,  "right": null},
+		{"node_id": 5, "left": 7,  "right": null},
+		{"node_id": 6, "left": 7,  "right": null},
+		{"node_id": 7, "left": 8,  "right": null},
 	]
 	for p in paths:
 		db.update_rows("Dungeon_Floor", "node_id = %d" % p["node_id"], {
