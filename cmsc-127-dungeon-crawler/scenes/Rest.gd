@@ -13,7 +13,6 @@ extends Control
 @onready var continue_btn:   Button = $MarginContainer/VBoxContainer/ContinueButton
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		print("Click detected! State: ", event.pressed) # This will show up in the Output console
 		GameState.update_cursor(event.pressed)
 
 func _ready() -> void:
