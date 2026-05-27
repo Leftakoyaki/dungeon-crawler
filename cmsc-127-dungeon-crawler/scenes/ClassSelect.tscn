@@ -349,16 +349,16 @@ horizontal_alignment = 1
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="BerserkerCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=155096933]
+[node name="WarriorCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=155096933]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard" unique_id=1487970029]
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/WarriorCard" unique_id=1487970029]
 layout_mode = 2
-text = "BERSERKER"
+text = "WARRIOR"
 horizontal_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard" unique_id=1975088617]
+[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/WarriorCard" unique_id=1975088617]
 layout_mode = 2
 horizontal_alignment = 1
 
@@ -403,7 +403,7 @@ animation = &"run"
 autoplay = "idle"
 frame_progress = 0.013598351
 
-[node name="BerserkerSprite" type="AnimatedSprite2D" parent="Animations" unique_id=1574215232]
+[node name="WarriorSprite" type="AnimatedSprite2D" parent="Animations" unique_id=1574215232]
 position = Vector2(447, 74)
 sprite_frames = SubResource("SpriteFrames_rl1km")
 animation = &"run"
@@ -426,7 +426,7 @@ offset_bottom = 413.0
 texture_normal = ExtResource("8_o3gvq")
 texture_pressed = ExtResource("9_l3ik0")
 
-[node name="SelectBerserker" type="TextureButton" parent="." unique_id=1348215687]
+[node name="SelectWarrior" type="TextureButton" parent="." unique_id=1348215687]
 layout_mode = 0
 offset_left = 469.0
 offset_top = 349.0
