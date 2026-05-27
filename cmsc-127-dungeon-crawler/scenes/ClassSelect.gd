@@ -19,7 +19,10 @@ var selected_class: String = ""
 @onready var mage_sprite: AnimatedSprite2D = $Animations/MageSprite
 @onready var berserker_sprite: AnimatedSprite2D = $Animations/BerserkerSprite
 @onready var archer_sprite: AnimatedSprite2D = $Animations/ArcherSprite
-
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		print("Click detected! State: ", event.pressed) # This will show up in the Output console
+		GameState.update_cursor(event.pressed)
 func _ready() -> void:
 	mage_btn.pressed.connect(func(): _select_class("MAGE"))
 	berserker_btn.pressed.connect(func(): _select_class("BERSERKER"))

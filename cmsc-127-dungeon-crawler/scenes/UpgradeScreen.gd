@@ -12,7 +12,10 @@ extends Control
 @onready var skill_list:  VBoxContainer = $MarginContainer/VBoxContainer/ScrollContainer/SkillList
 @onready var back_btn:    Button        = $MarginContainer/VBoxContainer/BackButton
 
-
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		print("Click detected! State: ", event.pressed) # This will show up in the Output console
+		GameState.update_cursor(event.pressed)
 func _ready() -> void:
 	back_btn.pressed.connect(_on_back_pressed)
 	_refresh()
