@@ -20,10 +20,6 @@ config/icon="res://icon.svg"
 GameState="*uid://bwanwq5pnfc5t"
 DatabaseManager="*uid://b40yqyp2hlq62"
 
-[display]
-
-mouse_cursor/custom_image="uid://citxa13yjr7dq"
-
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg")

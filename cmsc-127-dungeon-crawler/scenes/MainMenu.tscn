@@ -1,42 +1,89 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://cyeyevku611a6"]
 
-[ext_resource type="Script" path="res://scenes/MainMenu.gd" id="1_mainmenu"]
+[ext_resource type="Script" uid="uid://c1m7ebspxyola" path="res://scenes/MainMenu.gd" id="1_mainmenu"]
+[ext_resource type="Texture2D" uid="uid://cvylswgaksy46" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Papers/PaperTitle.png" id="2_2wh52"]
+[ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_ow34m"]
+[ext_resource type="Texture2D" uid="uid://b2fstby4ico8p" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Swords/Swordfinal.png" id="4_l72w3"]
+[ext_resource type="Texture2D" uid="uid://pac2ao6kuhol" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Icons/Icon_08.png" id="5_l72w3"]
+[ext_resource type="Texture2D" uid="uid://0u131mhtd0f2" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Icons/Icon_09.png" id="6_826wr"]
 
-[node name="MainMenu" type="Control"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_l72w3"]
+atlas = ExtResource("4_l72w3")
+region = Rect2(58.171844, -8.3594055, 390.38766, 141.72488)
+
+[node name="MainMenu" type="Control" unique_id=2061730621]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_mainmenu")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1285471248]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -26.0
+offset_top = -4.0
+offset_right = -26.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
-layout_mode = 2
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=217401485]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
+[node name="TitleLabel" type="TextureButton" parent="." unique_id=1111925033]
+layout_mode = 0
+offset_left = 715.0
+offset_top = -89.0
+offset_right = 1122.0
+offset_bottom = 307.0
+texture_normal = ExtResource("2_2wh52")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="SubtitleLabel" type="Label" parent="TitleLabel" unique_id=214405434]
+layout_mode = 0
+offset_left = 53.0
+offset_top = 130.0
+offset_right = 353.0
+offset_bottom = 249.0
+theme_override_fonts/font = ExtResource("3_ow34m")
+theme_override_font_sizes/font_size = 52
+text = "Dungeon Crawler
+CMSC 127 Project"
 horizontal_alignment = 1
-text = "DUNGEON CRAWLER"
 
-[node name="SubtitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
-horizontal_alignment = 1
-text = "CMSC 127 Project"
+[node name="NewGameButton" type="TextureButton" parent="." unique_id=434927792]
+layout_mode = 0
+offset_left = -12.0
+offset_top = 209.0
+offset_right = 279.0
+offset_bottom = 378.0
+texture_normal = SubResource("AtlasTexture_l72w3")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
+[node name="ContinueButton" type="TextureButton" parent="." unique_id=1077975240]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 372.0
+offset_right = 239.0
+offset_bottom = 485.0
+texture_normal = ExtResource("5_l72w3")
+ignore_texture_size = true
+stretch_mode = 5
+flip_h = true
 
-[node name="NewGameButton" type="Button" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
-text = "New Game"
-
-[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
-text = "Continue"
-
-[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
-text = "Quit"
+[node name="QuitButton" type="TextureButton" parent="." unique_id=1792267572]
+layout_mode = 0
+offset_left = 51.0
+offset_top = 489.0
+offset_right = 211.0
+offset_bottom = 624.0
+texture_normal = ExtResource("6_826wr")
+ignore_texture_size = true
+stretch_mode = 5

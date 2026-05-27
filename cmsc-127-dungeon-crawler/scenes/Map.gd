@@ -84,7 +84,11 @@ const Y_NUDGE: Dictionary = {
 	9: -0.022,
 	10: 0.000,
 }
-
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		print("Click detected! State: ", event.pressed) # This will show up in the Output console
+		GameState.update_cursor(event.pressed)
+		
 func _calculate_positions() -> void:
 	var vp:     Vector2 = get_viewport_rect().size
 	var w:      float   = vp.x
