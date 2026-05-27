@@ -38,6 +38,10 @@ text = "ULT --/--"
 layout_mode = 2
 text = "UPG --"
 
+[node name="UpgradeButton" type="Button" parent="StatsBar/HBoxContainer"]
+layout_mode = 2
+text = "⬆ Upgrade"
+
 ; ── Info panel — bottom 52px ──────────────────────────────────────────────────
 [node name="InfoPanel" type="PanelContainer" parent="."]
 anchor_top = 1.0
