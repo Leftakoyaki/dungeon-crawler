@@ -1,5 +1,15 @@
 extends Control
+const STAGE_SPRITES: Dictionary = {
+	"START":  "res://assets/LEVEL SPRITES/START LEVEL.png",
+	"NORMAL": "res://assets/LEVEL SPRITES/NORMAL ENEMY LEVEL.png",
+	"ELITE":  "res://assets/LEVEL SPRITES/ELITE ENEMY LEVEL.png",
+	"EVENT":  "res://assets/LEVEL SPRITES/EVENT LEVEL.png",
+	"REST":   "res://assets/LEVEL SPRITES/REST LEVEL.png",
+	"BOSS":   "res://assets/LEVEL SPRITES/BOSS LEVEL.png"
+}
 
+func _get_sprite_for_stage(stage: String) -> Texture2D:
+	return load(STAGE_SPRITES.get(stage, "res://assets/LEVEL SPRITES/NORMAL ENEMY LEVEL.png"))
 # Hard-coded connections matching the new 8-node Dungeon_Floor seed data.
 const CONNECTIONS: Array = [
 	[1, 2], [1, 3],
@@ -72,9 +82,12 @@ const Y_NUDGE: Dictionary = {
 	5: -0.010,
 	6:  0.000,
 	7:  0.000,
-	8:  0.000,
+	8:  -0.050,
 }
-
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		GameState.update_cursor(event.pressed)
+		
 func _calculate_positions() -> void:
 	var vp:     Vector2 = get_viewport_rect().size
 	var w:      float   = vp.x
@@ -137,10 +150,9 @@ func _refresh_stats() -> void:
 
 
 # ─── Build node buttons ───────────────────────────────────────────────────────
-
 func _build_node_buttons() -> void:
 	for child in get_children():
-		if child is Button:
+		if child is TextureButton: # Changed from Button
 			child.queue_free()
 
 	var reachable: Array = _get_reachable_ids()
@@ -148,28 +160,37 @@ func _build_node_buttons() -> void:
 	for node_id in node_positions.keys():
 		var pos:  Vector2    = node_positions[node_id]
 		var data: Dictionary = all_nodes.get(node_id, {})
-
-		var btn := Button.new()
+		
+		# Create a TextureButton
+		var btn := TextureButton.new()
+		var stage: String = data.get("stage_type", "NORMAL")
+		
+		btn.texture_normal = _get_sprite_for_stage(stage)
 		btn.custom_minimum_size = NODE_BTN_SIZE
-		btn.size = NODE_BTN_SIZE
+		btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		btn.position = pos - NODE_BTN_SIZE * 0.5
 
-		if data.is_empty():
-			btn.text = "?"
-		else:
-			var stage:   String = data.get("stage_type", "?")
-			var cleared: bool   = int(data.get("is_cleared", 0)) == 1
-			btn.text = _node_label(node_id, stage, cleared)
 
-		if node_id == GameState.current_node_id:
-			btn.modulate = Color(1.0, 1.0, 0.3)
+# Create a Label to hold the emoji/number
+		var lbl := Label.new()
+		lbl.text = _node_label(node_id, stage, int(data.get("is_cleared", 0)) == 1)
+		
+		# Center the label inside the button area
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.size = NODE_BTN_SIZE
+		
+		# Add to button
+		btn.add_child(lbl)
 
+		# Logic for active/disabled
 		btn.disabled = not (node_id in reachable)
-		if not btn.disabled:
-			btn.modulate = Color(0.4, 1.0, 0.5)
-
 		if node_id == GameState.current_node_id:
-			btn.modulate = Color(1.0, 1.0, 0.3)
+			btn.modulate = Color(1.0, 1.0, 0.3) # Highlight current
+		elif not btn.disabled:
+			btn.modulate = Color(1.0, 1.0, 1.0) # Normal
+		else:
+			btn.modulate = Color(0.3, 0.3, 0.3) # Disabled/Greyed out
 
 		btn.pressed.connect(func(): _travel_to(node_id))
 		add_child(btn)
