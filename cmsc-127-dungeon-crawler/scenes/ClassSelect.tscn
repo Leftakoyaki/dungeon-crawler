@@ -354,78 +354,60 @@ theme_override_constants/separation = 20
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard" unique_id=983715936]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("2_o4c2n")
-theme_override_font_sizes/font_size = 25
-horizontal_alignment = 1
-
 [node name="BerserkerCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=155096933]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard" unique_id=1975088617]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("2_o4c2n")
-theme_override_font_sizes/font_size = 25
-horizontal_alignment = 1
 
 [node name="ArcherCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=220082261]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard" unique_id=2061510636]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("2_o4c2n")
-theme_override_font_sizes/font_size = 25
-horizontal_alignment = 1
-
 [node name="Animations" type="Node2D" parent="." unique_id=13064702]
 
 [node name="MageSprite" type="AnimatedSprite2D" parent="Animations" unique_id=989929655]
-position = Vector2(199, 227)
+position = Vector2(195, 197)
 sprite_frames = SubResource("SpriteFrames_5d0op")
 animation = &"run"
 autoplay = "idle"
 frame_progress = 0.013598351
 
 [node name="BerserkerSprite" type="AnimatedSprite2D" parent="Animations" unique_id=1574215232]
-position = Vector2(567, 238)
+position = Vector2(573, 206)
 sprite_frames = SubResource("SpriteFrames_rl1km")
 animation = &"run"
 autoplay = "idle"
 frame_progress = 0.2569088
 
 [node name="ArcherSprite" type="AnimatedSprite2D" parent="Animations" unique_id=1986212603]
-position = Vector2(923, 240)
+position = Vector2(939, 211)
 sprite_frames = SubResource("SpriteFrames_wkxv2")
 animation = &"run"
 autoplay = "idle"
 
 [node name="SelectMage" type="TextureButton" parent="." unique_id=1189317099]
 layout_mode = 0
-offset_left = 103.0
-offset_top = 291.0
-offset_right = 295.0
-offset_bottom = 355.0
+offset_left = 99.0
+offset_top = 259.0
+offset_right = 291.0
+offset_bottom = 323.0
 texture_normal = ExtResource("8_o3gvq")
 texture_pressed = ExtResource("9_l3ik0")
 
 [node name="SelectBerserker" type="TextureButton" parent="." unique_id=1348215687]
 layout_mode = 0
 offset_left = 470.0
-offset_top = 289.0
+offset_top = 263.0
 offset_right = 662.0
-offset_bottom = 353.0
+offset_bottom = 327.0
 texture_normal = ExtResource("10_lmqgn")
 texture_pressed = ExtResource("9_b47ka")
 
 [node name="SelectArcher" type="TextureButton" parent="." unique_id=115495162]
 layout_mode = 0
-offset_left = 826.0
-offset_top = 290.0
-offset_right = 1018.0
-offset_bottom = 354.0
+offset_left = 837.0
+offset_top = 266.0
+offset_right = 1029.0
+offset_bottom = 330.0
 texture_normal = ExtResource("10_l3ik0")
 texture_pressed = ExtResource("13_lmqgn")
 
@@ -452,10 +434,10 @@ text = "Confirm"
 
 [node name="SelectedLabel" type="Label" parent="." unique_id=1321358387]
 layout_mode = 0
-offset_left = 43.0
-offset_top = 394.0
-offset_right = 1115.0
-offset_bottom = 433.0
+offset_left = 36.0
+offset_top = 339.0
+offset_right = 1108.0
+offset_bottom = 378.0
 theme_override_fonts/font = ExtResource("15_no6jg")
 theme_override_font_sizes/font_size = 34
 text = "No class selected."
@@ -463,30 +445,30 @@ horizontal_alignment = 1
 
 [node name="NameLabel" type="TextureButton" parent="." unique_id=2134837183]
 layout_mode = 0
-offset_left = 400.0
-offset_top = 111.0
-offset_right = 745.0
-offset_bottom = 180.0
+offset_left = 397.0
+offset_top = 78.0
+offset_right = 742.0
+offset_bottom = 147.0
 texture_normal = SubResource("AtlasTexture_iscca")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="NameLabel2" type="TextureButton" parent="." unique_id=162908308]
 layout_mode = 0
-offset_left = 70.0
-offset_top = 112.0
-offset_right = 319.0
-offset_bottom = 185.0
+offset_left = 73.0
+offset_top = 76.0
+offset_right = 322.0
+offset_bottom = 149.0
 texture_normal = SubResource("AtlasTexture_gepli")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="NameLabel3" type="TextureButton" parent="." unique_id=849418509]
 layout_mode = 0
-offset_left = 790.0
-offset_top = 109.0
-offset_right = 1046.0
-offset_bottom = 199.0
+offset_left = 801.0
+offset_top = 66.0
+offset_right = 1057.0
+offset_bottom = 156.0
 texture_normal = SubResource("AtlasTexture_wkxv2")
 ignore_texture_size = true
 stretch_mode = 5
@@ -495,10 +477,10 @@ stretch_mode = 5
 layout_mode = 1
 anchors_preset = -1
 anchor_bottom = 0.16700001
-offset_left = 153.0
-offset_top = 136.0
-offset_right = 242.0
-offset_bottom = 105.784
+offset_left = 151.0
+offset_top = 101.0
+offset_right = 240.0
+offset_bottom = 70.784
 theme_override_fonts/font = ExtResource("2_o4c2n")
 theme_override_font_sizes/font_size = 20
 text = "MAGE
@@ -510,10 +492,10 @@ horizontal_alignment = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_bottom = 0.16700001
-offset_left = 525.0
-offset_top = 134.0
-offset_right = 635.0
-offset_bottom = 197.47699
+offset_left = 518.0
+offset_top = 100.0
+offset_right = 628.0
+offset_bottom = 76.784
 theme_override_fonts/font = ExtResource("2_o4c2n")
 theme_override_font_sizes/font_size = 20
 text = "BERSERKER
@@ -526,10 +508,10 @@ horizontal_alignment = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_bottom = 0.16700001
-offset_left = 872.0
-offset_top = 142.0
-offset_right = 969.0
-offset_bottom = 205.47699
+offset_left = 886.0
+offset_top = 98.0
+offset_right = 983.0
+offset_bottom = 74.784
 theme_override_fonts/font = ExtResource("2_o4c2n")
 theme_override_font_sizes/font_size = 20
 text = "ARCHER
@@ -540,10 +522,10 @@ horizontal_alignment = 1
 
 [node name="Label3" type="Label" parent="." unique_id=1434863841]
 layout_mode = 0
-offset_left = 36.0
-offset_top = 84.0
-offset_right = 1108.0
-offset_bottom = 107.0
+offset_left = 40.0
+offset_top = 33.0
+offset_right = 1112.0
+offset_bottom = 56.0
 theme_override_fonts/font = ExtResource("2_o4c2n")
 theme_override_font_sizes/font_size = 20
 text = "Choose Your Class"
@@ -559,3 +541,13 @@ theme_override_fonts/font = ExtResource("15_no6jg")
 theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="StatsLabel" type="Label" parent="." unique_id=983715936]
+layout_mode = 0
+offset_left = 391.0
+offset_top = 394.0
+offset_right = 735.0
+offset_bottom = 418.0
+theme_override_fonts/font = ExtResource("2_o4c2n")
+theme_override_font_sizes/font_size = 25
+horizontal_alignment = 1
