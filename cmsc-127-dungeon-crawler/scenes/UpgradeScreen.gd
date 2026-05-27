@@ -12,10 +12,12 @@ extends Control
 @onready var skill_list:  VBoxContainer = $MarginContainer/VBoxContainer/ScrollContainer/SkillList
 @onready var back_btn:    Button        = $MarginContainer/VBoxContainer/BackButton
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		print("Click detected! State: ", event.pressed) # This will show up in the Output console
-		GameState.update_cursor(event.pressed)
+# Add this helper near the top of the script
+func _get_max_tier(skill_id: int) -> int:
+	if skill_id in [1, 4, 7]:
+		return 1
+	return 3
+
 func _ready() -> void:
 	back_btn.pressed.connect(_on_back_pressed)
 	_refresh()
@@ -40,7 +42,8 @@ func _refresh() -> void:
 
 func _build_skill_row(skill: Dictionary, upg_pts: int) -> void:
 	var current_tier: int = int(skill["current_tier"])
-	var is_maxed: bool    = current_tier >= 3
+	var max_tier: int     = _get_max_tier(int(skill["skill_id"]))
+	var is_maxed: bool    = current_tier >= max_tier
 
 	# Get next tier data for comparison (empty if maxed)
 	var next_data: Dictionary = {}
@@ -50,7 +53,7 @@ func _build_skill_row(skill: Dictionary, upg_pts: int) -> void:
 	# Row container
 	var row := HBoxContainer.new()
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.theme_override_constants["separation"] = 12
+	row.add_theme_constant_override("separation", 12)
 
 	# Skill info label
 	var info := Label.new()
