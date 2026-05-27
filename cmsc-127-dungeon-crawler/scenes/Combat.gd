@@ -9,8 +9,8 @@ extends Control
 #   BOSS   → 1 wave
 #
 # Passive abilities (applied here in damage calc):
-#   MAGE      Arcane Affinity — SKILL-type SP cost -1 (min 1)
-#   BERSERKER Bloodlust       — +5 ATK per 20% HP lost (stacks)
+#   MAGE      Arcane Affinity — all attacks build your ultimate
+#   WARRIOR   Unyielding Spirit — 1.5x ATK boost at 30% HP
 #   ARCHER    Eagle Eye       — 25% chance NORMAL attacks hit twice
 #
 # DAMAGE_BUFF potion: sets GameState.atk_buff_multiplier, consumed on next hit.
@@ -74,7 +74,6 @@ func _ready() -> void:
 # ─── Turn management ─────────────────────────────────────────────────────────
 
 func _begin_player_turn() -> void:
-	DatabaseManager.update_player_sp(GameState.current_max_sp())
 	_set_skill_buttons_enabled(true)
 	use_potion_btn.disabled = false
 	flee_btn.disabled       = false
@@ -117,17 +116,19 @@ func _build_skill_buttons() -> void:
 		child.queue_free()
 
 	var skills := DatabaseManager.get_player_skills()
+	var player := DatabaseManager.get_player()
+	var class_data := DatabaseManager.get_class_data(player["player_class"])
+	var base_atk: int = int(class_data.get("base_atk", 10))
+	
 	for skill in skills:
 		var btn := Button.new()
+		var display_dmg: int = int(float(base_atk) * float(skill["dmg_multiplier"]))
 		# Show effective SP cost — MAGE Arcane Affinity reduces SKILL cost by 1
-		var display_sp: int = int(skill["sp_cost"])
-		if GameState.player_class == "MAGE" and skill["atk_type"] == "SKILL":
-			display_sp = max(display_sp - 1, 1)
-		btn.text = "%s\n[%s]  SP:%d  x%.1f" % [
+		btn.text = "%s\n[%s]  SP:%d  ATK:%d" % [
 			skill["skill_name"],
 			skill["atk_type"],
-			display_sp,
-			skill["dmg_multiplier"]
+			int(skill["sp_cost"]),
+			display_dmg
 		]
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.custom_minimum_size   = Vector2(0, 70)
@@ -144,30 +145,32 @@ func _set_skill_buttons_enabled(enabled: bool) -> void:
 # ─── Skill use ────────────────────────────────────────────────────────────────
 
 func _on_skill_used(skill: Dictionary) -> void:
+	# Prevent double-firing while processing
+	_set_skill_buttons_enabled(false)
+	
 	var player := DatabaseManager.get_player()
 
-	# ── Passive: MAGE — Arcane Affinity (SKILL type costs 1 less SP, min 1) ───
 	var effective_sp_cost: int = int(skill["sp_cost"])
-	if player["player_class"] == "MAGE" and skill["atk_type"] == "SKILL":
-		effective_sp_cost = max(effective_sp_cost - 1, 1)
 
 	# Validation
 	if int(player["current_sp"]) < effective_sp_cost:
 		log_label.text = "Not enough SP!"
+		_set_skill_buttons_enabled(true)
 		return
 	if skill["atk_type"] == "ULTIMATE" and int(player["current_ult_pts"]) < GameState.ULT_PTS_MAX:
 		log_label.text = "Need %d ULT points to use Ultimate!" % GameState.ULT_PTS_MAX
+		_set_skill_buttons_enabled(true)
 		return
 
 	# ── Base ATK from class ───────────────────────────────────────────────────
 	var class_data: Dictionary = DatabaseManager.get_class_data(player["player_class"])
 	var base_atk: int = int(class_data.get("base_atk", 10))
 
-	# ── Passive: BERSERKER — Bloodlust (+5 ATK per 20% HP lost) ──────────────
-	if player["player_class"] == "BERSERKER":
+	# ── Passive: WARRIOR — Unyielding Spirit (1.5x ATK boost at 30% HP) ─────────
+	if player["player_class"] == "WARRIOR":
 		var hp_ratio: float = float(player["current_hp"]) / float(player["max_hp"])
-		var stacks: int = int((1.0 - hp_ratio) / 0.20)
-		base_atk += stacks * 5
+		if hp_ratio <= 0.3:
+			base_atk = int(base_atk * 1.5)
 
 	# ── Damage calculation ────────────────────────────────────────────────────
 	var damage: int = int(float(base_atk) * float(skill["dmg_multiplier"]))
@@ -179,8 +182,14 @@ func _on_skill_used(skill: Dictionary) -> void:
 
 	var log_msg: String = "You used %s for %d damage!" % [skill["skill_name"], damage]
 
+# ── Override log if Warrior Bloodlust is active ───────────────────────────
+	if player["player_class"] == "WARRIOR":
+		var hp_ratio: float = float(player["current_hp"]) / float(player["max_hp"])
+		if hp_ratio <= 0.3:
+			log_msg = "Your Unyielding Spirit is showing! %s deals %d damage!" % [skill["skill_name"], damage]
+			
 	# ── Passive: ARCHER — Eagle Eye (25% double strike on NORMAL) ────────────
-	if player["player_class"] == "ARCHER" and skill["atk_type"] == "NORMAL" and randf() < 0.25:
+	if player["player_class"] == "ARCHER" and (skill["atk_type"] == "NORMAL" or skill["atk_type"] == "SKILL") and randf() < 0.30:
 		damage *= 2
 		log_msg = "Eagle Eye! %s hits TWICE for %d damage!" % [skill["skill_name"], damage]
 
@@ -200,8 +209,23 @@ func _on_skill_used(skill: Dictionary) -> void:
 		await get_tree().create_timer(0.5).timeout
 		_on_wave_cleared()
 		return
+		
+	# ── Check remaining SP — end turn only if out of SP ──────────────────────
+	var updated_player := DatabaseManager.get_player()
+	var can_still_act: bool = false
+	var current_skills := DatabaseManager.get_player_skills()
+	for s in current_skills:
+		var cost: int = int(s["sp_cost"])
+		if int(updated_player["current_sp"]) >= cost:
+			can_still_act = true
+			break
 
-	_end_player_turn()
+	if not can_still_act:
+		DatabaseManager.reset_player_sp()
+		_end_player_turn()
+	else:
+		# Re-enable buttons only if player can still act
+		_set_skill_buttons_enabled(true)
 
 
 # ─── Wave management ──────────────────────────────────────────────────────────
@@ -215,6 +239,9 @@ func _on_wave_cleared() -> void:
 		log_label.text    = "Wave %d cleared! Next wave incoming..." % waves_done
 		wave_label.text   = "Wave %d / %d" % [next_wave, waves_total]
 		enemy_current_hp  = int(combat_data["monster"]["max_hp"])
+		var current_player := DatabaseManager.get_player()
+		if int(current_player["current_sp"]) <= 0:
+			DatabaseManager.reset_player_sp()
 		_refresh_ui()
 		await get_tree().create_timer(1.2).timeout
 		_begin_player_turn()
@@ -257,11 +284,64 @@ func _on_defeat() -> void:
 
 func _on_use_potion_pressed() -> void:
 	var inventory := DatabaseManager.get_inventory()
+
 	if inventory.is_empty():
 		log_label.text = "No potions!"
 		return
 
-	var item:   Dictionary = inventory[0]
+	# Always show picker (even if 1 item)
+	_set_skill_buttons_enabled(false)
+	use_potion_btn.disabled = true
+	flee_btn.disabled       = true
+
+	var popup := Panel.new()
+	popup.name     = "PotionPicker"
+	popup.size     = Vector2(250, 50 + inventory.size() * 50 + 50)
+	popup.position = (get_viewport_rect().size - popup.size) * 0.5
+	popup.z_index  = 10
+
+	var vbox := VBoxContainer.new()
+	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 8)
+	popup.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "Choose a potion:"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	for item in inventory:
+		var btn := Button.new()
+		btn.text = item["pot_name"]
+		btn.custom_minimum_size = Vector2(0, 40)
+
+		var captured_item: Dictionary = item
+		btn.pressed.connect(func():
+			popup.queue_free()
+			_set_skill_buttons_enabled(true)
+			use_potion_btn.disabled = false
+			flee_btn.disabled = false
+			_use_potion(captured_item)
+		)
+
+		vbox.add_child(btn)
+
+	var cancel_btn := Button.new()
+	cancel_btn.text = "Cancel"
+	cancel_btn.custom_minimum_size = Vector2(0, 40)
+	cancel_btn.pressed.connect(func():
+		popup.queue_free()
+		_set_skill_buttons_enabled(true)
+		use_potion_btn.disabled = false
+		flee_btn.disabled = false
+	)
+
+	vbox.add_child(cancel_btn)
+
+	add_child(popup)
+
+
+func _use_potion(item: Dictionary) -> void:
 	var player: Dictionary = DatabaseManager.get_player()
 
 	match item["pot_type"]:
@@ -271,7 +351,12 @@ func _on_use_potion_pressed() -> void:
 			log_label.text = "Used %s — restored %d HP." % [item["pot_name"], int(item["potency_value"])]
 		"DAMAGE_BUFF":
 			GameState.atk_buff_multiplier = 1.0 + float(item["potency_value"])
-			log_label.text = "Used %s — ATK +%d%% on next hit!" % [item["pot_name"], int(item["potency_value"] * 100.0)]
+			log_label.text = "Used %s — ATK x%.2f on next hit!" % [item["pot_name"], GameState.atk_buff_multiplier]
+		"SP_RECOVER":
+			var player_fresh := DatabaseManager.get_player()
+			var new_sp := mini(int(player_fresh["current_sp"]) + int(item["potency_value"]), int(player_fresh["max_sp"]))
+			DatabaseManager.update_player_sp(new_sp)
+			log_label.text = "Used %s — recovered %d SP." % [item["pot_name"], int(item["potency_value"])]
 
 	DatabaseManager.remove_from_inventory(item["inv_id"])
 	_refresh_ui()
@@ -280,7 +365,9 @@ func _on_use_potion_pressed() -> void:
 # ─── Flee ─────────────────────────────────────────────────────────────────────
 
 func _on_flee_pressed() -> void:
-	if randf() < 0.5:
+	var monster: Dictionary = combat_data["monster"]
+	var type = monster["monster_type"]
+	if randf() < 0.5 and type not in ["ELITE", "BOSS"]:
 		log_label.text = "You fled!"
 		DatabaseManager.combat_ended.emit("fled")
 		await get_tree().create_timer(0.8).timeout
@@ -295,7 +382,7 @@ func _on_flee_pressed() -> void:
 func _roll_drops() -> void:
 	var monster: Dictionary = combat_data["monster"]
 	if randf() < float(monster["pot_drop_chance"]):
-		var pot_id := randi_range(1, 3)
+		var pot_id := randi_range(1, 4)
 		if DatabaseManager.add_to_inventory(pot_id):
 			var potion := DatabaseManager.get_potion(pot_id)
 			log_label.text += "\nDrop: %s!" % potion.get("pot_name", "Potion")
@@ -315,9 +402,9 @@ func _refresh_ui() -> void:
 		player_hp_bar.max_value = int(player["max_hp"])
 		player_hp_bar.value     = int(player["current_hp"])
 		player_hp_label.text    = "HP  %d / %d" % [player["current_hp"], player["max_hp"]]
-		player_sp_bar.max_value = GameState.current_max_sp()
+		player_sp_bar.max_value = int(player["max_sp"])
 		player_sp_bar.value     = int(player["current_sp"])
-		player_sp_label.text    = "SP  %d / %d" % [player["current_sp"], GameState.current_max_sp()]
+		player_sp_label.text    = "SP  %d / %d" % [player["current_sp"], player["max_sp"]]
 		player_ult_label.text   = "ULT  %d / %d" % [player["current_ult_pts"], GameState.ULT_PTS_MAX]
 
 	if not monster.is_empty():

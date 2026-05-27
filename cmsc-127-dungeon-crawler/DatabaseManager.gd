@@ -62,16 +62,18 @@ func _initialize_database() -> void:
 
 func _create_tables() -> void:
 	# ── Static Entities ──────────────────────────────────────────────────────
-
+	# Classes Table
 	db.query("""
 		CREATE TABLE IF NOT EXISTS Classes (
 			class_name TEXT PRIMARY KEY,
 			base_hp INTEGER NOT NULL,
 			base_atk INTEGER NOT NULL,
+			base_sp INTEGER NOT NULL,
 			passive_description TEXT NOT NULL
 		);
 	""")
-
+	
+	# Skills Master Registry (2NF Base Info)
 	db.query("""
 		CREATE TABLE IF NOT EXISTS Skills (
 			skill_id INTEGER PRIMARY KEY,
@@ -139,6 +141,7 @@ func _create_tables() -> void:
 			current_hp INTEGER NOT NULL,
 			max_hp INTEGER NOT NULL,
 			current_sp INTEGER NOT NULL,
+			max_sp INTEGER NOT NULL,
 			current_ult_pts INTEGER NOT NULL DEFAULT 0,
 			upg_pts_bank INTEGER NOT NULL DEFAULT 0,
 			current_node_id INTEGER NOT NULL,
@@ -197,21 +200,24 @@ func _seed_classes() -> void:
 	var rows := [
 		{
 			"class_name":           "MAGE",
-			"base_hp":              80,
-			"base_atk":             30,
-			"passive_description":  "Arcane Affinity: SKILL-type SP costs reduced by 1 (min 1)."
+			"base_hp":              70,
+			"base_atk":             15,
+			"base_sp":				5,
+			"passive_description":  "Arcane Affinity: Normal and skill actions build ult points."
 		},
 		{
-			"class_name":           "BERSERKER",
+			"class_name":           "WARRIOR",
 			"base_hp":              120,
-			"base_atk":             40,
-			"passive_description":  "Bloodlust: Gain +5 ATK for every 20% HP lost."
+			"base_atk":             10,
+			"base_sp":				5,
+			"passive_description":  "Unyielding Spirit: Increase damage by 1.5x when HP drops below 30%."
 		},
 		{
 			"class_name":           "ARCHER",
 			"base_hp":              100,
-			"base_atk":             35,
-			"passive_description":  "Eagle Eye: NORMAL attacks have a 25% chance to strike twice."
+			"base_atk":             13,
+			"base_sp":				5,
+			"passive_description":  "Eagle Eye: Normal Attacks and Basic Skill have a 30% chance to strike twice."
 		},
 	]
 	for row in rows:
@@ -224,16 +230,16 @@ func _seed_skills() -> void:
 	# TODO: Replace with your final skill names.
 	var rows := [
 		# ── MAGE ──────────────────────────────────────────────────────────
-		{"skill_id": 1, "skill_name": "Staff Strike",    "atk_type": "NORMAL",   "class_restriction": "MAGE",      "ult_pts_mod":  1},
-		{"skill_id": 2, "skill_name": "Fireball",         "atk_type": "SKILL",    "class_restriction": "MAGE",      "ult_pts_mod":  1},
-		{"skill_id": 3, "skill_name": "Meteor Storm",     "atk_type": "ULTIMATE", "class_restriction": "MAGE",      "ult_pts_mod": -2},
-		# ── BERSERKER ─────────────────────────────────────────────────────
-		{"skill_id": 4, "skill_name": "Savage Slash",    "atk_type": "NORMAL",   "class_restriction": "BERSERKER", "ult_pts_mod":  1},
-		{"skill_id": 5, "skill_name": "Cleave",           "atk_type": "SKILL",    "class_restriction": "BERSERKER", "ult_pts_mod":  1},
-		{"skill_id": 6, "skill_name": "Rampage",          "atk_type": "ULTIMATE", "class_restriction": "BERSERKER", "ult_pts_mod": -2},
+		{"skill_id": 1, "skill_name": "Fireball",        "atk_type": "NORMAL",   "class_restriction": "MAGE",      "ult_pts_mod":  1},
+		{"skill_id": 2, "skill_name": "Meteor Strike",   "atk_type": "SKILL",    "class_restriction": "MAGE",      "ult_pts_mod":  1},
+		{"skill_id": 3, "skill_name": "Divine Light",    "atk_type": "ULTIMATE", "class_restriction": "MAGE",      "ult_pts_mod": -2},
+		# ── WARRIOR ─────────────────────────────────────────────────────
+		{"skill_id": 4, "skill_name": "Iron Cleave",     "atk_type": "NORMAL",   "class_restriction": "WARRIOR", "ult_pts_mod":  0},
+		{"skill_id": 5, "skill_name": "Crusader’s Fury", "atk_type": "SKILL",    "class_restriction": "WARRIOR", "ult_pts_mod":  1},
+		{"skill_id": 6, "skill_name": "Kingdom’s Ruin",  "atk_type": "ULTIMATE", "class_restriction": "WARRIOR", "ult_pts_mod": -2},
 		# ── ARCHER ────────────────────────────────────────────────────────
-		{"skill_id": 7, "skill_name": "Arrow Shot",      "atk_type": "NORMAL",   "class_restriction": "ARCHER",    "ult_pts_mod":  1},
-		{"skill_id": 8, "skill_name": "Volley",           "atk_type": "SKILL",    "class_restriction": "ARCHER",    "ult_pts_mod":  1},
+		{"skill_id": 7, "skill_name": "Arrow Shot",      "atk_type": "NORMAL",   "class_restriction": "ARCHER",    "ult_pts_mod":  0},
+		{"skill_id": 8, "skill_name": "Piercing Arrow",  "atk_type": "SKILL",    "class_restriction": "ARCHER",    "ult_pts_mod":  1},
 		{"skill_id": 9, "skill_name": "Rain of Arrows",  "atk_type": "ULTIMATE", "class_restriction": "ARCHER",    "ult_pts_mod": -2},
 	]
 	for row in rows:
@@ -247,23 +253,49 @@ func _seed_skill_upgrades() -> void:
 	# TODO: Tune dmg_multiplier values for your combat balance.
 	var upgrades: Array = []
 
-	for sid in [1, 4, 7]:  # NORMAL
-		upgrades.append({"skill_id": sid, "upgrade_tier": 0, "sp_cost": 1, "dmg_multiplier": 1.0})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 1, "sp_cost": 1, "dmg_multiplier": 1.2})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 2, "sp_cost": 1, "dmg_multiplier": 1.4})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 3, "sp_cost": 1, "dmg_multiplier": 1.6})
+# MAGE
+	# NORMAL ATTACK
+	upgrades.append({"skill_id": 1, "upgrade_tier": 0, "sp_cost": 1, "dmg_multiplier": 0.6})
+	upgrades.append({"skill_id": 1, "upgrade_tier": 1, "sp_cost": 1, "dmg_multiplier": 0.7})
+	# BASIC SKILL
+	upgrades.append({"skill_id": 2, "upgrade_tier": 0, "sp_cost": 3, "dmg_multiplier": 2.5})
+	upgrades.append({"skill_id": 2, "upgrade_tier": 1, "sp_cost": 3, "dmg_multiplier": 3.0})
+	upgrades.append({"skill_id": 2, "upgrade_tier": 2, "sp_cost": 2, "dmg_multiplier": 3.0})
+	upgrades.append({"skill_id": 2, "upgrade_tier": 3, "sp_cost": 1, "dmg_multiplier": 3.5})
+	# ULTIMATE
+	upgrades.append({"skill_id": 3, "upgrade_tier": 0, "sp_cost": 5, "dmg_multiplier": 4.5})
+	upgrades.append({"skill_id": 3, "upgrade_tier": 1, "sp_cost": 5, "dmg_multiplier": 5.5})
+	upgrades.append({"skill_id": 3, "upgrade_tier": 2, "sp_cost": 5, "dmg_multiplier": 6.5})
+	upgrades.append({"skill_id": 3, "upgrade_tier": 3, "sp_cost": 5, "dmg_multiplier": 8.0})
+# WARRIOR
+	# NORMAL ATTACK
+	upgrades.append({"skill_id": 4, "upgrade_tier": 0, "sp_cost": 1, "dmg_multiplier": 0.6})
+	upgrades.append({"skill_id": 4, "upgrade_tier": 1, "sp_cost": 1, "dmg_multiplier": 0.7})
+	# BASIC SKILL
+	upgrades.append({"skill_id": 5, "upgrade_tier": 0, "sp_cost": 3, "dmg_multiplier": 2.2})
+	upgrades.append({"skill_id": 5, "upgrade_tier": 1, "sp_cost": 3, "dmg_multiplier": 2.6})
+	upgrades.append({"skill_id": 5, "upgrade_tier": 2, "sp_cost": 2, "dmg_multiplier": 2.6})
+	upgrades.append({"skill_id": 5, "upgrade_tier": 3, "sp_cost": 1, "dmg_multiplier": 3.0})
+	# ULTIMATE
+	upgrades.append({"skill_id": 6, "upgrade_tier": 0, "sp_cost": 5, "dmg_multiplier": 4.0})
+	upgrades.append({"skill_id": 6, "upgrade_tier": 1, "sp_cost": 5, "dmg_multiplier": 5.0})
+	upgrades.append({"skill_id": 6, "upgrade_tier": 2, "sp_cost": 5, "dmg_multiplier": 6.0})
+	upgrades.append({"skill_id": 6, "upgrade_tier": 3, "sp_cost": 5, "dmg_multiplier": 7.0})
+# ARCHER
+	# NORMAL ATTACK
+	upgrades.append({"skill_id": 7, "upgrade_tier": 0, "sp_cost": 1, "dmg_multiplier": 0.53})
+	upgrades.append({"skill_id": 7, "upgrade_tier": 1, "sp_cost": 1, "dmg_multiplier": 0.63})
+	# BASIC SKILL
+	upgrades.append({"skill_id": 8, "upgrade_tier": 0, "sp_cost": 3, "dmg_multiplier": 2.2})
+	upgrades.append({"skill_id": 8, "upgrade_tier": 1, "sp_cost": 3, "dmg_multiplier": 2.4})
+	upgrades.append({"skill_id": 8, "upgrade_tier": 2, "sp_cost": 3, "dmg_multiplier": 2.6})
+	upgrades.append({"skill_id": 8, "upgrade_tier": 3, "sp_cost": 2, "dmg_multiplier": 2.8})
+	# ULTIMATE
+	upgrades.append({"skill_id": 9, "upgrade_tier": 0, "sp_cost": 5, "dmg_multiplier": 4.0})
+	upgrades.append({"skill_id": 9, "upgrade_tier": 1, "sp_cost": 5, "dmg_multiplier": 5.0})
+	upgrades.append({"skill_id": 9, "upgrade_tier": 2, "sp_cost": 5, "dmg_multiplier": 6.0})
+	upgrades.append({"skill_id": 9, "upgrade_tier": 3, "sp_cost": 5, "dmg_multiplier": 7.0})
 
-	for sid in [2, 5, 8]:  # SKILL
-		upgrades.append({"skill_id": sid, "upgrade_tier": 0, "sp_cost": 2, "dmg_multiplier": 1.5})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 1, "sp_cost": 2, "dmg_multiplier": 1.8})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 2, "sp_cost": 2, "dmg_multiplier": 2.1})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 3, "sp_cost": 2, "dmg_multiplier": 2.4})
-
-	for sid in [3, 6, 9]:  # ULTIMATE — sp_cost locked at 5 per schema
-		upgrades.append({"skill_id": sid, "upgrade_tier": 0, "sp_cost": 5, "dmg_multiplier": 2.5})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 1, "sp_cost": 5, "dmg_multiplier": 3.0})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 2, "sp_cost": 5, "dmg_multiplier": 3.5})
-		upgrades.append({"skill_id": sid, "upgrade_tier": 3, "sp_cost": 5, "dmg_multiplier": 4.0})
 
 	for row in upgrades:
 		db.insert_row("Skill_Upgrades", row)
@@ -273,12 +305,12 @@ func _seed_monsters() -> void:
 	# TODO: Tune stats for balance. pot_drop_chance and upg_point_chance are
 	# decimal probabilities (0.0–1.0) — roll against these in GDScript after combat.
 	var rows := [
-		{"monster_id": 1, "mon_name": "Goblin",      "max_hp": 40,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 0.30, "upg_point_chance": 0.05},
-		{"monster_id": 2, "mon_name": "Skeleton",    "max_hp": 35,  "attack_power": 7,  "monster_type": "NORMAL", "pot_drop_chance": 0.20, "upg_point_chance": 0.05},
-		{"monster_id": 3, "mon_name": "Orc",         "max_hp": 60,  "attack_power": 12, "monster_type": "NORMAL", "pot_drop_chance": 0.25, "upg_point_chance": 0.05},
-		{"monster_id": 4, "mon_name": "Dark Knight", "max_hp": 100, "attack_power": 18, "monster_type": "ELITE",  "pot_drop_chance": 0.50, "upg_point_chance": 0.60},
-		{"monster_id": 5, "mon_name": "Troll",       "max_hp": 120, "attack_power": 20, "monster_type": "ELITE",  "pot_drop_chance": 0.55, "upg_point_chance": 0.60},
-		{"monster_id": 6, "mon_name": "Dragon",      "max_hp": 200, "attack_power": 25, "monster_type": "BOSS",   "pot_drop_chance": 0.80, "upg_point_chance": 0.80},
+		{"monster_id": 1, "mon_name": "Goblin",      "max_hp": 45,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
+		{"monster_id": 2, "mon_name": "Skeleton",    "max_hp": 35,  "attack_power": 12,  "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
+		{"monster_id": 3, "mon_name": "Imp",         "max_hp": 40,  "attack_power": 10, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
+		{"monster_id": 4, "mon_name": "Dark Knight", "max_hp": 110, "attack_power": 18, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
+		{"monster_id": 5, "mon_name": "Troll",       "max_hp": 85,  "attack_power": 24, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
+		{"monster_id": 6, "mon_name": "Dragon",      "max_hp": 200, "attack_power": 25, "monster_type": "BOSS",   "pot_drop_chance": 0.00, "upg_point_chance": 0.00},
 	]
 	for row in rows:
 		db.insert_row("Monsters", row)
@@ -288,9 +320,10 @@ func _seed_potions() -> void:
 	# pot_type drives the effect logic in GDScript (HEAL restores HP, DAMAGE_BUFF scales ATK).
 	# TODO: Adjust potency_value. HEAL = flat HP restored. DAMAGE_BUFF = decimal multiplier.
 	var rows := [
-		{"pot_id": 1, "pot_name": "Health Potion",         "pot_type": "HEAL",        "potency_value": 50.0},
-		{"pot_id": 2, "pot_name": "Greater Health Potion", "pot_type": "HEAL",        "potency_value": 100.0},
-		{"pot_id": 3, "pot_name": "Attack Elixir",         "pot_type": "DAMAGE_BUFF", "potency_value": 0.25},
+		{"pot_id": 1, "pot_name": "Health Potion",         "pot_type": "HEAL",        "potency_value": 25.0},
+		{"pot_id": 2, "pot_name": "Elixir of Healing",     "pot_type": "HEAL",        "potency_value": 60.0},
+		{"pot_id": 3, "pot_name": "Attack Elixir", 		   "pot_type": "DAMAGE_BUFF", "potency_value": 1.3},
+		{"pot_id": 4, "pot_name": "Adrenaline Shot",       "pot_type": "SP_RECOVER",  "potency_value": 3.0},
 	]
 	for row in rows:
 		db.insert_row("Potions", row)
@@ -319,29 +352,25 @@ func _seed_dungeon_floor() -> void:
 	var nodes := [
 		{"node_id": 1,  "stage_type": "START",  "is_cleared": 0},
 		{"node_id": 2,  "stage_type": "NORMAL", "monster_id": 1, "is_cleared": 0},
-		{"node_id": 3,  "stage_type": "NORMAL", "monster_id": 2, "is_cleared": 0},
-		{"node_id": 4,  "stage_type": "EVENT",  "is_cleared": 0},
+		{"node_id": 3,  "stage_type": "EVENT",  "is_cleared": 0},
+		{"node_id": 4,  "stage_type": "NORMAL", "monster_id": 3, "is_cleared": 0},
 		{"node_id": 5,  "stage_type": "REST",   "is_cleared": 0},
 		{"node_id": 6,  "stage_type": "ELITE",  "monster_id": 4, "is_cleared": 0},
-		{"node_id": 7,  "stage_type": "NORMAL", "monster_id": 3, "is_cleared": 0},
-		{"node_id": 8,  "stage_type": "REST",   "is_cleared": 0},
-		{"node_id": 9,  "stage_type": "EVENT",  "is_cleared": 0},
-		{"node_id": 10, "stage_type": "BOSS",   "monster_id": 6, "is_cleared": 0},
+		{"node_id": 7,  "stage_type": "REST",   "is_cleared": 0},
+		{"node_id": 8, "stage_type": "BOSS",   "monster_id": 6, "is_cleared": 0},
 	]
 	for row in nodes:
 		db.insert_row("Dungeon_Floor", row)
 
 	# Pass 2: set child pointers (node 10 is terminal — no update needed)
 	var paths := [
-		{"node_id": 1, "left": 2,  "right": 3},
-		{"node_id": 2, "left": 4,  "right": 5},
-		{"node_id": 3, "left": 4,  "right": 5},
-		{"node_id": 4, "left": 6,  "right": 7},
-		{"node_id": 5, "left": 6,  "right": 7},
-		{"node_id": 6, "left": 8,  "right": 9},
-		{"node_id": 7, "left": 8,  "right": 9},
-		{"node_id": 8, "left": 10, "right": null},
-		{"node_id": 9, "left": 10, "right": null},
+		{"node_id": 1, "left": 3,  "right": 2},
+		{"node_id": 2, "left": 5,  "right": 4},
+		{"node_id": 3, "left": 6,  "right": null},
+		{"node_id": 4, "left": 7,  "right": null},
+		{"node_id": 5, "left": 7,  "right": null},
+		{"node_id": 6, "left": 7,  "right": null},
+		{"node_id": 7, "left": 8,  "right": null},
 	]
 	for p in paths:
 		db.update_rows("Dungeon_Floor", "node_id = %d" % p["node_id"], {
@@ -454,7 +483,8 @@ func create_player(chosen_class: String, starting_node_id: int = 1) -> bool:
 		"player_class":    chosen_class,
 		"current_hp":      class_data["base_hp"],
 		"max_hp":          class_data["base_hp"],
-		"current_sp":      GameState.max_sp_for_class(chosen_class),
+		"current_sp":      class_data["base_sp"],
+		"max_sp":          class_data["base_sp"],
 		"current_ult_pts": 0,
 		"upg_pts_bank":    0,
 		"current_node_id": starting_node_id
@@ -476,6 +506,12 @@ func update_player_hp(new_hp: int) -> bool:
 func update_player_sp(new_sp: int) -> bool:
 	return db.update_rows("Player_Status", "player_id = 1", {"current_sp": new_sp})
 
+## Resets current_sp to max_sp at the start of each combat turn.
+func reset_player_sp() -> bool:
+	var player := get_player()
+	if player.is_empty():
+		return false
+	return update_player_sp(player["max_sp"])
 
 ## Updates current_ult_pts. Caller must clamp to [0, GameState.ULT_PTS_MAX] before calling.
 func update_player_ult_pts(new_pts: int) -> bool:
@@ -486,6 +522,7 @@ func update_player_ult_pts(new_pts: int) -> bool:
 func update_player_location(node_id: int) -> bool:
 	var ok := db.update_rows("Player_Status", "player_id = 1", {"current_node_id": node_id})
 	if ok:
+		reset_player_sp()
 		GameState.current_node_id = node_id
 		player_moved.emit(node_id)
 	return ok
@@ -574,7 +611,8 @@ func upgrade_skill(skill_id: int) -> bool:
 	if skill.is_empty():
 		push_error("DatabaseManager.upgrade_skill: Skill %d not on player." % skill_id)
 		return false
-	if skill["current_tier"] >= 3:
+	var max_tier: int = 1 if skill_id in [1, 4, 7] else 3
+	if skill["current_tier"] >= max_tier:
 		return false  # already max tier
 	return db.update_rows("Player_Skills_Status",
 		"player_id = 1 AND skill_id = %d" % skill_id,
@@ -708,4 +746,3 @@ func get_combat_data(node_id: int) -> Dictionary:
 		return {}
 
 	return {"node": node, "monster": monster, "player": player}
-	
