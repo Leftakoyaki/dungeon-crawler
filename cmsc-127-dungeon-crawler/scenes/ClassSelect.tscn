@@ -1,13 +1,321 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://3ttg84jbdkjj"]
 
-[ext_resource type="Script" path="res://scenes/ClassSelect.gd" id="1_classselect"]
+[ext_resource type="Script" uid="uid://brxv61y5bdrkh" path="res://scenes/ClassSelect.gd" id="1_classselect"]
+[ext_resource type="Texture2D" uid="uid://dbr062qglqkah" path="res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Monk/Idle.png" id="2_mubi6"]
+[ext_resource type="Texture2D" uid="uid://c86hcwsc4tkbp" path="res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Monk/Run.png" id="3_gegav"]
+[ext_resource type="Texture2D" uid="uid://3de5vq5speou" path="res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Warrior/Warrior_Idle.png" id="4_1xrue"]
+[ext_resource type="Texture2D" uid="uid://ywm8cy3n8kh7" path="res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Warrior/Warrior_Run.png" id="5_o3gvq"]
+[ext_resource type="Texture2D" uid="uid://cql2x83xme82t" path="res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Archer/Archer_Idle.png" id="6_b47ka"]
+[ext_resource type="Texture2D" uid="uid://b7blksp437dbo" path="res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Archer/Archer_Run.png" id="7_l3ik0"]
+[ext_resource type="Texture2D" uid="uid://d4c8w5gdwjk8s" path="res://assets/Tiny Swords (Update 010)/UI/Buttons/Button_Blue_3Slides.png" id="8_o3gvq"]
+[ext_resource type="Texture2D" uid="uid://bphfmrdm8sjjc" path="res://assets/Tiny Swords (Update 010)/UI/Buttons/Button_Red_3Slides_Pressed.png" id="9_b47ka"]
+[ext_resource type="Texture2D" uid="uid://8t6f1opkg7kq" path="res://assets/Tiny Swords (Update 010)/UI/Buttons/Button_Blue_3Slides_Pressed.png" id="9_l3ik0"]
+[ext_resource type="Texture2D" uid="uid://dxwfbkxtmwijs" path="res://assets/Tiny Swords (Update 010)/UI/Buttons/Button_Hover_3Slides.png" id="10_l3ik0"]
+[ext_resource type="Texture2D" uid="uid://bliggg1573xol" path="res://assets/Tiny Swords (Update 010)/UI/Buttons/Button_Red_3Slides.png" id="10_lmqgn"]
+[ext_resource type="Texture2D" uid="uid://cjjlew3trbqxe" path="res://assets/Tiny Swords (Update 010)/UI/Buttons/Button_Disable_3Slides.png" id="13_lmqgn"]
 
-[node name="ClassSelect" type="Control"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_lmqgn"]
+atlas = ExtResource("2_mubi6")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_28y7f"]
+atlas = ExtResource("2_mubi6")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hf61t"]
+atlas = ExtResource("2_mubi6")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o4c2n"]
+atlas = ExtResource("2_mubi6")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_no6jg"]
+atlas = ExtResource("2_mubi6")
+region = Rect2(768, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gak6s"]
+atlas = ExtResource("2_mubi6")
+region = Rect2(960, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7y4dk"]
+atlas = ExtResource("3_gegav")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_82w58"]
+atlas = ExtResource("3_gegav")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_53yu4"]
+atlas = ExtResource("3_gegav")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_asapu"]
+atlas = ExtResource("3_gegav")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5d0op"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lmqgn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_28y7f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hf61t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o4c2n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_no6jg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gak6s")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7y4dk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_82w58")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_53yu4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_asapu")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fwx38"]
+atlas = ExtResource("4_1xrue")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xpvgs"]
+atlas = ExtResource("4_1xrue")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iowxw"]
+atlas = ExtResource("4_1xrue")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oxdu8"]
+atlas = ExtResource("4_1xrue")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lujmg"]
+atlas = ExtResource("4_1xrue")
+region = Rect2(768, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yx6i7"]
+atlas = ExtResource("4_1xrue")
+region = Rect2(960, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m5smv"]
+atlas = ExtResource("4_1xrue")
+region = Rect2(1152, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fheuf"]
+atlas = ExtResource("4_1xrue")
+region = Rect2(1344, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fm1tn"]
+atlas = ExtResource("5_o3gvq")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4fofa"]
+atlas = ExtResource("5_o3gvq")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2x7t7"]
+atlas = ExtResource("5_o3gvq")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tir7n"]
+atlas = ExtResource("5_o3gvq")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gphlj"]
+atlas = ExtResource("5_o3gvq")
+region = Rect2(768, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kmjrm"]
+atlas = ExtResource("5_o3gvq")
+region = Rect2(960, 0, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rl1km"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fwx38")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xpvgs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iowxw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oxdu8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lujmg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yx6i7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m5smv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fheuf")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fm1tn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4fofa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2x7t7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tir7n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gphlj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kmjrm")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3ktba"]
+atlas = ExtResource("6_b47ka")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vre7y"]
+atlas = ExtResource("6_b47ka")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2hy5y"]
+atlas = ExtResource("6_b47ka")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x83qj"]
+atlas = ExtResource("6_b47ka")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_usqke"]
+atlas = ExtResource("6_b47ka")
+region = Rect2(768, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_celsx"]
+atlas = ExtResource("6_b47ka")
+region = Rect2(960, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fa0yy"]
+atlas = ExtResource("7_l3ik0")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rlojt"]
+atlas = ExtResource("7_l3ik0")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iscca"]
+atlas = ExtResource("7_l3ik0")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gepli"]
+atlas = ExtResource("7_l3ik0")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wkxv2"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3ktba")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vre7y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2hy5y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x83qj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_usqke")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_celsx")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fa0yy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rlojt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iscca")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gepli")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]
+
+[node name="ClassSelect" type="Control" unique_id=1396623222]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_classselect")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1875621246]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/margin_left = 40
@@ -15,89 +323,123 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1922572870]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1434863841]
 layout_mode = 2
-horizontal_alignment = 1
 text = "Choose Your Class"
+horizontal_alignment = 1
 
-[node name="ClassCards" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ClassCards" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1349948662]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="MageCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards"]
+[node name="MageCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=1069771371]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard"]
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard" unique_id=113162921]
 layout_mode = 2
-horizontal_alignment = 1
 text = "MAGE"
+horizontal_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard"]
+[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard" unique_id=983715936]
 layout_mode = 2
 horizontal_alignment = 1
-text = ""
 
-[node name="SelectMage" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/MageCard"]
-layout_mode = 2
-text = "Select"
-
-[node name="BerserkerCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards"]
+[node name="BerserkerCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=155096933]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard"]
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard" unique_id=1487970029]
 layout_mode = 2
-horizontal_alignment = 1
 text = "BERSERKER"
+horizontal_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard"]
+[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard" unique_id=1975088617]
 layout_mode = 2
 horizontal_alignment = 1
-text = ""
 
-[node name="SelectBerserker" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard"]
-layout_mode = 2
-text = "Select"
-
-[node name="ArcherCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards"]
+[node name="ArcherCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=220082261]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard"]
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard" unique_id=909103005]
 layout_mode = 2
-horizontal_alignment = 1
 text = "ARCHER"
+horizontal_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard"]
+[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard" unique_id=2061510636]
 layout_mode = 2
 horizontal_alignment = 1
-text = ""
 
-[node name="SelectArcher" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard"]
+[node name="SelectedLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1321358387]
 layout_mode = 2
-text = "Select"
-
-[node name="SelectedLabel" type="Label" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-horizontal_alignment = 1
 text = "No class selected."
+horizontal_alignment = 1
 
-[node name="PassiveLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="PassiveLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1808916439]
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 3
-text = ""
 
-[node name="ConfirmButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="ConfirmButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=2118059902]
 layout_mode = 2
 disabled = true
 text = "Confirm"
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=275024299]
 layout_mode = 2
 text = "Back"
+
+[node name="Animations" type="Node2D" parent="." unique_id=13064702]
+
+[node name="MageSprite" type="AnimatedSprite2D" parent="Animations" unique_id=989929655]
+position = Vector2(120, 76)
+sprite_frames = SubResource("SpriteFrames_5d0op")
+animation = &"run"
+autoplay = "idle"
+frame_progress = 0.013598351
+
+[node name="BerserkerSprite" type="AnimatedSprite2D" parent="Animations" unique_id=1574215232]
+position = Vector2(447, 74)
+sprite_frames = SubResource("SpriteFrames_rl1km")
+animation = &"run"
+autoplay = "idle"
+frame_progress = 0.83210117
+
+[node name="ArcherSprite" type="AnimatedSprite2D" parent="Animations" unique_id=1986212603]
+position = Vector2(841, 75)
+sprite_frames = SubResource("SpriteFrames_wkxv2")
+animation = &"idle"
+autoplay = "idle"
+frame_progress = 0.16017468
+
+[node name="SelectMage" type="TextureButton" parent="." unique_id=1189317099]
+layout_mode = 0
+offset_left = 109.0
+offset_top = 349.0
+offset_right = 301.0
+offset_bottom = 413.0
+texture_normal = ExtResource("8_o3gvq")
+texture_pressed = ExtResource("9_l3ik0")
+
+[node name="SelectBerserker" type="TextureButton" parent="." unique_id=1348215687]
+layout_mode = 0
+offset_left = 469.0
+offset_top = 349.0
+offset_right = 661.0
+offset_bottom = 413.0
+texture_normal = ExtResource("10_lmqgn")
+texture_pressed = ExtResource("9_b47ka")
+
+[node name="SelectArcher" type="TextureButton" parent="." unique_id=115495162]
+layout_mode = 0
+offset_left = 830.0
+offset_top = 352.0
+offset_right = 1022.0
+offset_bottom = 416.0
+texture_normal = ExtResource("10_l3ik0")
+texture_pressed = ExtResource("13_lmqgn")

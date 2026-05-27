@@ -2,9 +2,10 @@ extends Control
 
 var selected_class: String = ""
 
-@onready var mage_btn:      Button = $MarginContainer/VBoxContainer/ClassCards/MageCard/SelectMage
-@onready var berserker_btn: Button = $MarginContainer/VBoxContainer/ClassCards/BerserkerCard/SelectBerserker
-@onready var archer_btn:    Button = $MarginContainer/VBoxContainer/ClassCards/ArcherCard/SelectArcher
+#grab the buttonsfrom root node now
+@onready var mage_btn: TextureButton = $SelectMage
+@onready var berserker_btn: TextureButton = $SelectBerserker
+@onready var archer_btn: TextureButton = $SelectArcher
 
 @onready var mage_stats:      Label = $MarginContainer/VBoxContainer/ClassCards/MageCard/StatsLabel
 @onready var berserker_stats: Label = $MarginContainer/VBoxContainer/ClassCards/BerserkerCard/StatsLabel
@@ -15,8 +16,14 @@ var selected_class: String = ""
 @onready var confirm_btn:    Button = $MarginContainer/VBoxContainer/ConfirmButton
 @onready var back_btn:       Button = $MarginContainer/VBoxContainer/BackButton
 
+#grab the spritesfrom the animations node
+@onready var mage_sprite: AnimatedSprite2D = $Animations/MageSprite
+@onready var berserker_sprite: AnimatedSprite2D = $Animations/BerserkerSprite
+@onready var archer_sprite: AnimatedSprite2D = $Animations/ArcherSprite
+
 
 func _ready() -> void:
+	
 	mage_btn.pressed.connect(func(): _select_class("MAGE"))
 	berserker_btn.pressed.connect(func(): _select_class("BERSERKER"))
 	archer_btn.pressed.connect(func(): _select_class("ARCHER"))
@@ -26,6 +33,11 @@ func _ready() -> void:
 	confirm_btn.disabled = true
 	selected_label.text  = "No class selected."
 	passive_label.text   = ""
+
+	#make everyone idleat the start
+	mage_sprite.play("idle")
+	berserker_sprite.play("idle")
+	archer_sprite.play("idle")
 
 	_populate_class_stats()
 
@@ -46,6 +58,17 @@ func _select_class(cls: String) -> void:
 	selected_label.text  = "Selected: %s" % cls
 	passive_label.text   = data.get("passive_description", "")
 	confirm_btn.disabled = false
+
+	#make everyone idlefirst
+	mage_sprite.play("idle")
+	berserker_sprite.play("idle")
+	archer_sprite.play("idle")
+	
+	#make the chosenone run
+	match cls:
+		"MAGE": mage_sprite.play("run")
+		"BERSERKER": berserker_sprite.play("run")
+		"ARCHER": archer_sprite.play("run")
 
 
 func _on_confirm_pressed() -> void:
