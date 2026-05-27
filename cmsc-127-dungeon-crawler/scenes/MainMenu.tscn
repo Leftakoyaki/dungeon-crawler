@@ -1,365 +1,45 @@
 [gd_scene format=3 uid="uid://cyeyevku611a6"]
 
 [ext_resource type="Script" uid="uid://c1m7ebspxyola" path="res://scenes/MainMenu.gd" id="1_mainmenu"]
-[ext_resource type="Texture2D" uid="uid://cvylswgaksy46" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Papers/PaperTitle.png" id="2_2wh52"]
-[ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_ow34m"]
-[ext_resource type="Texture2D" uid="uid://b2fstby4ico8p" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Swords/Swordfinal.png" id="4_l72w3"]
-[ext_resource type="Texture2D" uid="uid://b4q24e06d1kbp" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Icons/Icon_05.png" id="5_826wr"]
-[ext_resource type="Texture2D" uid="uid://pac2ao6kuhol" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Icons/Icon_08.png" id="5_l72w3"]
-[ext_resource type="Texture2D" uid="uid://0u131mhtd0f2" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Icons/Icon_09.png" id="6_826wr"]
-[ext_resource type="Texture2D" uid="uid://dranpme1fpk5" path="res://assets/Tiny Swords (Free Pack)/Particle FX/Explosion_01.png" id="7_8a8k8"]
-[ext_resource type="Texture2D" uid="uid://chit6731seops" path="res://assets/Tiny Swords (Free Pack)/Units/Yellow Units/Lancer/Lancer_Idle.png" id="7_ucygd"]
-[ext_resource type="Texture2D" uid="uid://dpnqjx7y4ylhy" path="res://assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Dead/Dead.png" id="8_7la6k"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_l72w3"]
-atlas = ExtResource("4_l72w3")
-region = Rect2(58.171844, -8.3594055, 390.38766, 141.72488)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7shrw"]
-atlas = ExtResource("7_8a8k8")
-region = Rect2(0, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_viowm"]
-atlas = ExtResource("7_8a8k8")
-region = Rect2(192, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1n6yq"]
-atlas = ExtResource("7_8a8k8")
-region = Rect2(384, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_yovvs"]
-atlas = ExtResource("7_8a8k8")
-region = Rect2(576, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_2axsc"]
-atlas = ExtResource("7_8a8k8")
-region = Rect2(768, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_wrgne"]
-atlas = ExtResource("7_8a8k8")
-region = Rect2(960, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hm0al"]
-atlas = ExtResource("7_8a8k8")
-region = Rect2(1152, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_i7r3k"]
-atlas = ExtResource("7_8a8k8")
-region = Rect2(1344, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_os5dr"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(0, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_duata"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(128, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_lw0hr"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(256, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_gnvml"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(384, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_d3xvo"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(512, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ynb5t"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(640, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ejntt"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(768, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_c3y1w"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(0, 128, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_krgl8"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(128, 128, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_vbqq2"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(256, 128, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_h1mrw"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(384, 128, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_2pqvh"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(512, 128, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_kc01p"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(640, 128, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ggp3y"]
-atlas = ExtResource("8_7la6k")
-region = Rect2(768, 128, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_mipys"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(0, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_8a8k8"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(320, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7la6k"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(640, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_2nypq"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(960, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_bky6r"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(1280, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_l4mxc"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(1600, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_5faoh"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(1920, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ptake"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(2240, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hubol"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(2560, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_8vx4p"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(2880, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tdapf"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(3200, 0, 320, 320)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_v41fp"]
-atlas = ExtResource("7_ucygd")
-region = Rect2(3520, 0, 320, 320)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_7shrw"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_7shrw")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_viowm")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_1n6yq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_yovvs")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_2axsc")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_wrgne")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_hm0al")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_i7r3k")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_os5dr")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_duata")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_lw0hr")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_gnvml")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_d3xvo")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ynb5t")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ejntt")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_c3y1w")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_krgl8")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_vbqq2")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_h1mrw")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_2pqvh")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_kc01p")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ggp3y")
-}],
-"loop": true,
-"name": &"death",
-"speed": 12.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"default",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_mipys")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_8a8k8")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_7la6k")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_2nypq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_bky6r")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_l4mxc")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_5faoh")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ptake")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_hubol")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_8vx4p")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_tdapf")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_v41fp")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}]
-
-[node name="MainMenu" type="Control" unique_id=2061730621]
+[node name="MainMenu" type="Control" unique_id=1330859322]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_mainmenu")
 
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1285471248]
-layout_mode = 1
-anchors_preset = 15
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1143746873]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -26.0
-offset_top = -4.0
-offset_right = -26.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=217401485]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1632355311]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="TextureButton" parent="." unique_id=1111925033]
-layout_mode = 0
-offset_left = 715.0
-offset_top = -89.0
-offset_right = 1122.0
-offset_bottom = 307.0
-texture_normal = ExtResource("2_2wh52")
-ignore_texture_size = true
-stretch_mode = 5
-
-[node name="SubtitleLabel" type="Label" parent="TitleLabel" unique_id=214405434]
-layout_mode = 0
-offset_left = 53.0
-offset_top = 130.0
-offset_right = 353.0
-offset_bottom = 249.0
-theme_override_fonts/font = ExtResource("3_ow34m")
-theme_override_font_sizes/font_size = 52
-text = "Dungeon Crawler
-CMSC 127 Project"
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=501301765]
+layout_mode = 2
+text = "DUNGEON CRAWLER"
 horizontal_alignment = 1
 
-[node name="NewGameButton" type="TextureButton" parent="." unique_id=434927792]
-layout_mode = 0
-offset_left = -12.0
-offset_top = 209.0
-offset_right = 279.0
-offset_bottom = 378.0
-texture_normal = SubResource("AtlasTexture_l72w3")
-ignore_texture_size = true
-stretch_mode = 5
+[node name="SubtitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1848096306]
+layout_mode = 2
+text = "CMSC 127 Project"
+horizontal_alignment = 1
 
-[node name="OriginalGameButton" type="TextureButton" parent="." unique_id=17261377]
-layout_mode = 0
-offset_left = 883.0
-offset_top = 230.0
-offset_right = 1056.0
-offset_bottom = 318.0
-texture_normal = ExtResource("5_826wr")
-ignore_texture_size = true
-stretch_mode = 5
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBoxContainer" unique_id=1245588379]
+layout_mode = 2
 
-[node name="ContinueButton" type="TextureButton" parent="." unique_id=1077975240]
-layout_mode = 0
-offset_left = 65.0
-offset_top = 399.0
-offset_right = 235.0
-offset_bottom = 472.0
-texture_normal = ExtResource("5_l72w3")
-ignore_texture_size = true
-stretch_mode = 5
-flip_h = true
+[node name="NewGameButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=380393584]
+layout_mode = 2
+text = "New Game"
 
-[node name="QuitButton" type="TextureButton" parent="." unique_id=1792267572]
-layout_mode = 0
-offset_left = 89.0
-offset_top = 520.0
-offset_right = 201.0
-offset_bottom = 597.0
-texture_normal = ExtResource("6_826wr")
-ignore_texture_size = true
-stretch_mode = 5
+[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2067401519]
+layout_mode = 2
+text = "Continue"
 
-[node name="MainMenuLancer" type="AnimatedSprite2D" parent="." unique_id=1428947719]
-position = Vector2(799, 274)
-sprite_frames = SubResource("SpriteFrames_7shrw")
-animation = &"death"
-autoplay = "idle"
+[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2132144851]
+layout_mode = 2
+text = "Quit"
