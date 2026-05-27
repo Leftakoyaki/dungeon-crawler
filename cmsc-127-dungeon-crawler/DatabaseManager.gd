@@ -40,6 +40,9 @@ func _ready() -> void:
 
 
 func _initialize_database() -> void:
+	# TEMP: delete stale DB from before merge — remove this line after one run
+	DirAccess.remove_absolute(OS.get_user_data_dir() + "/dungeon_crawler.db")
+
 	db = SQLite.new()
 	db.path = DB_PATH
 	db.verbosity_level = 1  # 0=quiet, 1=normal, 2=verbose, 3=very verbose
@@ -72,7 +75,7 @@ func _create_tables() -> void:
 			passive_description TEXT NOT NULL
 		);
 	""")
-	
+
 	# Skills Master Registry (2NF Base Info)
 	db.query("""
 		CREATE TABLE IF NOT EXISTS Skills (
@@ -196,28 +199,27 @@ func _seed_static_data() -> void:
 
 
 func _seed_classes() -> void:
-	# TODO: Adjust base_hp, base_atk, and passive_description to match your design.
 	var rows := [
 		{
-			"class_name":           "MAGE",
-			"base_hp":              70,
-			"base_atk":             15,
-			"base_sp":				5,
-			"passive_description":  "Arcane Affinity: Normal and skill actions build ult points."
+			"class_name":          "MAGE",
+			"base_hp":             70,
+			"base_atk":            15,
+			"base_sp":             5,
+			"passive_description": "Arcane Affinity: Normal and skill actions build ult points."
 		},
 		{
-			"class_name":           "WARRIOR",
-			"base_hp":              120,
-			"base_atk":             10,
-			"base_sp":				5,
-			"passive_description":  "Unyielding Spirit: Increase damage by 1.5x when HP drops below 30%."
+			"class_name":          "WARRIOR",
+			"base_hp":             120,
+			"base_atk":            10,
+			"base_sp":             5,
+			"passive_description": "Unyielding Spirit: Increase damage by 1.5x when HP drops below 30%."
 		},
 		{
-			"class_name":           "ARCHER",
-			"base_hp":              100,
-			"base_atk":             13,
-			"base_sp":				5,
-			"passive_description":  "Eagle Eye: Normal Attacks and Basic Skill have a 25% chance to strike twice."
+			"class_name":          "ARCHER",
+			"base_hp":             100,
+			"base_atk":            13,
+			"base_sp":             5,
+			"passive_description": "Eagle Eye: Normal Attacks and Basic Skill have a 25% chance to strike twice."
 		},
 	]
 	for row in rows:
@@ -225,35 +227,28 @@ func _seed_classes() -> void:
 
 
 func _seed_skills() -> void:
-	# 3 skills per class: 1 NORMAL, 1 SKILL, 1 ULTIMATE.
-	# ult_pts_mod: NORMAL/SKILL charge ult (+1), ULTIMATE spends ult (-2).
-	# TODO: Replace with your final skill names.
 	var rows := [
 		# ── MAGE ──────────────────────────────────────────────────────────
-		{"skill_id": 1, "skill_name": "Fireball",        "atk_type": "NORMAL",   "class_restriction": "MAGE",      "ult_pts_mod":  1},
-		{"skill_id": 2, "skill_name": "Meteor Strike",   "atk_type": "SKILL",    "class_restriction": "MAGE",      "ult_pts_mod":  1},
-		{"skill_id": 3, "skill_name": "Divine Light",    "atk_type": "ULTIMATE", "class_restriction": "MAGE",      "ult_pts_mod": -2},
-		# ── WARRIOR ─────────────────────────────────────────────────────
+		{"skill_id": 1, "skill_name": "Fireball",        "atk_type": "NORMAL",   "class_restriction": "MAGE",    "ult_pts_mod":  1},
+		{"skill_id": 2, "skill_name": "Meteor Strike",   "atk_type": "SKILL",    "class_restriction": "MAGE",    "ult_pts_mod":  1},
+		{"skill_id": 3, "skill_name": "Divine Light",    "atk_type": "ULTIMATE", "class_restriction": "MAGE",    "ult_pts_mod": -2},
+		# ── WARRIOR ───────────────────────────────────────────────────────
 		{"skill_id": 4, "skill_name": "Iron Cleave",     "atk_type": "NORMAL",   "class_restriction": "WARRIOR", "ult_pts_mod":  0},
-		{"skill_id": 5, "skill_name": "Crusader’s Fury", "atk_type": "SKILL",    "class_restriction": "WARRIOR", "ult_pts_mod":  1},
-		{"skill_id": 6, "skill_name": "Kingdom’s Ruin",  "atk_type": "ULTIMATE", "class_restriction": "WARRIOR", "ult_pts_mod": -2},
+		{"skill_id": 5, "skill_name": "Crusader's Fury", "atk_type": "SKILL",    "class_restriction": "WARRIOR", "ult_pts_mod":  1},
+		{"skill_id": 6, "skill_name": "Kingdom's Ruin",  "atk_type": "ULTIMATE", "class_restriction": "WARRIOR", "ult_pts_mod": -2},
 		# ── ARCHER ────────────────────────────────────────────────────────
-		{"skill_id": 7, "skill_name": "Arrow Shot",      "atk_type": "NORMAL",   "class_restriction": "ARCHER",    "ult_pts_mod":  0},
-		{"skill_id": 8, "skill_name": "Piercing Arrow",  "atk_type": "SKILL",    "class_restriction": "ARCHER",    "ult_pts_mod":  1},
-		{"skill_id": 9, "skill_name": "Rain of Arrows",  "atk_type": "ULTIMATE", "class_restriction": "ARCHER",    "ult_pts_mod": -2},
+		{"skill_id": 7, "skill_name": "Arrow Shot",      "atk_type": "NORMAL",   "class_restriction": "ARCHER",  "ult_pts_mod":  0},
+		{"skill_id": 8, "skill_name": "Piercing Arrow",  "atk_type": "SKILL",    "class_restriction": "ARCHER",  "ult_pts_mod":  1},
+		{"skill_id": 9, "skill_name": "Rain of Arrows",  "atk_type": "ULTIMATE", "class_restriction": "ARCHER",  "ult_pts_mod": -2},
 	]
 	for row in rows:
 		db.insert_row("Skills", row)
 
 
 func _seed_skill_upgrades() -> void:
-	# NORMAL  (ids 1,4,7): sp_cost=1, dmg scales 1.0 → 1.6
-	# SKILL   (ids 2,5,8): sp_cost=2, dmg scales 1.5 → 2.4
-	# ULTIMATE(ids 3,6,9): sp_cost=5 (locked per schema), dmg scales 2.5 → 4.0
-	# TODO: Tune dmg_multiplier values for your combat balance.
 	var upgrades: Array = []
 
-# MAGE
+	# MAGE
 	# NORMAL ATTACK
 	upgrades.append({"skill_id": 1, "upgrade_tier": 0, "sp_cost": 1, "dmg_multiplier": 0.6})
 	upgrades.append({"skill_id": 1, "upgrade_tier": 1, "sp_cost": 1, "dmg_multiplier": 0.7})
@@ -267,7 +262,8 @@ func _seed_skill_upgrades() -> void:
 	upgrades.append({"skill_id": 3, "upgrade_tier": 1, "sp_cost": 5, "dmg_multiplier": 5.5})
 	upgrades.append({"skill_id": 3, "upgrade_tier": 2, "sp_cost": 5, "dmg_multiplier": 6.5})
 	upgrades.append({"skill_id": 3, "upgrade_tier": 3, "sp_cost": 5, "dmg_multiplier": 8.0})
-# WARRIOR
+
+	# WARRIOR
 	# NORMAL ATTACK
 	upgrades.append({"skill_id": 4, "upgrade_tier": 0, "sp_cost": 1, "dmg_multiplier": 0.6})
 	upgrades.append({"skill_id": 4, "upgrade_tier": 1, "sp_cost": 1, "dmg_multiplier": 0.7})
@@ -281,7 +277,8 @@ func _seed_skill_upgrades() -> void:
 	upgrades.append({"skill_id": 6, "upgrade_tier": 1, "sp_cost": 5, "dmg_multiplier": 5.0})
 	upgrades.append({"skill_id": 6, "upgrade_tier": 2, "sp_cost": 5, "dmg_multiplier": 6.0})
 	upgrades.append({"skill_id": 6, "upgrade_tier": 3, "sp_cost": 5, "dmg_multiplier": 7.0})
-# ARCHER
+
+	# ARCHER
 	# NORMAL ATTACK
 	upgrades.append({"skill_id": 7, "upgrade_tier": 0, "sp_cost": 1, "dmg_multiplier": 0.53})
 	upgrades.append({"skill_id": 7, "upgrade_tier": 1, "sp_cost": 1, "dmg_multiplier": 0.63})
@@ -296,17 +293,14 @@ func _seed_skill_upgrades() -> void:
 	upgrades.append({"skill_id": 9, "upgrade_tier": 2, "sp_cost": 5, "dmg_multiplier": 6.0})
 	upgrades.append({"skill_id": 9, "upgrade_tier": 3, "sp_cost": 5, "dmg_multiplier": 7.0})
 
-
 	for row in upgrades:
 		db.insert_row("Skill_Upgrades", row)
 
 
 func _seed_monsters() -> void:
-	# TODO: Tune stats for balance. pot_drop_chance and upg_point_chance are
-	# decimal probabilities (0.0–1.0) — roll against these in GDScript after combat.
 	var rows := [
 		{"monster_id": 1, "mon_name": "Goblin",      "max_hp": 45,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
-		{"monster_id": 2, "mon_name": "Skeleton",    "max_hp": 35,  "attack_power": 12,  "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
+		{"monster_id": 2, "mon_name": "Skeleton",    "max_hp": 35,  "attack_power": 12, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
 		{"monster_id": 3, "mon_name": "Imp",         "max_hp": 40,  "attack_power": 10, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
 		{"monster_id": 4, "mon_name": "Dark Knight", "max_hp": 110, "attack_power": 18, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
 		{"monster_id": 5, "mon_name": "Troll",       "max_hp": 85,  "attack_power": 24, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
@@ -317,60 +311,38 @@ func _seed_monsters() -> void:
 
 
 func _seed_potions() -> void:
-	# pot_type drives the effect logic in GDScript (HEAL restores HP, DAMAGE_BUFF scales ATK).
-	# TODO: Adjust potency_value. HEAL = flat HP restored. DAMAGE_BUFF = decimal multiplier.
 	var rows := [
-		{"pot_id": 1, "pot_name": "Health Potion",         "pot_type": "HEAL",        "potency_value": 25.0},
-		{"pot_id": 2, "pot_name": "Elixir of Healing",     "pot_type": "HEAL",        "potency_value": 60.0},
-		{"pot_id": 3, "pot_name": "Attack Elixir", 		   "pot_type": "DAMAGE_BUFF", "potency_value": 1.3},
-		{"pot_id": 4, "pot_name": "Adrenaline Shot",       "pot_type": "SP_RECOVER",  "potency_value": 3.0},
+		{"pot_id": 1, "pot_name": "Health Potion",     "pot_type": "HEAL",        "potency_value": 25.0},
+		{"pot_id": 2, "pot_name": "Elixir of Healing", "pot_type": "HEAL",        "potency_value": 60.0},
+		{"pot_id": 3, "pot_name": "Attack Elixir",     "pot_type": "DAMAGE_BUFF", "potency_value": 1.3},
+		{"pot_id": 4, "pot_name": "Adrenaline Shot",   "pot_type": "SP_RECOVER",  "potency_value": 3.0},
 	]
 	for row in rows:
 		db.insert_row("Potions", row)
 
 
 func _seed_dungeon_floor() -> void:
-	# Self-referencing FK requires two-pass insert:
-	# Pass 1 — insert all nodes with null child pointers (avoids FK violation).
-	# Pass 2 — UPDATE child pointers now that all node_ids exist.
-	#
-	# Map layout (10 nodes, binary tree FSM):
-	#
-	#           1 (START)
-	#          / \
-	#         2   3        ← NORMAL encounters
-	#        / \ / \
-	#       4       5      ← 4=EVENT, 5=REST  (convergent — both paths reach same nodes)
-	#      / \     / \
-	#     6   7   6   7    ← 6=ELITE, 7=NORMAL  (same node_ids, shared children)
-	#    / \ / \
-	#   8       9          ← 8=REST, 9=EVENT   (shared)
-	#    \     /
-	#        10            ← BOSS
-	#
-	# Pass 1: insert with no children
 	var nodes := [
-		{"node_id": 1,  "stage_type": "START",  "is_cleared": 0},
-		{"node_id": 2,  "stage_type": "NORMAL", "monster_id": 1, "is_cleared": 0},
-		{"node_id": 3,  "stage_type": "EVENT",  "is_cleared": 0},
-		{"node_id": 4,  "stage_type": "NORMAL", "monster_id": 3, "is_cleared": 0},
-		{"node_id": 5,  "stage_type": "REST",   "is_cleared": 0},
-		{"node_id": 6,  "stage_type": "ELITE",  "monster_id": 4, "is_cleared": 0},
-		{"node_id": 7,  "stage_type": "REST",   "is_cleared": 0},
+		{"node_id": 1, "stage_type": "START",  "is_cleared": 0},
+		{"node_id": 2, "stage_type": "NORMAL", "monster_id": 1, "is_cleared": 0},
+		{"node_id": 3, "stage_type": "EVENT",  "is_cleared": 0},
+		{"node_id": 4, "stage_type": "NORMAL", "monster_id": 3, "is_cleared": 0},
+		{"node_id": 5, "stage_type": "REST",   "is_cleared": 0},
+		{"node_id": 6, "stage_type": "ELITE",  "monster_id": 4, "is_cleared": 0},
+		{"node_id": 7, "stage_type": "REST",   "is_cleared": 0},
 		{"node_id": 8, "stage_type": "BOSS",   "monster_id": 6, "is_cleared": 0},
 	]
 	for row in nodes:
 		db.insert_row("Dungeon_Floor", row)
 
-	# Pass 2: set child pointers (node 10 is terminal — no update needed)
 	var paths := [
-		{"node_id": 1, "left": 3,  "right": 2},
-		{"node_id": 2, "left": 5,  "right": 4},
-		{"node_id": 3, "left": 6,  "right": null},
-		{"node_id": 4, "left": 7,  "right": null},
-		{"node_id": 5, "left": 7,  "right": null},
-		{"node_id": 6, "left": 7,  "right": null},
-		{"node_id": 7, "left": 8,  "right": null},
+		{"node_id": 1, "left": 3, "right": 2},
+		{"node_id": 2, "left": 5, "right": 4},
+		{"node_id": 3, "left": 6, "right": null},
+		{"node_id": 4, "left": 7, "right": null},
+		{"node_id": 5, "left": 7, "right": null},
+		{"node_id": 6, "left": 7, "right": null},
+		{"node_id": 7, "left": 8, "right": null},
 	]
 	for p in paths:
 		db.update_rows("Dungeon_Floor", "node_id = %d" % p["node_id"], {
@@ -383,13 +355,11 @@ func _seed_dungeon_floor() -> void:
 # QUERY HELPERS — CLASSES
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns Array[Dictionary] of all class rows. Empty array on failure.
 func get_all_classes() -> Array:
 	db.select_rows("Classes", "", ["*"])
 	return db.query_result.duplicate()
 
 
-## Returns Dictionary for one class by name. Empty {} if not found.
 func get_class_data(cls_name: String) -> Dictionary:
 	db.select_rows("Classes", "class_name = '%s'" % cls_name, ["*"])
 	if db.query_result.is_empty():
@@ -401,13 +371,11 @@ func get_class_data(cls_name: String) -> Dictionary:
 # QUERY HELPERS — SKILLS
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns Array[Dictionary] of all skills belonging to a class.
 func get_skills_for_class(cls_name: String) -> Array:
 	db.select_rows("Skills", "class_restriction = '%s'" % cls_name, ["*"])
 	return db.query_result.duplicate()
 
 
-## Returns Dictionary for one skill by id. Empty {} if not found.
 func get_skill(skill_id: int) -> Dictionary:
 	db.select_rows("Skills", "skill_id = %d" % skill_id, ["*"])
 	if db.query_result.is_empty():
@@ -419,7 +387,6 @@ func get_skill(skill_id: int) -> Dictionary:
 # QUERY HELPERS — SKILL UPGRADES
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns Dictionary for a specific (skill_id, tier) pair. Empty {} if not found.
 func get_skill_upgrade(skill_id: int, tier: int) -> Dictionary:
 	db.select_rows("Skill_Upgrades",
 		"skill_id = %d AND upgrade_tier = %d" % [skill_id, tier], ["*"])
@@ -428,7 +395,6 @@ func get_skill_upgrade(skill_id: int, tier: int) -> Dictionary:
 	return db.query_result[0].duplicate()
 
 
-## Returns all 4 upgrade tier rows for a skill (tiers 0–3).
 func get_all_tiers(skill_id: int) -> Array:
 	db.select_rows("Skill_Upgrades", "skill_id = %d" % skill_id, ["*"])
 	return db.query_result.duplicate()
@@ -438,7 +404,6 @@ func get_all_tiers(skill_id: int) -> Array:
 # QUERY HELPERS — MONSTERS
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns Dictionary for one monster by id. Empty {} if not found.
 func get_monster(monster_id: int) -> Dictionary:
 	db.select_rows("Monsters", "monster_id = %d" % monster_id, ["*"])
 	if db.query_result.is_empty():
@@ -450,7 +415,6 @@ func get_monster(monster_id: int) -> Dictionary:
 # QUERY HELPERS — POTIONS
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns Dictionary for one potion blueprint by id. Empty {} if not found.
 func get_potion(pot_id: int) -> Dictionary:
 	db.select_rows("Potions", "pot_id = %d" % pot_id, ["*"])
 	if db.query_result.is_empty():
@@ -462,7 +426,6 @@ func get_potion(pot_id: int) -> Dictionary:
 # QUERY HELPERS — PLAYER STATUS
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns full Player_Status row. Empty {} if no active save.
 func get_player() -> Dictionary:
 	db.select_rows("Player_Status", "player_id = 1", ["*"])
 	if db.query_result.is_empty():
@@ -470,8 +433,6 @@ func get_player() -> Dictionary:
 	return db.query_result[0].duplicate()
 
 
-## Inserts a new Player_Status row. Call from start_new_game() only.
-## Reads class base_hp for starting HP. Returns true on success.
 func create_player(chosen_class: String, starting_node_id: int = 1) -> bool:
 	var class_data := get_class_data(chosen_class)
 	if class_data.is_empty():
@@ -483,15 +444,14 @@ func create_player(chosen_class: String, starting_node_id: int = 1) -> bool:
 		"player_class":    chosen_class,
 		"current_hp":      class_data["base_hp"],
 		"max_hp":          class_data["base_hp"],
-		"current_sp":      class_data["base_sp"],
-		"max_sp":          class_data["base_sp"],
+		"current_sp":      class_data.get("base_sp", 5),
+		"max_sp":          class_data.get("base_sp", 5),
 		"current_ult_pts": 0,
 		"upg_pts_bank":    0,
 		"current_node_id": starting_node_id
 	})
 
 
-## Updates current_hp and emits player_hp_changed(new_hp, max_hp).
 func update_player_hp(new_hp: int) -> bool:
 	var player := get_player()
 	if player.is_empty():
@@ -502,23 +462,21 @@ func update_player_hp(new_hp: int) -> bool:
 	return ok
 
 
-## Updates current_sp (remaining SP this turn). Called at turn start and after spending SP.
 func update_player_sp(new_sp: int) -> bool:
 	return db.update_rows("Player_Status", "player_id = 1", {"current_sp": new_sp})
 
-## Resets current_sp to max_sp at the start of each combat turn.
+
 func reset_player_sp() -> bool:
 	var player := get_player()
 	if player.is_empty():
 		return false
 	return update_player_sp(player["max_sp"])
 
-## Updates current_ult_pts. Caller must clamp to [0, GameState.ULT_PTS_MAX] before calling.
+
 func update_player_ult_pts(new_pts: int) -> bool:
 	return db.update_rows("Player_Status", "player_id = 1", {"current_ult_pts": new_pts})
 
 
-## Moves player to a new node and emits player_moved(new_node_id).
 func update_player_location(node_id: int) -> bool:
 	var ok := db.update_rows("Player_Status", "player_id = 1", {"current_node_id": node_id})
 	if ok:
@@ -528,7 +486,6 @@ func update_player_location(node_id: int) -> bool:
 	return ok
 
 
-## Adds upgrade points won from combat drops.
 func add_upg_pts(amount: int) -> bool:
 	var player := get_player()
 	if player.is_empty():
@@ -537,7 +494,6 @@ func add_upg_pts(amount: int) -> bool:
 		{"upg_pts_bank": player["upg_pts_bank"] + amount})
 
 
-## Spends upgrade points (e.g., at upgrade screen). Returns false if insufficient.
 func spend_upg_pts(amount: int) -> bool:
 	var player := get_player()
 	if player.is_empty() or player["upg_pts_bank"] < amount:
@@ -546,8 +502,6 @@ func spend_upg_pts(amount: int) -> bool:
 		{"upg_pts_bank": player["upg_pts_bank"] - amount})
 
 
-## Wipes all runtime player data. Deletes in FK dependency order (children first).
-## Also resets the dungeon floor cleared state.
 func delete_player() -> void:
 	db.delete_rows("Player_Skills_Status", "player_id = 1")
 	db.delete_rows("Player_Inventory",     "player_id = 1")
@@ -559,8 +513,6 @@ func delete_player() -> void:
 # QUERY HELPERS — PLAYER SKILLS
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns Array[Dictionary] of all player skills joined with full skill and upgrade data.
-## Each dict has: skill_id, current_tier, skill_name, atk_type, ult_pts_mod, sp_cost, dmg_multiplier
 func get_player_skills() -> Array:
 	db.query("""
 		SELECT pss.skill_id, pss.current_tier,
@@ -577,7 +529,6 @@ func get_player_skills() -> Array:
 	return db.query_result.duplicate()
 
 
-## Returns one player skill row with full joined data. Empty {} if not found.
 func get_player_skill(skill_id: int) -> Dictionary:
 	db.query("""
 		SELECT pss.skill_id, pss.current_tier,
@@ -596,7 +547,6 @@ func get_player_skill(skill_id: int) -> Dictionary:
 	return db.query_result[0].duplicate()
 
 
-## Grants a skill to the player at tier 0. Use during new game setup.
 func add_player_skill(skill_id: int) -> bool:
 	return db.insert_row("Player_Skills_Status", {
 		"player_id":    1,
@@ -605,7 +555,6 @@ func add_player_skill(skill_id: int) -> bool:
 	})
 
 
-## Upgrades a player skill by 1 tier. Returns false if already at tier 3 or not found.
 func upgrade_skill(skill_id: int) -> bool:
 	var skill := get_player_skill(skill_id)
 	if skill.is_empty():
@@ -613,7 +562,7 @@ func upgrade_skill(skill_id: int) -> bool:
 		return false
 	var max_tier: int = 1 if skill_id in [1, 4, 7] else 3
 	if skill["current_tier"] >= max_tier:
-		return false  # already max tier
+		return false
 	return db.update_rows("Player_Skills_Status",
 		"player_id = 1 AND skill_id = %d" % skill_id,
 		{"current_tier": skill["current_tier"] + 1})
@@ -623,8 +572,6 @@ func upgrade_skill(skill_id: int) -> bool:
 # QUERY HELPERS — PLAYER INVENTORY
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns Array[Dictionary] of inventory slots joined with potion blueprint data.
-## Each dict has: inv_id, pot_id, pot_name, pot_type, potency_value
 func get_inventory() -> Array:
 	db.query("""
 		SELECT pi.inv_id, pi.pot_id,
@@ -636,7 +583,6 @@ func get_inventory() -> Array:
 	return db.query_result.duplicate()
 
 
-## Returns current number of held items. Max capacity is 3 (enforced in add_to_inventory).
 func get_inventory_count() -> int:
 	db.query("SELECT COUNT(*) AS cnt FROM Player_Inventory WHERE player_id = 1;")
 	if db.query_result.is_empty():
@@ -644,14 +590,12 @@ func get_inventory_count() -> int:
 	return db.query_result[0].get("cnt", 0)
 
 
-## Adds a potion to inventory. Enforces 3-slot cap. Returns false if full.
 func add_to_inventory(pot_id: int) -> bool:
 	if get_inventory_count() >= 3:
 		return false
 	return db.insert_row("Player_Inventory", {"player_id": 1, "pot_id": pot_id})
 
 
-## Removes one inventory slot by inv_id (call after using or discarding a potion).
 func remove_from_inventory(inv_id: int) -> bool:
 	return db.delete_rows("Player_Inventory",
 		"inv_id = %d AND player_id = 1" % inv_id)
@@ -661,7 +605,6 @@ func remove_from_inventory(inv_id: int) -> bool:
 # QUERY HELPERS — DUNGEON FLOOR
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Returns Dictionary for one dungeon node. Empty {} if not found.
 func get_dungeon_node(node_id: int) -> Dictionary:
 	db.select_rows("Dungeon_Floor", "node_id = %d" % node_id, ["*"])
 	if db.query_result.is_empty():
@@ -669,9 +612,6 @@ func get_dungeon_node(node_id: int) -> Dictionary:
 	return db.query_result[0].duplicate()
 
 
-## Returns Array[Dictionary] of reachable child nodes from a given node.
-## Each dict has: direction ("LEFT"|"RIGHT"), node_id, stage_type, is_cleared, monster_id.
-## Use this to populate the map path buttons.
 func get_available_paths(node_id: int) -> Array:
 	db.query("""
 		SELECT 'LEFT' AS direction,
@@ -689,12 +629,10 @@ func get_available_paths(node_id: int) -> Array:
 	return db.query_result.duplicate()
 
 
-## Marks a node as cleared (is_cleared = 1). Call after combat victory or event completion.
 func mark_node_cleared(node_id: int) -> bool:
 	return db.update_rows("Dungeon_Floor", "node_id = %d" % node_id, {"is_cleared": 1})
 
 
-## Resets all floor nodes to uncleared. Called as part of delete_player() on new game.
 func reset_floor() -> bool:
 	return db.query("UPDATE Dungeon_Floor SET is_cleared = 0;")
 
@@ -703,9 +641,6 @@ func reset_floor() -> bool:
 # COMPOSITE HELPERS — GAME FLOW
 # ─────────────────────────────────────────────────────────────────────────────
 
-## Full new game setup wrapped in a transaction.
-## Wipes old save → creates player → grants class skills → syncs GameState.
-## Returns true on full success, false on any failure (auto-rolls back).
 func start_new_game(chosen_class: String) -> bool:
 	delete_player()
 
@@ -723,7 +658,6 @@ func start_new_game(chosen_class: String) -> bool:
 			push_error("DatabaseManager.start_new_game: Failed to grant skill %d." % skill["skill_id"])
 			return false
 
-	# Sync runtime state
 	GameState.player_class    = chosen_class
 	GameState.current_node_id = 1
 	GameState.enemy_id        = -1
@@ -731,9 +665,6 @@ func start_new_game(chosen_class: String) -> bool:
 	return true
 
 
-## Returns all data needed to start a combat encounter at a node.
-## Returns {"node": {...}, "monster": {...}, "player": {...}}
-## Returns empty {} if node has no monster or data is missing.
 func get_combat_data(node_id: int) -> Dictionary:
 	var node := get_dungeon_node(node_id)
 	if node.is_empty() or node.get("monster_id") == null:
@@ -746,4 +677,3 @@ func get_combat_data(node_id: int) -> Dictionary:
 		return {}
 
 	return {"node": node, "monster": monster, "player": player}
-
