@@ -4,7 +4,7 @@ var selected_class: String = ""
 
 # Buttons
 @onready var mage_btn: TextureButton = $SelectMage
-@onready var berserker_btn: TextureButton = $SelectBerserker
+@onready var warrior_btn: TextureButton = $SelectWarrior
 @onready var archer_btn: TextureButton = $SelectArcher
 
 # We now only have one label for stats
@@ -17,7 +17,7 @@ var selected_class: String = ""
 
 # Sprites
 @onready var mage_sprite: AnimatedSprite2D = $Animations/MageSprite
-@onready var berserker_sprite: AnimatedSprite2D = $Animations/BerserkerSprite
+@onready var warrior_sprite: AnimatedSprite2D = $Animations/WarriorSprite
 @onready var archer_sprite: AnimatedSprite2D = $Animations/ArcherSprite
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -25,7 +25,7 @@ func _input(event: InputEvent) -> void:
 		GameState.update_cursor(event.pressed)
 func _ready() -> void:
 	mage_btn.pressed.connect(func(): _select_class("MAGE"))
-	berserker_btn.pressed.connect(func(): _select_class("BERSERKER"))
+	warrior_btn.pressed.connect(func(): _select_class("WARRIOR"))
 	archer_btn.pressed.connect(func(): _select_class("ARCHER"))
 	confirm_btn.pressed.connect(_on_confirm_pressed)
 	back_btn.pressed.connect(_on_back_pressed)
@@ -33,8 +33,8 @@ func _ready() -> void:
 	# Mouse hover effects
 	mage_btn.mouse_entered.connect(func(): mage_btn.modulate = Color(0.5, 0.5, 0.5))
 	mage_btn.mouse_exited.connect(func(): mage_btn.modulate = Color(1.0, 1.0, 1.0))
-	berserker_btn.mouse_entered.connect(func(): berserker_btn.modulate = Color(0.5, 0.5, 0.5))
-	berserker_btn.mouse_exited.connect(func(): berserker_btn.modulate = Color(1.0, 1.0, 1.0))
+	warrior_btn.mouse_entered.connect(func(): warrior_btn.modulate = Color(0.5, 0.5, 0.5))
+	warrior_btn.mouse_exited.connect(func(): warrior_btn.modulate = Color(1.0, 1.0, 1.0))
 	archer_btn.mouse_entered.connect(func(): archer_btn.modulate = Color(0.5, 0.5, 0.5))
 	archer_btn.mouse_exited.connect(func(): archer_btn.modulate = Color(1.0, 1.0, 1.0))
 
@@ -46,7 +46,7 @@ func _ready() -> void:
 	stats_label.visible = false
 
 	mage_sprite.play("idle")
-	berserker_sprite.play("idle")
+	warrior_sprite.play("idle")
 	archer_sprite.play("idle")
 
 func _select_class(cls: String) -> void:
@@ -64,13 +64,13 @@ func _select_class(cls: String) -> void:
 
 	# Reset animations
 	mage_sprite.play("idle")
-	berserker_sprite.play("idle")
+	warrior_sprite.play("idle")
 	archer_sprite.play("idle")
 	
 	# Play run animation
 	match cls:
 		"MAGE": mage_sprite.play("run")
-		"BERSERKER": berserker_sprite.play("run")
+		"WARRIOR": warrior_sprite.play("run")
 		"ARCHER": archer_sprite.play("run")
 
 func _on_confirm_pressed() -> void:

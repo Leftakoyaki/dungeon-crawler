@@ -371,7 +371,7 @@ animation = &"run"
 autoplay = "idle"
 frame_progress = 0.013598351
 
-[node name="BerserkerSprite" type="AnimatedSprite2D" parent="Animations" unique_id=1574215232]
+[node name="WarriorSprite" type="AnimatedSprite2D" parent="Animations" unique_id=1574215232]
 position = Vector2(573, 206)
 sprite_frames = SubResource("SpriteFrames_rl1km")
 animation = &"run"
@@ -393,7 +393,7 @@ offset_bottom = 323.0
 texture_normal = ExtResource("8_o3gvq")
 texture_pressed = ExtResource("9_l3ik0")
 
-[node name="SelectBerserker" type="TextureButton" parent="." unique_id=1348215687]
+[node name="SelectWarrior" type="TextureButton" parent="." unique_id=1348215687]
 layout_mode = 0
 offset_left = 470.0
 offset_top = 263.0
@@ -488,7 +488,7 @@ text = "MAGE
 "
 horizontal_alignment = 1
 
-[node name="BerserkerLabel" type="Label" parent="." unique_id=1981796255]
+[node name="WarriorLabel" type="Label" parent="." unique_id=1981796255]
 layout_mode = 1
 anchors_preset = -1
 anchor_bottom = 0.16700001
@@ -498,7 +498,7 @@ offset_right = 628.0
 offset_bottom = 76.784
 theme_override_fonts/font = ExtResource("2_o4c2n")
 theme_override_font_sizes/font_size = 20
-text = "BERSERKER
+text = "WARRIOR
 
 
 "
