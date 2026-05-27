@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="cmsc 127 dungeon crawler"
+run/main_scene="uid://b2i3pextndgrv"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+DatabaseManager="*uid://b40yqyp2hlq62"
 
 [editor_plugins]
 
