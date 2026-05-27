@@ -141,7 +141,7 @@ func _refresh_stats() -> void:
 	if player.is_empty():
 		return
 	hp_label.text  = "HP %d/%d"  % [player["current_hp"],      player["max_hp"]]
-	sp_label.text  = "SP %d/%d"  % [player["current_sp"],      GameState.current_max_sp()]
+	sp_label.text  = "SP %d/%d"  % [player["current_sp"],      player["max_sp"]]
 	ult_label.text = "ULT %d/%d" % [player["current_ult_pts"], GameState.ULT_PTS_MAX]
 	upg_label.text = "UPG %d"    % player["upg_pts_bank"]
 
