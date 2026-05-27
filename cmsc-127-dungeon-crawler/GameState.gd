@@ -17,13 +17,8 @@ var enemy_id: int        = -1
 # ─── Combat buffs ────────────────────────────────────────────────────────────
 var atk_buff_multiplier: float = 1.0  
 
-# ─── SP & Ult Caps ───────────────────────────────────────────────────────────
-const SP_MAX_BY_CLASS: Dictionary = {
-	"MAGE":      4,
-	"BERSERKER": 3,
-	"ARCHER":    3,
-}
-
+# ─── Ult Points Cap ──────────────────────────────────────────────────────────
+# SP max now lives in DB (Classes.base_sp → Player_Status.max_sp)
 const ULT_PTS_MAX: int = 2
 
 # ─── Cursor Logic ────────────────────────────────────────────────────────────
@@ -35,13 +30,6 @@ func update_cursor(is_pressed: bool) -> void:
 		Input.set_custom_mouse_cursor(cursor_clicked)
 	else:
 		Input.set_custom_mouse_cursor(cursor_normal)
-
-# ─── SP Helpers ──────────────────────────────────────────────────────────────
-func max_sp_for_class(cls_name: String) -> int:
-	return SP_MAX_BY_CLASS.get(cls_name, 3)
-
-func current_max_sp() -> int:
-	return max_sp_for_class(player_class)
 
 # ─── State Management ────────────────────────────────────────────────────────
 func sync_from_db() -> void:
