@@ -17,6 +17,9 @@ var player_class: String = ""
 var current_node_id: int = -1
 var enemy_id: int        = -1  # monster_id of current encounter; -1 = not in combat
 
+# ─── Combat buffs — consumed on next hit, tracked here not in DB ─────────────
+var atk_buff_multiplier: float = 1.0  # set by DAMAGE_BUFF potion, reset after one hit
+
 # ─── SP Cap — tracked here, NOT in DB ────────────────────────────────────────
 # current_sp in Player_Status tracks SP *remaining this turn*.
 # These constants define the per-turn maximum per class.
@@ -57,6 +60,7 @@ func sync_from_db() -> void:
 
 ## Resets all runtime state. Call before starting a new game.
 func reset() -> void:
-	player_class    = ""
-	current_node_id = -1
-	enemy_id        = -1
+	player_class         = ""
+	current_node_id      = -1
+	enemy_id             = -1
+	atk_buff_multiplier  = 1.0

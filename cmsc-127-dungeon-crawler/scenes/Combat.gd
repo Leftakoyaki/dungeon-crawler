@@ -1,29 +1,48 @@
 extends Control
 
-# ─── Combat state (GDScript-owned, not in DB) ────────────────────────────────
-var enemy_current_hp: int    = 0
-var combat_data: Dictionary  = {}  # keys: node, monster, player
+# ─────────────────────────────────────────────────────────────────────────────
+# Combat.gd
+#
+# Wave counts per stage type:
+#   NORMAL → 3 waves (same monster each wave)
+#   ELITE  → 2 waves
+#   BOSS   → 1 wave
+#
+# Passive abilities (applied here in damage calc):
+#   MAGE      Arcane Affinity — SKILL-type SP cost -1 (min 1)
+#   BERSERKER Bloodlust       — +5 ATK per 20% HP lost (stacks)
+#   ARCHER    Eagle Eye       — 25% chance NORMAL attacks hit twice
+#
+# DAMAGE_BUFF potion: sets GameState.atk_buff_multiplier, consumed on next hit.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─── Combat state ─────────────────────────────────────────────────────────────
+var enemy_current_hp: int   = 0
+var combat_data: Dictionary = {}
+var waves_total: int        = 1
+var waves_done: int         = 0
 
 # ─── Node refs — Player side ──────────────────────────────────────────────────
-@onready var player_sprite:     ColorRect   = $BattleArea/PlayerSide/PlayerSprite
-@onready var player_name_label: Label       = $BattleArea/PlayerSide/PlayerNameLabel
-@onready var player_hp_bar:     ProgressBar = $BattleArea/PlayerSide/PlayerHPBar
-@onready var player_hp_label:   Label       = $BattleArea/PlayerSide/PlayerHPLabel
-@onready var player_sp_bar:     ProgressBar = $BattleArea/PlayerSide/PlayerSPBar
-@onready var player_sp_label:   Label       = $BattleArea/PlayerSide/PlayerSPLabel
-@onready var player_ult_label:  Label       = $BattleArea/PlayerSide/UltLabel
+@onready var player_sprite:     ColorRect    = $BattleArea/PlayerSide/PlayerSprite
+@onready var player_name_label: Label        = $BattleArea/PlayerSide/PlayerNameLabel
+@onready var player_hp_bar:     ProgressBar  = $BattleArea/PlayerSide/PlayerHPBar
+@onready var player_hp_label:   Label        = $BattleArea/PlayerSide/PlayerHPLabel
+@onready var player_sp_bar:     ProgressBar  = $BattleArea/PlayerSide/PlayerSPBar
+@onready var player_sp_label:   Label        = $BattleArea/PlayerSide/PlayerSPLabel
+@onready var player_ult_label:  Label        = $BattleArea/PlayerSide/UltLabel
 
 # ─── Node refs — Enemy side ───────────────────────────────────────────────────
-@onready var enemy_sprite:      ColorRect   = $BattleArea/EnemySide/EnemySprite
-@onready var enemy_name_label:  Label       = $BattleArea/EnemySide/EnemyNameLabel
-@onready var enemy_hp_bar:      ProgressBar = $BattleArea/EnemySide/EnemyHPBar
-@onready var enemy_hp_label:    Label       = $BattleArea/EnemySide/EnemyHPLabel
+@onready var enemy_sprite:      ColorRect    = $BattleArea/EnemySide/EnemySprite
+@onready var enemy_name_label:  Label        = $BattleArea/EnemySide/EnemyNameLabel
+@onready var enemy_hp_bar:      ProgressBar  = $BattleArea/EnemySide/EnemyHPBar
+@onready var enemy_hp_label:    Label        = $BattleArea/EnemySide/EnemyHPLabel
 
-# ─── Node refs — Bottom UI ───────────────────────────────────────────────────
-@onready var log_label:         Label        = $LogPanel/LogLabel
-@onready var skill_container:   HBoxContainer = $SkillContainer
-@onready var use_potion_btn:    Button       = $ActionRow/UsePotionButton
-@onready var flee_btn:          Button       = $ActionRow/FleeButton
+# ─── Node refs — Bottom UI ────────────────────────────────────────────────────
+@onready var wave_label:      Label         = $LogPanel/VBox/WaveLabel
+@onready var log_label:       Label         = $LogPanel/VBox/LogLabel
+@onready var skill_container: HBoxContainer = $SkillContainer
+@onready var use_potion_btn:  Button        = $ActionRow/UsePotionButton
+@onready var flee_btn:        Button        = $ActionRow/FleeButton
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -34,12 +53,20 @@ func _ready() -> void:
 		push_error("Combat: no combat data for node %d." % GameState.current_node_id)
 		return
 
-	enemy_current_hp = combat_data["monster"]["max_hp"]
+	# Wave count from stage type
+	var stage: String = combat_data["node"]["stage_type"]
+	match stage:
+		"NORMAL": waves_total = 3
+		"ELITE":  waves_total = 2
+		"BOSS":   waves_total = 1
+
+	enemy_current_hp = int(combat_data["monster"]["max_hp"])
 
 	use_potion_btn.pressed.connect(_on_use_potion_pressed)
 	flee_btn.pressed.connect(_on_flee_pressed)
 
 	_build_skill_buttons()
+	wave_label.text = "Wave 1 / %d" % waves_total
 	_refresh_ui()
 	_begin_player_turn()
 
@@ -66,7 +93,7 @@ func _enemy_turn() -> void:
 	var player:  Dictionary = DatabaseManager.get_player()
 	var monster: Dictionary = combat_data["monster"]
 
-	var damage: int = monster["attack_power"]
+	var damage: int = int(monster["attack_power"])
 	var new_hp: int = max(int(player["current_hp"]) - damage, 0)
 
 	log_label.text = "%s attacks for %d damage!" % [monster["mon_name"], damage]
@@ -83,7 +110,7 @@ func _enemy_turn() -> void:
 	_begin_player_turn()
 
 
-# ─── Skill buttons ───────────────────────────────────────────────────────────
+# ─── Skill buttons ────────────────────────────────────────────────────────────
 
 func _build_skill_buttons() -> void:
 	for child in skill_container.get_children():
@@ -92,16 +119,20 @@ func _build_skill_buttons() -> void:
 	var skills := DatabaseManager.get_player_skills()
 	for skill in skills:
 		var btn := Button.new()
-		# Multi-line label: name on top, stats below
+		# Show effective SP cost — MAGE Arcane Affinity reduces SKILL cost by 1
+		var display_sp: int = int(skill["sp_cost"])
+		if GameState.player_class == "MAGE" and skill["atk_type"] == "SKILL":
+			display_sp = max(display_sp - 1, 1)
 		btn.text = "%s\n[%s]  SP:%d  x%.1f" % [
 			skill["skill_name"],
 			skill["atk_type"],
-			skill["sp_cost"],
+			display_sp,
 			skill["dmg_multiplier"]
 		]
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.custom_minimum_size   = Vector2(0, 70)
-		btn.pressed.connect(func(): _on_skill_used(skill))
+		# .bind() evaluates skill NOW (current loop value), avoiding closure-capture bug
+		btn.pressed.connect(_on_skill_used.bind(skill))
 		skill_container.add_child(btn)
 
 
@@ -110,29 +141,54 @@ func _set_skill_buttons_enabled(enabled: bool) -> void:
 		btn.disabled = not enabled
 
 
-# ─── Skill use ───────────────────────────────────────────────────────────────
+# ─── Skill use ────────────────────────────────────────────────────────────────
 
 func _on_skill_used(skill: Dictionary) -> void:
 	var player := DatabaseManager.get_player()
 
+	# ── Passive: MAGE — Arcane Affinity (SKILL type costs 1 less SP, min 1) ───
+	var effective_sp_cost: int = int(skill["sp_cost"])
+	if player["player_class"] == "MAGE" and skill["atk_type"] == "SKILL":
+		effective_sp_cost = max(effective_sp_cost - 1, 1)
+
 	# Validation
-	if player["current_sp"] < skill["sp_cost"]:
+	if int(player["current_sp"]) < effective_sp_cost:
 		log_label.text = "Not enough SP!"
 		return
-	if skill["atk_type"] == "ULTIMATE" and player["current_ult_pts"] < GameState.ULT_PTS_MAX:
+	if skill["atk_type"] == "ULTIMATE" and int(player["current_ult_pts"]) < GameState.ULT_PTS_MAX:
 		log_label.text = "Need %d ULT points to use Ultimate!" % GameState.ULT_PTS_MAX
 		return
 
-	# Damage
+	# ── Base ATK from class ───────────────────────────────────────────────────
 	var class_data: Dictionary = DatabaseManager.get_class_data(player["player_class"])
-	var base_atk: int = class_data.get("base_atk", 10)
-	var damage: int = int(base_atk * float(skill["dmg_multiplier"]))
+	var base_atk: int = int(class_data.get("base_atk", 10))
+
+	# ── Passive: BERSERKER — Bloodlust (+5 ATK per 20% HP lost) ──────────────
+	if player["player_class"] == "BERSERKER":
+		var hp_ratio: float = float(player["current_hp"]) / float(player["max_hp"])
+		var stacks: int = int((1.0 - hp_ratio) / 0.20)
+		base_atk += stacks * 5
+
+	# ── Damage calculation ────────────────────────────────────────────────────
+	var damage: int = int(float(base_atk) * float(skill["dmg_multiplier"]))
+
+	# ── Apply DAMAGE_BUFF if active (consumed on hit) ─────────────────────────
+	if GameState.atk_buff_multiplier != 1.0:
+		damage = int(float(damage) * GameState.atk_buff_multiplier)
+		GameState.atk_buff_multiplier = 1.0
+
+	var log_msg: String = "You used %s for %d damage!" % [skill["skill_name"], damage]
+
+	# ── Passive: ARCHER — Eagle Eye (25% double strike on NORMAL) ────────────
+	if player["player_class"] == "ARCHER" and skill["atk_type"] == "NORMAL" and randf() < 0.25:
+		damage *= 2
+		log_msg = "Eagle Eye! %s hits TWICE for %d damage!" % [skill["skill_name"], damage]
 
 	enemy_current_hp -= damage
-	log_label.text = "You used %s for %d damage!" % [skill["skill_name"], damage]
+	log_label.text = log_msg
 
-	# Consume SP
-	DatabaseManager.update_player_sp(player["current_sp"] - skill["sp_cost"])
+	# Consume SP (effective cost respects MAGE passive)
+	DatabaseManager.update_player_sp(int(player["current_sp"]) - effective_sp_cost)
 
 	# Update ult points
 	var new_ult: int = clampi(int(player["current_ult_pts"]) + int(skill["ult_pts_mod"]), 0, GameState.ULT_PTS_MAX)
@@ -142,53 +198,35 @@ func _on_skill_used(skill: Dictionary) -> void:
 
 	if enemy_current_hp <= 0:
 		await get_tree().create_timer(0.5).timeout
-		_on_victory()
+		_on_wave_cleared()
 		return
 
 	_end_player_turn()
 
 
-# ─── Potion use ──────────────────────────────────────────────────────────────
+# ─── Wave management ──────────────────────────────────────────────────────────
 
-func _on_use_potion_pressed() -> void:
-	var inventory := DatabaseManager.get_inventory()
-	if inventory.is_empty():
-		log_label.text = "No potions!"
-		return
+func _on_wave_cleared() -> void:
+	waves_done += 1
 
-	var item:   Dictionary = inventory[0]
-	var player: Dictionary = DatabaseManager.get_player()
-
-	match item["pot_type"]:
-		"HEAL":
-			var new_hp := mini(player["current_hp"] + int(item["potency_value"]), player["max_hp"])
-			DatabaseManager.update_player_hp(new_hp)
-			log_label.text = "Used %s — restored %d HP." % [item["pot_name"], int(item["potency_value"])]
-		"DAMAGE_BUFF":
-			# TODO: store buff in GameState and apply as multiplier on next hit
-			log_label.text = "Used %s — ATK +%d%% next hit." % [item["pot_name"], int(item["potency_value"] * 100)]
-
-	DatabaseManager.remove_from_inventory(item["inv_id"])
-	_refresh_ui()
-
-
-# ─── Flee ────────────────────────────────────────────────────────────────────
-
-func _on_flee_pressed() -> void:
-	if randf() < 0.5:
-		log_label.text = "You fled!"
-		DatabaseManager.combat_ended.emit("fled")
-		await get_tree().create_timer(0.8).timeout
-		get_tree().change_scene_to_file("res://scenes/Map.tscn")
+	if waves_done < waves_total:
+		# More waves — reset enemy, update label, continue
+		var next_wave: int = waves_done + 1
+		log_label.text    = "Wave %d cleared! Next wave incoming..." % waves_done
+		wave_label.text   = "Wave %d / %d" % [next_wave, waves_total]
+		enemy_current_hp  = int(combat_data["monster"]["max_hp"])
+		_refresh_ui()
+		await get_tree().create_timer(1.2).timeout
+		_begin_player_turn()
 	else:
-		log_label.text = "Couldn't escape!"
-		_end_player_turn()
+		_on_victory()
 
 
-# ─── Resolution ──────────────────────────────────────────────────────────────
+# ─── Resolution ───────────────────────────────────────────────────────────────
 
 func _on_victory() -> void:
-	log_label.text = "Victory!"
+	log_label.text  = "Victory!"
+	wave_label.text = "All waves cleared!"
 	_set_skill_buttons_enabled(false)
 	use_potion_btn.disabled = true
 	flee_btn.disabled       = true
@@ -215,38 +253,75 @@ func _on_defeat() -> void:
 	get_tree().change_scene_to_file("res://scenes/GameOver.tscn")
 
 
-# ─── Drop rolls ──────────────────────────────────────────────────────────────
+# ─── Potion use ───────────────────────────────────────────────────────────────
+
+func _on_use_potion_pressed() -> void:
+	var inventory := DatabaseManager.get_inventory()
+	if inventory.is_empty():
+		log_label.text = "No potions!"
+		return
+
+	var item:   Dictionary = inventory[0]
+	var player: Dictionary = DatabaseManager.get_player()
+
+	match item["pot_type"]:
+		"HEAL":
+			var new_hp := mini(int(player["current_hp"]) + int(item["potency_value"]), int(player["max_hp"]))
+			DatabaseManager.update_player_hp(new_hp)
+			log_label.text = "Used %s — restored %d HP." % [item["pot_name"], int(item["potency_value"])]
+		"DAMAGE_BUFF":
+			GameState.atk_buff_multiplier = 1.0 + float(item["potency_value"])
+			log_label.text = "Used %s — ATK +%d%% on next hit!" % [item["pot_name"], int(item["potency_value"] * 100.0)]
+
+	DatabaseManager.remove_from_inventory(item["inv_id"])
+	_refresh_ui()
+
+
+# ─── Flee ─────────────────────────────────────────────────────────────────────
+
+func _on_flee_pressed() -> void:
+	if randf() < 0.5:
+		log_label.text = "You fled!"
+		DatabaseManager.combat_ended.emit("fled")
+		await get_tree().create_timer(0.8).timeout
+		get_tree().change_scene_to_file("res://scenes/Map.tscn")
+	else:
+		log_label.text = "Couldn't escape!"
+		_end_player_turn()
+
+
+# ─── Drop rolls ───────────────────────────────────────────────────────────────
 
 func _roll_drops() -> void:
 	var monster: Dictionary = combat_data["monster"]
-	if randf() < monster["pot_drop_chance"]:
+	if randf() < float(monster["pot_drop_chance"]):
 		var pot_id := randi_range(1, 3)
 		if DatabaseManager.add_to_inventory(pot_id):
 			var potion := DatabaseManager.get_potion(pot_id)
 			log_label.text += "\nDrop: %s!" % potion.get("pot_name", "Potion")
-	if randf() < monster["upg_point_chance"]:
+	if randf() < float(monster["upg_point_chance"]):
 		DatabaseManager.add_upg_pts(1)
 		log_label.text += "\nDrop: +1 Upgrade Point!"
 
 
-# ─── UI refresh ──────────────────────────────────────────────────────────────
+# ─── UI refresh ───────────────────────────────────────────────────────────────
 
 func _refresh_ui() -> void:
 	var player:  Dictionary = DatabaseManager.get_player()
 	var monster: Dictionary = combat_data.get("monster", {})
 
 	if not player.is_empty():
-		player_name_label.text = "%s  (%s)" % [GameState.player_class, combat_data.get("node", {}).get("stage_type", "")]
-		player_hp_bar.max_value = player["max_hp"]
-		player_hp_bar.value     = player["current_hp"]
+		player_name_label.text = GameState.player_class
+		player_hp_bar.max_value = int(player["max_hp"])
+		player_hp_bar.value     = int(player["current_hp"])
 		player_hp_label.text    = "HP  %d / %d" % [player["current_hp"], player["max_hp"]]
 		player_sp_bar.max_value = GameState.current_max_sp()
-		player_sp_bar.value     = player["current_sp"]
+		player_sp_bar.value     = int(player["current_sp"])
 		player_sp_label.text    = "SP  %d / %d" % [player["current_sp"], GameState.current_max_sp()]
 		player_ult_label.text   = "ULT  %d / %d" % [player["current_ult_pts"], GameState.ULT_PTS_MAX]
 
 	if not monster.is_empty():
-		enemy_name_label.text    = "%s  [%s]" % [monster["mon_name"], monster["monster_type"]]
-		enemy_hp_bar.max_value   = monster["max_hp"]
-		enemy_hp_bar.value       = max(enemy_current_hp, 0)
-		enemy_hp_label.text      = "HP  %d / %d" % [max(enemy_current_hp, 0), monster["max_hp"]]
+		enemy_name_label.text  = "%s  [%s]" % [monster["mon_name"], monster["monster_type"]]
+		enemy_hp_bar.max_value = int(monster["max_hp"])
+		enemy_hp_bar.value     = max(enemy_current_hp, 0)
+		enemy_hp_label.text    = "HP  %d / %d" % [max(enemy_current_hp, 0), monster["max_hp"]]

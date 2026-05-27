@@ -28,11 +28,12 @@ const INFO_BAR_H:    float   = 52.0
 var node_positions: Dictionary = {}
 var all_nodes:      Dictionary = {}  # node_id (int) → Dictionary from DB
 
-@onready var hp_label:    Label = $StatsBar/HBoxContainer/HPLabel
-@onready var sp_label:    Label = $StatsBar/HBoxContainer/SPLabel
-@onready var ult_label:   Label = $StatsBar/HBoxContainer/UltLabel
-@onready var upg_label:   Label = $StatsBar/HBoxContainer/UpgLabel
-@onready var info_label:  Label = $InfoPanel/InfoLabel
+@onready var hp_label:      Label  = $StatsBar/HBoxContainer/HPLabel
+@onready var sp_label:      Label  = $StatsBar/HBoxContainer/SPLabel
+@onready var ult_label:     Label  = $StatsBar/HBoxContainer/UltLabel
+@onready var upg_label:     Label  = $StatsBar/HBoxContainer/UpgLabel
+@onready var upgrade_btn:   Button = $StatsBar/HBoxContainer/UpgradeButton
+@onready var info_label:    Label  = $InfoPanel/InfoLabel
 
 
 func _ready() -> void:
@@ -40,7 +41,12 @@ func _ready() -> void:
 	_load_all_nodes()
 	_refresh_stats()
 	_build_node_buttons()
+	upgrade_btn.pressed.connect(_on_upgrade_pressed)
 	queue_redraw()
+
+
+func _on_upgrade_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/UpgradeScreen.tscn")
 
 
 # ─── Position calculation ─────────────────────────────────────────────────────
