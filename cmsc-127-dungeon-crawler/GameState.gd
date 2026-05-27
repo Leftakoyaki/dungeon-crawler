@@ -16,6 +16,24 @@ var enemy_id: int        = -1
 
 # ─── Combat buffs ────────────────────────────────────────────────────────────
 var atk_buff_multiplier: float = 1.0  
+extends Node
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GameState.gd  —  Autoload singleton
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─── Cursor Sprites ──────────────────────────────────────────────────────────
+var cursor_normal = preload("res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Cursors/Cursor_01.png")
+var cursor_clicked = preload("res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Cursors/Cursor_02.png")
+
+# ─── Runtime Identity ────────────────────────────────────────────────────────
+var player_id: int       = 1  
+var player_class: String = ""
+var current_node_id: int = -1
+var enemy_id: int        = -1 
+
+# ─── Combat buffs ────────────────────────────────────────────────────────────
+var atk_buff_multiplier: float = 1.0  
 
 # ─── SP Cap ──────────────────────────────────────────────────────────────────
 const SP_MAX_BY_CLASS: Dictionary = {
@@ -43,6 +61,21 @@ func max_sp_for_class(cls_name: String) -> int:
 func current_max_sp() -> int:
 	return max_sp_for_class(player_class)
 
+# ─── State Management ────────────────────────────────────────────────────────
+func sync_from_db() -> void:
+	var player: Dictionary = DatabaseManager.get_player()
+	if player.is_empty():
+		push_warning("GameState.sync_from_db: No active player found in DB.")
+		return
+	player_class    = player["player_class"]
+	current_node_id = player["current_node_id"]
+	enemy_id        = -1
+
+func reset() -> void:
+	player_class         = ""
+	current_node_id      = -1
+	enemy_id             = -1
+	atk_buff_multiplier  = 1.0
 # ─── State Management ────────────────────────────────────────────────────────
 func sync_from_db() -> void:
 	var player: Dictionary = DatabaseManager.get_player()
