@@ -8,6 +8,10 @@ extends Node
 var cursor_normal = preload("res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Cursors/Cursor_01.png")
 var cursor_clicked = preload("res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Cursors/Cursor_02.png")
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			update_cursor(event.pressed)
 # ─── Runtime Identity ────────────────────────────────────────────────────────
 var player_id: int       = 1  
 var player_class: String = ""
