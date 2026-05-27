@@ -15,3 +15,9 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Windows temp lock files (created when DLLs are in use)
+~*.dll
+
+# Local tooling configs
+.mcp.json
