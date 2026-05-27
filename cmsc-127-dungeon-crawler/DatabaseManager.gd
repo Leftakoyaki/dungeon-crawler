@@ -40,9 +40,6 @@ func _ready() -> void:
 
 
 func _initialize_database() -> void:
-	# TEMP: delete stale DB from before merge — remove this line after one run
-	DirAccess.remove_absolute(OS.get_user_data_dir() + "/dungeon_crawler.db")
-
 	db = SQLite.new()
 	db.path = DB_PATH
 	db.verbosity_level = 1  # 0=quiet, 1=normal, 2=verbose, 3=very verbose
