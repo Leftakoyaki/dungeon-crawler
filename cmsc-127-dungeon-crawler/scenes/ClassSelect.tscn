@@ -1,13 +1,18 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://3ttg84jbdkjj"]
 
-[ext_resource type="Script" path="res://scenes/ClassSelect.gd" id="1_classselect"]
+[ext_resource type="Script" uid="uid://brxv61y5bdrkh" path="res://scenes/ClassSelect.gd" id="1_classselect"]
 
-[node name="ClassSelect" type="Control"]
+[node name="ClassSelect" type="Control" unique_id=1177914508]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_classselect")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1995562576]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/margin_left = 40
@@ -15,89 +20,82 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=615446597]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1489582282]
 layout_mode = 2
-horizontal_alignment = 1
 text = "Choose Your Class"
+horizontal_alignment = 1
 
-[node name="ClassCards" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ClassCards" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=274710617]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="MageCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards"]
+[node name="MageCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=1899733250]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard"]
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard" unique_id=667461614]
 layout_mode = 2
 horizontal_alignment = 1
-text = "MAGE"
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard"]
+[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/MageCard" unique_id=1337900975]
 layout_mode = 2
 horizontal_alignment = 1
-text = ""
 
-[node name="SelectMage" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/MageCard"]
+[node name="SelectMage" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/MageCard" unique_id=749149405]
 layout_mode = 2
 text = "Select"
 
-[node name="BerserkerCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards"]
+[node name="WarriorCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=480545146]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard"]
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/WarriorCard" unique_id=1162731582]
 layout_mode = 2
 horizontal_alignment = 1
-text = "BERSERKER"
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard"]
+[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/WarriorCard" unique_id=1385417898]
 layout_mode = 2
 horizontal_alignment = 1
-text = ""
 
-[node name="SelectBerserker" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/BerserkerCard"]
+[node name="SelectWarrior" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/WarriorCard" unique_id=1639290672]
 layout_mode = 2
 text = "Select"
 
-[node name="ArcherCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards"]
+[node name="ArcherCard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ClassCards" unique_id=856779336]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard"]
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard" unique_id=1278880312]
 layout_mode = 2
 horizontal_alignment = 1
-text = "ARCHER"
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard"]
+[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard" unique_id=1161353554]
 layout_mode = 2
 horizontal_alignment = 1
-text = ""
 
-[node name="SelectArcher" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard"]
+[node name="SelectArcher" type="Button" parent="MarginContainer/VBoxContainer/ClassCards/ArcherCard" unique_id=1271309278]
 layout_mode = 2
 text = "Select"
 
-[node name="SelectedLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="SelectedLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=2106469834]
 layout_mode = 2
-horizontal_alignment = 1
 text = "No class selected."
+horizontal_alignment = 1
 
-[node name="PassiveLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="PassiveLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1177183694]
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 3
-text = ""
 
-[node name="ConfirmButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="ConfirmButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=682978757]
 layout_mode = 2
 disabled = true
 text = "Confirm"
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=562545083]
 layout_mode = 2
 text = "Back"
