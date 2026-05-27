@@ -120,6 +120,8 @@ theme_override_constants/separation = 2
 
 [node name="WaveLabel" type="Label" parent="LogPanel/VBox" unique_id=1984936917]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_0qy8o")
+theme_override_font_sizes/font_size = 25
 
 [node name="LogLabel" type="Label" parent="LogPanel/VBox" unique_id=1764336199]
 layout_mode = 2
