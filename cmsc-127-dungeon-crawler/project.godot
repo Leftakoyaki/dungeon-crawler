@@ -24,6 +24,10 @@ DatabaseManager="*uid://b40yqyp2hlq62"
 
 enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg")
 
+[gui]
+
+theme/default_font_antialiasing=0
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
