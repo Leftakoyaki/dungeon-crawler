@@ -10,11 +10,12 @@ var selected_class: String = ""
 @onready var mage_stats:      Label = $MarginContainer/VBoxContainer/ClassCards/MageCard/StatsLabel
 @onready var berserker_stats: Label = $MarginContainer/VBoxContainer/ClassCards/BerserkerCard/StatsLabel
 @onready var archer_stats:    Label = $MarginContainer/VBoxContainer/ClassCards/ArcherCard/StatsLabel
-
-@onready var selected_label: Label  = $MarginContainer/VBoxContainer/SelectedLabel
-@onready var passive_label:  Label  = $MarginContainer/VBoxContainer/PassiveLabel
-@onready var confirm_btn:    Button = $MarginContainer/VBoxContainer/ConfirmButton
-@onready var back_btn:       Button = $MarginContainer/VBoxContainer/BackButton
+#if u moved the labels out of the folders too they should look like this
+@onready var selected_label: Label = $SelectedLabel
+#grab the passive label from inside the folders
+@onready var passive_label: Label = $PassiveLabel#if u moved confirm and back out of the folders make sure they look like this
+@onready var confirm_btn:    Button = $ConfirmButton
+@onready var back_btn:       Button = $BackButton
 
 #grab the spritesfrom the animations node
 @onready var mage_sprite: AnimatedSprite2D = $Animations/MageSprite
@@ -23,12 +24,21 @@ var selected_class: String = ""
 
 
 func _ready() -> void:
-	
 	mage_btn.pressed.connect(func(): _select_class("MAGE"))
 	berserker_btn.pressed.connect(func(): _select_class("BERSERKER"))
 	archer_btn.pressed.connect(func(): _select_class("ARCHER"))
 	confirm_btn.pressed.connect(_on_confirm_pressed)
 	back_btn.pressed.connect(_on_back_pressed)
+
+	#grey out when mouse touchesthem
+	mage_btn.mouse_entered.connect(func(): mage_btn.modulate = Color(0.5, 0.5, 0.5))
+	mage_btn.mouse_exited.connect(func(): mage_btn.modulate = Color(1.0, 1.0, 1.0))
+	
+	berserker_btn.mouse_entered.connect(func(): berserker_btn.modulate = Color(0.5, 0.5, 0.5))
+	berserker_btn.mouse_exited.connect(func(): berserker_btn.modulate = Color(1.0, 1.0, 1.0))
+	
+	archer_btn.mouse_entered.connect(func(): archer_btn.modulate = Color(0.5, 0.5, 0.5))
+	archer_btn.mouse_exited.connect(func(): archer_btn.modulate = Color(1.0, 1.0, 1.0))
 
 	confirm_btn.disabled = true
 	selected_label.text  = "No class selected."
