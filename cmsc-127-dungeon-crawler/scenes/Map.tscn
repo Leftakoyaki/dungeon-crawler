@@ -1,55 +1,61 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://cjmav2bx0ywrk"]
 
-[ext_resource type="Script" path="res://scenes/Map.gd" id="1_map"]
+[ext_resource type="Script" uid="uid://cm07es7kd4qk7" path="res://scenes/Map.gd" id="1_map"]
 
-[node name="Map" type="Control"]
+[node name="Map" type="Control" unique_id=245040120]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_map")
 
-; ── Background ────────────────────────────────────────────────────────────────
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=1728370655]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.06, 0.06, 0.10, 1.0)
+color = Color(0.06, 0.06, 0.1, 1)
 
-; ── Stats bar — top 52px ──────────────────────────────────────────────────────
-[node name="StatsBar" type="PanelContainer" parent="."]
+[node name="StatsBar" type="PanelContainer" parent="." unique_id=1732571788]
+layout_mode = 0
 anchor_right = 1.0
 offset_bottom = 52.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="StatsBar"]
+[node name="HBoxContainer" type="HBoxContainer" parent="StatsBar" unique_id=852353088]
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="HPLabel" type="Label" parent="StatsBar/HBoxContainer"]
+[node name="HPLabel" type="Label" parent="StatsBar/HBoxContainer" unique_id=450751764]
 layout_mode = 2
 text = "HP --/--"
 
-[node name="SPLabel" type="Label" parent="StatsBar/HBoxContainer"]
+[node name="SPLabel" type="Label" parent="StatsBar/HBoxContainer" unique_id=754330750]
 layout_mode = 2
 text = "SP --/--"
 
-[node name="UltLabel" type="Label" parent="StatsBar/HBoxContainer"]
+[node name="UltLabel" type="Label" parent="StatsBar/HBoxContainer" unique_id=437965837]
 layout_mode = 2
 text = "ULT --/--"
 
-[node name="UpgLabel" type="Label" parent="StatsBar/HBoxContainer"]
+[node name="PotionLabel" type="Label" parent="StatsBar/HBoxContainer" unique_id=1950530009]
+layout_mode = 2
+text = "Potions --/--"
+
+[node name="UpgLabel" type="Label" parent="StatsBar/HBoxContainer" unique_id=30801496]
 layout_mode = 2
 text = "UPG --"
 
-[node name="UpgradeButton" type="Button" parent="StatsBar/HBoxContainer"]
+[node name="UpgradeButton" type="Button" parent="StatsBar/HBoxContainer" unique_id=1637219996]
 layout_mode = 2
 text = "⬆ Upgrade"
 
-; ── Info panel — bottom 52px ──────────────────────────────────────────────────
-[node name="InfoPanel" type="PanelContainer" parent="."]
+[node name="InfoPanel" type="PanelContainer" parent="." unique_id=1149206167]
+layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = -52.0
 
-[node name="InfoLabel" type="Label" parent="InfoPanel"]
+[node name="InfoLabel" type="Label" parent="InfoPanel" unique_id=1222232585]
 layout_mode = 2
-horizontal_alignment = 1
 text = "Choose your path"
+horizontal_alignment = 1

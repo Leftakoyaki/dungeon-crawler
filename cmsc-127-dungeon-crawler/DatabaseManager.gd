@@ -142,6 +142,8 @@ func _create_tables() -> void:
 			max_hp INTEGER NOT NULL,
 			current_sp INTEGER NOT NULL,
 			max_sp INTEGER NOT NULL,
+			current_inv INTEGER NOT NULL,
+			max_inv INTEGER NOT NULL,
 			current_ult_pts INTEGER NOT NULL DEFAULT 0,
 			upg_pts_bank INTEGER NOT NULL DEFAULT 0,
 			current_node_id INTEGER NOT NULL,
@@ -485,6 +487,8 @@ func create_player(chosen_class: String, starting_node_id: int = 1) -> bool:
 		"max_hp":          class_data["base_hp"],
 		"current_sp":      class_data["base_sp"],
 		"max_sp":          class_data["base_sp"],
+		"current_inv":     0,
+		"max_inv":         3,
 		"current_ult_pts": 0,
 		"upg_pts_bank":    0,
 		"current_node_id": starting_node_id
@@ -638,23 +642,56 @@ func get_inventory() -> Array:
 
 ## Returns current number of held items. Max capacity is 3 (enforced in add_to_inventory).
 func get_inventory_count() -> int:
-	db.query("SELECT COUNT(*) AS cnt FROM Player_Inventory WHERE player_id = 1;")
-	if db.query_result.is_empty():
+	var player := get_player()
+	if player.is_empty():
 		return 0
-	return db.query_result[0].get("cnt", 0)
+	return int(player.get("current_inv", 0))
 
 
 ## Adds a potion to inventory. Enforces 3-slot cap. Returns false if full.
-func add_to_inventory(pot_id: int) -> bool:
-	if get_inventory_count() >= 3:
-		return false
-	return db.insert_row("Player_Inventory", {"player_id": 1, "pot_id": pot_id})
+func add_to_inventory(pot_id: int) -> Dictionary:
+	var player := get_player()
+	if player.is_empty():
+		return {"success": false, "reason": "NO_PLAYER"}
+
+	if player["current_inv"] >= player["max_inv"]:
+		return {"success": false, "reason": "FULL"} 
+
+	if not db.insert_row("Player_Inventory", {"player_id": 1, "pot_id": pot_id}):
+		return {"success": false, "reason": "DB_FAIL"}
+
+	var ok: bool = db.update_rows(
+		"Player_Status",
+		"player_id = 1",
+		{"current_inv": player["current_inv"] + 1}
+	)
+	
+	if not ok:
+		return {"success": false, "reason": "DB_FAIL_UPDATE"}
+	
+	return {
+		"success": ok,
+		"reason": "OK"
+	}
 
 
 ## Removes one inventory slot by inv_id (call after using or discarding a potion).
 func remove_from_inventory(inv_id: int) -> bool:
-	return db.delete_rows("Player_Inventory",
-		"inv_id = %d AND player_id = 1" % inv_id)
+	var player := get_player()
+	if player.is_empty():
+		return false
+
+	if not db.delete_rows("Player_Inventory",
+		"inv_id = %d AND player_id = 1" % inv_id):
+		return false
+
+	var new_count: int = max(0, int(player["current_inv"]) - 1)
+
+	return db.update_rows(
+		"Player_Status",
+		"player_id = 1",
+		{"current_inv": new_count}
+	)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

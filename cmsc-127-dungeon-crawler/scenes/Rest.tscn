@@ -1,13 +1,16 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://dnyb67fp88g63"]
 
-[ext_resource type="Script" path="res://scenes/Rest.gd" id="1_rest"]
+[ext_resource type="Script" uid="uid://dqe2f4p2crfm5" path="res://scenes/Rest.gd" id="1_rest"]
 
-[node name="Rest" type="Control"]
+[node name="Rest" type="Control" unique_id=1575958272]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_rest")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1171162150]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/margin_left = 40
@@ -15,28 +18,32 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1141546802]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1390120058]
 layout_mode = 2
-horizontal_alignment = 1
 text = "Rest Site"
+horizontal_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=1633705859]
 layout_mode = 2
 
-[node name="HealLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="HealLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1962629521]
 layout_mode = 2
 horizontal_alignment = 1
-text = ""
 
-[node name="HPLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="HPLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=929647362]
 layout_mode = 2
 horizontal_alignment = 1
-text = ""
 
-[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1504933415]
 layout_mode = 2
 text = "Continue"
+
+[node name="CampfireButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=989545296]
+layout_mode = 2
+
+[node name="ForgeButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=2091062271]
+layout_mode = 2

@@ -24,7 +24,7 @@ var all_nodes:      Dictionary = {}
 @onready var upg_label:     Label  = $StatsBar/HBoxContainer/UpgLabel
 @onready var upgrade_btn:   Button = $StatsBar/HBoxContainer/UpgradeButton
 @onready var info_label:    Label  = $InfoPanel/InfoLabel
-
+@onready var potion_label:  Label  = $StatsBar/HBoxContainer/PotionLabel
 
 func _ready() -> void:
 	_calculate_positions()
@@ -133,6 +133,7 @@ func _refresh_stats() -> void:
 	hp_label.text  = "HP %d/%d"  % [player["current_hp"],      player["max_hp"]]
 	sp_label.text  = "SP %d/%d"  % [player["current_sp"],      player["max_sp"]]
 	ult_label.text = "ULT %d/%d" % [player["current_ult_pts"], GameState.ULT_PTS_MAX]
+	potion_label.text = "Potions %d/%d" % [player["current_inv"], player["max_inv"]]
 	upg_label.text = "UPG %d"    % player["upg_pts_bank"]
 
 

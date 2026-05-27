@@ -3,14 +3,23 @@ extends Control
 # ─────────────────────────────────────────────────────────────────────────────
 # Rest.gd — REST node handler
 #
-# On enter: restore player HP to max, mark node cleared.
-# Player sees HP before/after, then clicks Continue to return to Map.
+# Two choices:
+#   Tend the Campfire — heals HP to max
+#   Forge             — grants +2 upgrade points
+#
+# Node is marked cleared after either choice.
 # ─────────────────────────────────────────────────────────────────────────────
 
-@onready var title_label:    Label  = $MarginContainer/VBoxContainer/TitleLabel
-@onready var heal_label:     Label  = $MarginContainer/VBoxContainer/HealLabel
-@onready var hp_label:       Label  = $MarginContainer/VBoxContainer/HPLabel
-@onready var continue_btn:   Button = $MarginContainer/VBoxContainer/ContinueButton
+const FORGE_POINTS: int = 2
+
+@onready var title_label:  Label  = $MarginContainer/VBoxContainer/TitleLabel
+@onready var heal_label:   Label  = $MarginContainer/VBoxContainer/HealLabel
+@onready var hp_label:     Label  = $MarginContainer/VBoxContainer/HPLabel
+@onready var continue_btn: Button = $MarginContainer/VBoxContainer/ContinueButton
+
+# New buttons — add these to your scene under VBoxContainer
+@onready var campfire_btn: Button = $MarginContainer/VBoxContainer/CampfireButton
+@onready var forge_btn:    Button = $MarginContainer/VBoxContainer/ForgeButton
 
 
 func _ready() -> void:
@@ -23,18 +32,52 @@ func _ready() -> void:
 	var max_hp: int = int(player["max_hp"])
 	var healed: int = max_hp - old_hp
 
-	# Restore HP
+	title_label.text = "⛺  Rest Site"
+	heal_label.text  = "HP: %d / %d     UPG: %d" % [old_hp, max_hp, player["upg_pts_bank"]]
+	hp_label.text    = "What will you do?"
+
+	campfire_btn.text = "Tend the Campfire  (+%d HP)" % healed if healed > 0 else "Tend the Campfire  (Already full)"
+	forge_btn.text    = "Forge  (+%d Upgrade Points)" % FORGE_POINTS
+
+	continue_btn.hide()
+
+	campfire_btn.pressed.connect(_on_campfire_pressed)
+	forge_btn.pressed.connect(_on_forge_pressed)
+
+
+func _on_campfire_pressed() -> void:
+	campfire_btn.disabled = true
+	forge_btn.disabled    = true
+
+	var player: Dictionary = DatabaseManager.get_player()
+	var old_hp: int = int(player["current_hp"])
+	var max_hp: int = int(player["max_hp"])
+	var healed: int = max_hp - old_hp
+
 	DatabaseManager.update_player_hp(max_hp)
 	DatabaseManager.mark_node_cleared(GameState.current_node_id)
 
-	# Update UI
-	title_label.text = "⛺  Rest Site"
 	if healed > 0:
-		heal_label.text = "You rest and recover +%d HP." % healed
+		heal_label.text = "You rest by the fire and recover +%d HP." % healed
 	else:
 		heal_label.text = "You are already at full health."
-	hp_label.text = "HP: %d / %d" % [max_hp, max_hp]
 
+	hp_label.text = "HP: %d / %d" % [max_hp, max_hp]
+	continue_btn.show()
+	continue_btn.pressed.connect(_on_continue_pressed)
+
+
+func _on_forge_pressed() -> void:
+	campfire_btn.disabled = true
+	forge_btn.disabled    = true
+
+	DatabaseManager.add_upg_pts(FORGE_POINTS)
+	DatabaseManager.mark_node_cleared(GameState.current_node_id)
+
+	var player: Dictionary = DatabaseManager.get_player()
+	heal_label.text = "You sharpen your skills at the forge."
+	hp_label.text   = "UPG: %d  (+%d)" % [player["upg_pts_bank"], FORGE_POINTS]
+	continue_btn.show()
 	continue_btn.pressed.connect(_on_continue_pressed)
 
 
