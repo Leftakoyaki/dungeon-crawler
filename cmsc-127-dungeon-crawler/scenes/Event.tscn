@@ -1,13 +1,18 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://va1o4vfmi7ea"]
 
-[ext_resource type="Script" path="res://scenes/Event.gd" id="1_event"]
+[ext_resource type="Script" uid="uid://dys4e5kw60tke" path="res://scenes/Event.gd" id="1_event"]
+[ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_46xpc"]
+[ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_hjsmv"]
 
-[node name="Event" type="Control"]
+[node name="Event" type="Control" unique_id=450495286]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_event")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1916772677]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/margin_left = 40
@@ -15,30 +20,36 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=250668203]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1499281002]
 layout_mode = 2
-horizontal_alignment = 1
+theme_override_fonts/font = ExtResource("2_46xpc")
+theme_override_font_sizes/font_size = 45
 text = "Strange Event"
+horizontal_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=870939912]
 layout_mode = 2
 
-[node name="FlavorLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="FlavorLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=199082700]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_46xpc")
+theme_override_font_sizes/font_size = 45
 horizontal_alignment = 1
 autowrap_mode = 3
-text = ""
 
-[node name="ResultLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="ResultLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=327399250]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_46xpc")
+theme_override_font_sizes/font_size = 45
 horizontal_alignment = 1
 autowrap_mode = 3
-text = ""
 
-[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=87895869]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_hjsmv")
+theme_override_font_sizes/font_size = 50
 text = "Continue"
