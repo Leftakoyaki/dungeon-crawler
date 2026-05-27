@@ -104,7 +104,15 @@ anchor_bottom = 0.70
 offset_left = 20.0
 offset_right = -20.0
 
-[node name="LogLabel" type="Label" parent="LogPanel"]
+[node name="VBox" type="VBoxContainer" parent="LogPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="WaveLabel" type="Label" parent="LogPanel/VBox"]
+layout_mode = 2
+text = ""
+
+[node name="LogLabel" type="Label" parent="LogPanel/VBox"]
 layout_mode = 2
 autowrap_mode = 3
 text = ""
