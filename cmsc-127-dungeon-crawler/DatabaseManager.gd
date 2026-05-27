@@ -708,3 +708,4 @@ func get_combat_data(node_id: int) -> Dictionary:
 		return {}
 
 	return {"node": node, "monster": monster, "player": player}
+	
