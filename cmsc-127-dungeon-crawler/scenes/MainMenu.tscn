@@ -1,42 +1,45 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://cyeyevku611a6"]
 
-[ext_resource type="Script" path="res://scenes/MainMenu.gd" id="1_mainmenu"]
+[ext_resource type="Script" uid="uid://c1m7ebspxyola" path="res://scenes/MainMenu.gd" id="1_mainmenu"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=1330859322]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_mainmenu")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1143746873]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
-layout_mode = 2
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1632355311]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=501301765]
 layout_mode = 2
-horizontal_alignment = 1
 text = "DUNGEON CRAWLER"
-
-[node name="SubtitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
 horizontal_alignment = 1
-text = "CMSC 127 Project"
 
-[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBoxContainer"]
+[node name="SubtitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1848096306]
+layout_mode = 2
+text = "CMSC 127 Project"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBoxContainer" unique_id=1245588379]
 layout_mode = 2
 
-[node name="NewGameButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="NewGameButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=380393584]
 layout_mode = 2
 text = "New Game"
 
-[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2067401519]
 layout_mode = 2
 text = "Continue"
 
-[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2132144851]
 layout_mode = 2
 text = "Quit"
