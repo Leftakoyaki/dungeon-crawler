@@ -11,8 +11,18 @@ config_version=5
 [application]
 
 config/name="cmsc 127 dungeon crawler"
+run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameState="*uid://bwanwq5pnfc5t"
+DatabaseManager="*uid://b40yqyp2hlq62"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg")
 
 [physics]
 
