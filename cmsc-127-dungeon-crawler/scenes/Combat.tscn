@@ -1,135 +1,143 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://db6l1u0noj56s"]
 
-[ext_resource type="Script" path="res://scenes/Combat.gd" id="1_combat"]
+[ext_resource type="Script" uid="uid://dixbpi4sqmk3t" path="res://scenes/Combat.gd" id="1_combat"]
+[ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_hrlpu"]
+[ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_0qy8o"]
 
-[node name="Combat" type="Control"]
+[node name="Combat" type="Control" unique_id=520126410]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_combat")
 
-; ── Full-screen background ────────────────────────────────────────────────────
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=1118673826]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.08, 0.08, 0.12, 1.0)
+color = Color(0.08, 0.08, 0.12, 1)
 
-; ── Battle area — top 55% of screen ──────────────────────────────────────────
-; Replace PlayerSprite and EnemySprite ColorRects with Sprite2D when art is ready.
-[node name="BattleArea" type="HBoxContainer" parent="."]
+[node name="BattleArea" type="HBoxContainer" parent="." unique_id=428515140]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 0.55
 offset_left = 20.0
 offset_right = -20.0
 theme_override_constants/separation = 0
 
-; ── Player side (left) ────────────────────────────────────────────────────────
-[node name="PlayerSide" type="VBoxContainer" parent="BattleArea"]
+[node name="PlayerSide" type="VBoxContainer" parent="BattleArea" unique_id=1348269011]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="PlayerSprite" type="ColorRect" parent="BattleArea/PlayerSide"]
+[node name="PlayerSprite" type="ColorRect" parent="BattleArea/PlayerSide" unique_id=1716756212]
+custom_minimum_size = Vector2(130, 180)
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(130, 180)
 color = Color(0.18, 0.32, 0.72, 0.85)
 
-[node name="PlayerNameLabel" type="Label" parent="BattleArea/PlayerSide"]
+[node name="PlayerNameLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1045863704]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_hrlpu")
+theme_override_font_sizes/font_size = 25
 text = "PLAYER"
 
-[node name="PlayerHPBar" type="ProgressBar" parent="BattleArea/PlayerSide"]
-layout_mode = 2
+[node name="PlayerHPBar" type="ProgressBar" parent="BattleArea/PlayerSide" unique_id=672754199]
 custom_minimum_size = Vector2(0, 18)
-max_value = 100
-value = 100
+layout_mode = 2
+value = 100.0
 show_percentage = false
 
-[node name="PlayerHPLabel" type="Label" parent="BattleArea/PlayerSide"]
+[node name="PlayerHPLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=462652939]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_hrlpu")
+theme_override_font_sizes/font_size = 25
 text = "HP  -- / --"
 
-[node name="PlayerSPBar" type="ProgressBar" parent="BattleArea/PlayerSide"]
-layout_mode = 2
+[node name="PlayerSPBar" type="ProgressBar" parent="BattleArea/PlayerSide" unique_id=1929142913]
 custom_minimum_size = Vector2(0, 18)
-max_value = 4
-value = 4
+layout_mode = 2
+max_value = 4.0
+value = 4.0
 show_percentage = false
 
-[node name="PlayerSPLabel" type="Label" parent="BattleArea/PlayerSide"]
+[node name="PlayerSPLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1233722275]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_hrlpu")
+theme_override_font_sizes/font_size = 25
 text = "SP  -- / --"
 
-[node name="UltLabel" type="Label" parent="BattleArea/PlayerSide"]
+[node name="UltLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1611326756]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_hrlpu")
+theme_override_font_sizes/font_size = 25
 text = "ULT  0 / 2"
 
-; ── Centre spacer ─────────────────────────────────────────────────────────────
-[node name="BattleSpacer" type="Control" parent="BattleArea"]
+[node name="BattleSpacer" type="Control" parent="BattleArea" unique_id=342857783]
 layout_mode = 2
 size_flags_horizontal = 3
 
-; ── Enemy side (right) ────────────────────────────────────────────────────────
-[node name="EnemySide" type="VBoxContainer" parent="BattleArea"]
+[node name="EnemySide" type="VBoxContainer" parent="BattleArea" unique_id=872093841]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="EnemySprite" type="ColorRect" parent="BattleArea/EnemySide"]
+[node name="EnemySprite" type="ColorRect" parent="BattleArea/EnemySide" unique_id=1582070422]
+custom_minimum_size = Vector2(130, 180)
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(130, 180)
 color = Color(0.72, 0.18, 0.18, 0.85)
 
-[node name="EnemyNameLabel" type="Label" parent="BattleArea/EnemySide"]
+[node name="EnemyNameLabel" type="Label" parent="BattleArea/EnemySide" unique_id=824051631]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_hrlpu")
+theme_override_font_sizes/font_size = 25
 text = "ENEMY"
 
-[node name="EnemyHPBar" type="ProgressBar" parent="BattleArea/EnemySide"]
-layout_mode = 2
+[node name="EnemyHPBar" type="ProgressBar" parent="BattleArea/EnemySide" unique_id=211590325]
 custom_minimum_size = Vector2(0, 18)
-max_value = 100
-value = 100
+layout_mode = 2
+value = 100.0
 show_percentage = false
 
-[node name="EnemyHPLabel" type="Label" parent="BattleArea/EnemySide"]
+[node name="EnemyHPLabel" type="Label" parent="BattleArea/EnemySide" unique_id=255089021]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_hrlpu")
+theme_override_font_sizes/font_size = 25
 text = "HP  -- / --"
 
-; ── Combat log — 55%–70% ──────────────────────────────────────────────────────
-[node name="LogPanel" type="PanelContainer" parent="."]
+[node name="LogPanel" type="PanelContainer" parent="." unique_id=697454670]
+layout_mode = 0
 anchor_top = 0.55
 anchor_right = 1.0
-anchor_bottom = 0.70
+anchor_bottom = 0.7
 offset_left = 20.0
 offset_right = -20.0
 
-[node name="VBox" type="VBoxContainer" parent="LogPanel"]
+[node name="VBox" type="VBoxContainer" parent="LogPanel" unique_id=1257084607]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="WaveLabel" type="Label" parent="LogPanel/VBox"]
+[node name="WaveLabel" type="Label" parent="LogPanel/VBox" unique_id=1984936917]
 layout_mode = 2
-text = ""
 
-[node name="LogLabel" type="Label" parent="LogPanel/VBox"]
+[node name="LogLabel" type="Label" parent="LogPanel/VBox" unique_id=1764336199]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_0qy8o")
+theme_override_font_sizes/font_size = 35
 autowrap_mode = 3
-text = ""
 
-; ── Skill buttons — 70%–87% ───────────────────────────────────────────────────
-; Buttons are added here dynamically by Combat.gd._build_skill_buttons()
-; When sprites are ready, wrap each skill in a Panel styled like a card.
-[node name="SkillContainer" type="HBoxContainer" parent="."]
-anchor_top = 0.70
+[node name="SkillContainer" type="HBoxContainer" parent="." unique_id=2055143110]
+layout_mode = 0
+anchor_top = 0.7
 anchor_right = 1.0
 anchor_bottom = 0.87
 offset_left = 20.0
 offset_right = -20.0
 theme_override_constants/separation = 10
 
-; ── Action row — 87%–100% ─────────────────────────────────────────────────────
-[node name="ActionRow" type="HBoxContainer" parent="."]
+[node name="ActionRow" type="HBoxContainer" parent="." unique_id=1104686841]
+layout_mode = 0
 anchor_top = 0.87
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -138,12 +146,16 @@ offset_right = -20.0
 offset_bottom = -10.0
 theme_override_constants/separation = 16
 
-[node name="UsePotionButton" type="Button" parent="ActionRow"]
+[node name="UsePotionButton" type="Button" parent="ActionRow" unique_id=738302309]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_0qy8o")
+theme_override_font_sizes/font_size = 35
 text = "Use Potion"
 
-[node name="FleeButton" type="Button" parent="ActionRow"]
+[node name="FleeButton" type="Button" parent="ActionRow" unique_id=907525033]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_0qy8o")
+theme_override_font_sizes/font_size = 35
 text = "Flee"
