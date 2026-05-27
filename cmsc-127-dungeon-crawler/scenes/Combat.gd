@@ -43,7 +43,9 @@ var waves_done: int         = 0
 @onready var skill_container: HBoxContainer = $SkillContainer
 @onready var use_potion_btn:  Button        = $ActionRow/UsePotionButton
 @onready var flee_btn:        Button        = $ActionRow/FleeButton
-
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		GameState.update_cursor(event.pressed)
 
 # ─────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
@@ -284,11 +286,64 @@ func _on_defeat() -> void:
 
 func _on_use_potion_pressed() -> void:
 	var inventory := DatabaseManager.get_inventory()
+
 	if inventory.is_empty():
 		log_label.text = "No potions!"
 		return
 
-	var item:   Dictionary = inventory[0]
+	# Always show picker (even if 1 item)
+	_set_skill_buttons_enabled(false)
+	use_potion_btn.disabled = true
+	flee_btn.disabled       = true
+
+	var popup := Panel.new()
+	popup.name     = "PotionPicker"
+	popup.size     = Vector2(250, 50 + inventory.size() * 50 + 50)
+	popup.position = (get_viewport_rect().size - popup.size) * 0.5
+	popup.z_index  = 10
+
+	var vbox := VBoxContainer.new()
+	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 8)
+	popup.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "Choose a potion:"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	for item in inventory:
+		var btn := Button.new()
+		btn.text = item["pot_name"]
+		btn.custom_minimum_size = Vector2(0, 40)
+
+		var captured_item: Dictionary = item
+		btn.pressed.connect(func():
+			popup.queue_free()
+			_set_skill_buttons_enabled(true)
+			use_potion_btn.disabled = false
+			flee_btn.disabled = false
+			_use_potion(captured_item)
+		)
+
+		vbox.add_child(btn)
+
+	var cancel_btn := Button.new()
+	cancel_btn.text = "Cancel"
+	cancel_btn.custom_minimum_size = Vector2(0, 40)
+	cancel_btn.pressed.connect(func():
+		popup.queue_free()
+		_set_skill_buttons_enabled(true)
+		use_potion_btn.disabled = false
+		flee_btn.disabled = false
+	)
+
+	vbox.add_child(cancel_btn)
+
+	add_child(popup)
+
+
+func _use_potion(item: Dictionary) -> void:
 	var player: Dictionary = DatabaseManager.get_player()
 
 	match item["pot_type"]:
@@ -298,7 +353,12 @@ func _on_use_potion_pressed() -> void:
 			log_label.text = "Used %s — restored %d HP." % [item["pot_name"], int(item["potency_value"])]
 		"DAMAGE_BUFF":
 			GameState.atk_buff_multiplier = 1.0 + float(item["potency_value"])
-			log_label.text = "Used %s — ATK +%d%% on next hit!" % [item["pot_name"], int(item["potency_value"] * 100.0)]
+			log_label.text = "Used %s — ATK x%.2f on next hit!" % [item["pot_name"], GameState.atk_buff_multiplier]
+		"SP_RECOVER":
+			var player_fresh := DatabaseManager.get_player()
+			var new_sp := mini(int(player_fresh["current_sp"]) + int(item["potency_value"]), int(player_fresh["max_sp"]))
+			DatabaseManager.update_player_sp(new_sp)
+			log_label.text = "Used %s — recovered %d SP." % [item["pot_name"], int(item["potency_value"])]
 
 	DatabaseManager.remove_from_inventory(item["inv_id"])
 	_refresh_ui()
@@ -307,7 +367,9 @@ func _on_use_potion_pressed() -> void:
 # ─── Flee ─────────────────────────────────────────────────────────────────────
 
 func _on_flee_pressed() -> void:
-	if randf() < 0.5:
+	var monster: Dictionary = combat_data["monster"]
+	var type = monster["monster_type"]
+	if randf() < 0.5 and type not in ["ELITE", "BOSS"]:
 		log_label.text = "You fled!"
 		DatabaseManager.combat_ended.emit("fled")
 		await get_tree().create_timer(0.8).timeout
@@ -322,7 +384,7 @@ func _on_flee_pressed() -> void:
 func _roll_drops() -> void:
 	var monster: Dictionary = combat_data["monster"]
 	if randf() < float(monster["pot_drop_chance"]):
-		var pot_id := randi_range(1, 3)
+		var pot_id := randi_range(1, 4)
 		if DatabaseManager.add_to_inventory(pot_id):
 			var potion := DatabaseManager.get_potion(pot_id)
 			log_label.text += "\nDrop: %s!" % potion.get("pot_name", "Potion")
