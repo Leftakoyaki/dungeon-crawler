@@ -352,7 +352,7 @@ func _use_potion(item: Dictionary) -> void:
 			DatabaseManager.update_player_hp(new_hp)
 			log_label.text = "Used %s — restored %d HP." % [item["pot_name"], int(item["potency_value"])]
 		"DAMAGE_BUFF":
-			GameState.atk_buff_multiplier = 1.0 + float(item["potency_value"])
+			GameState.atk_buff_multiplier = float(item["potency_value"])
 			log_label.text = "Used %s — ATK x%.2f on next hit!" % [item["pot_name"], GameState.atk_buff_multiplier]
 		"SP_RECOVER":
 			var player_fresh := DatabaseManager.get_player()
