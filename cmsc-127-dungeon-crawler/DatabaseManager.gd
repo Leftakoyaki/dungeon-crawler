@@ -217,7 +217,7 @@ func _seed_classes() -> void:
 			"base_hp":              100,
 			"base_atk":             13,
 			"base_sp":				5,
-			"passive_description":  "Eagle Eye: Normal Attacks and Basic Skill have a 25% chance to strike twice."
+			"passive_description":  "Eagle Eye: Normal Attacks and Basic Skill have a 30% chance to strike twice."
 		},
 	]
 	for row in rows:
