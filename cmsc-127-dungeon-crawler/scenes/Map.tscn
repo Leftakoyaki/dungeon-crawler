@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/Map.gd" id="1_map"]
+
+[node name="Map" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_map")
+
+; ── Background ────────────────────────────────────────────────────────────────
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.06, 0.06, 0.10, 1.0)
+
+; ── Stats bar — top 52px ──────────────────────────────────────────────────────
+[node name="StatsBar" type="PanelContainer" parent="."]
+anchor_right = 1.0
+offset_bottom = 52.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="StatsBar"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="HPLabel" type="Label" parent="StatsBar/HBoxContainer"]
+layout_mode = 2
+text = "HP --/--"
+
+[node name="SPLabel" type="Label" parent="StatsBar/HBoxContainer"]
+layout_mode = 2
+text = "SP --/--"
+
+[node name="UltLabel" type="Label" parent="StatsBar/HBoxContainer"]
+layout_mode = 2
+text = "ULT --/--"
+
+[node name="UpgLabel" type="Label" parent="StatsBar/HBoxContainer"]
+layout_mode = 2
+text = "UPG --"
+
+; ── Info panel — bottom 52px ──────────────────────────────────────────────────
+[node name="InfoPanel" type="PanelContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -52.0
+
+[node name="InfoLabel" type="Label" parent="InfoPanel"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "Choose your path"
