@@ -3,6 +3,35 @@
 [ext_resource type="Script" uid="uid://dixbpi4sqmk3t" path="res://scenes/Combat.gd" id="1_combat"]
 [ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_font"]
 [ext_resource type="Texture2D" uid="uid://q4jp07crkxgv" path="res://assets/Backgrounds/Combat_Background.png" id="3_bg"]
+[ext_resource type="Texture2D" uid="uid://dxp8dhbajcxn6" path="res://SPBarBlank1.png" id="3_mak3c"]
+[ext_resource type="Texture2D" uid="uid://byish52ow46wx" path="res://SPBarBlank2.png" id="4_3q7sh"]
+[ext_resource type="Texture2D" uid="uid://bnahqf23fg4q1" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/HpBar.png" id="4_tp2sa"]
+[ext_resource type="Texture2D" uid="uid://1nyb76j72o82" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/BigBarspace (1).png" id="5_akg4l"]
+[ext_resource type="Texture2D" uid="uid://co1y6ypxc5kgm" path="res://SPBarBlank.png" id="6_akg4l"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3q7sh"]
+atlas = ExtResource("6_akg4l")
+region = Rect2(0, 176, 24, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_spaix"]
+atlas = ExtResource("3_mak3c")
+region = Rect2(0, 176, 24, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t74xm"]
+atlas = ExtResource("4_3q7sh")
+region = Rect2(0, 176, 24, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_70oqa"]
+atlas = ExtResource("4_tp2sa")
+region = Rect2(42.026566, 2.6639557, 239.87431, 56.826706)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tp2sa"]
+atlas = ExtResource("4_tp2sa")
+region = Rect2(40, 8, 240, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mak3c"]
+atlas = ExtResource("6_akg4l")
+region = Rect2(-8, 176, 40, 16)
 
 [node name="Combat" type="Control" unique_id=520126410]
 layout_mode = 3
@@ -12,6 +41,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_combat")
+ult_empty_tex = SubResource("AtlasTexture_3q7sh")
+ult_half_tex = SubResource("AtlasTexture_spaix")
+ult_full_tex = SubResource("AtlasTexture_t74xm")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1118673826]
 layout_mode = 1
@@ -51,11 +83,16 @@ theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 22
 text = "PLAYER"
 
-[node name="PlayerHPBar" type="ProgressBar" parent="BattleArea/PlayerSide" unique_id=672754199]
-custom_minimum_size = Vector2(0, 14)
+[node name="PlayerHPBar" type="TextureProgressBar" parent="BattleArea/PlayerSide" unique_id=1273798527]
+clip_contents = true
+custom_minimum_size = Vector2(-100, 35)
 layout_mode = 2
-value = 100.0
-show_percentage = false
+max_value = 83.0
+value = 83.0
+nine_patch_stretch = true
+texture_under = SubResource("AtlasTexture_70oqa")
+texture_progress = ExtResource("5_akg4l")
+texture_progress_offset = Vector2(7, 0)
 
 [node name="PlayerHPLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=462652939]
 layout_mode = 2
@@ -76,7 +113,10 @@ theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 22
 text = "SP  -- / --"
 
-[node name="UltLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1611326756]
+[node name="UltRow" type="HBoxContainer" parent="BattleArea/PlayerSide" unique_id=1799090181]
+layout_mode = 2
+
+[node name="UltLabel" type="Label" parent="BattleArea/PlayerSide/UltRow" unique_id=1611326756]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 22
@@ -102,11 +142,14 @@ theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 22
 text = "ENEMY"
 
-[node name="EnemyHPBar" type="ProgressBar" parent="BattleArea/EnemySide" unique_id=211590325]
-custom_minimum_size = Vector2(0, 14)
+[node name="EnemyHPBar" type="TextureProgressBar" parent="BattleArea/EnemySide" unique_id=1377134469]
+custom_minimum_size = Vector2(150, 35)
 layout_mode = 2
 value = 100.0
-show_percentage = false
+nine_patch_stretch = true
+texture_under = SubResource("AtlasTexture_tp2sa")
+texture_progress = ExtResource("5_akg4l")
+texture_progress_offset = Vector2(10, 0)
 
 [node name="EnemyHPLabel" type="Label" parent="BattleArea/EnemySide" unique_id=255089021]
 layout_mode = 2
@@ -148,7 +191,8 @@ anchor_top = 0.7
 anchor_right = 1.0
 anchor_bottom = 0.87
 offset_left = 20.0
-offset_right = -20.0
+offset_top = 45.399994
+offset_right = -12.0
 theme_override_constants/separation = 10
 
 [node name="ActionRow" type="HBoxContainer" parent="." unique_id=1104686841]
@@ -162,15 +206,34 @@ offset_bottom = -10.0
 theme_override_constants/separation = 16
 
 [node name="UsePotionButton" type="Button" parent="ActionRow" unique_id=738302309]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 28
 text = "Use Potion"
 
 [node name="FleeButton" type="Button" parent="ActionRow" unique_id=907525033]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 28
 text = "Flee"
+
+[node name="UltSprite" type="TextureRect" parent="." unique_id=525392683]
+top_level = true
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.054
+anchor_bottom = 0.5
+offset_left = 131.0
+offset_top = 458.0
+offset_right = 310.792
+offset_bottom = 174.0
+texture = SubResource("AtlasTexture_mak3c")
+expand_mode = 1
+stretch_mode = 4

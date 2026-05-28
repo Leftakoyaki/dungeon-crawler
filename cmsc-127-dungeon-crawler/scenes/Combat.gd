@@ -17,7 +17,21 @@ extends Control
 # ─────────────────────────────────────────────────────────────────────────────
 
 signal replace_popup_closed
+# Sprite for the ULT
+@onready var ult_label = $BattleArea/PlayerSide/UltRow/UltLabel
+@onready var ult_sprite = $BattleArea/PlayerSide/UltRow/UltSprite
 
+# Hardcode the textures so you don't have to use the Inspector
+# (Double-check that the res:// paths match your project structure)
+var ult_emptyULT_tex = preload("res://SPBarBlank.png")
+var ult_halfULT_tex  = preload("res://SPBarBlank1.png")
+var ult_fullULT_tex  = preload("res://SPBarBlank2.png")
+
+
+# Creates slots in the Inspector for your 3 images
+@export var ult_empty_tex: Texture2D
+@export var ult_half_tex: Texture2D
+@export var ult_full_tex: Texture2D
 # ─── Sprite position tweaks (edit in Inspector on the Combat node) ────────────
 @export var player_sprite_offset: Vector2 = Vector2(0, 70)   # push down onto left cliff
 @export var enemy_sprite_offset:  Vector2 = Vector2(0, 0)
@@ -37,16 +51,16 @@ var enemy_anim:  AnimatedSprite2D = null
 # ─── Node refs — Player side ──────────────────────────────────────────────────
 @onready var player_sprite:     Control      = $BattleArea/PlayerSide/PlayerSprite
 @onready var player_name_label: Label        = $BattleArea/PlayerSide/PlayerNameLabel
-@onready var player_hp_bar:     ProgressBar  = $BattleArea/PlayerSide/PlayerHPBar
+@onready var player_hp_bar:     TextureProgressBar  = $BattleArea/PlayerSide/PlayerHPBar
 @onready var player_hp_label:   Label        = $BattleArea/PlayerSide/PlayerHPLabel
 @onready var player_sp_bar:     ProgressBar  = $BattleArea/PlayerSide/PlayerSPBar
 @onready var player_sp_label:   Label        = $BattleArea/PlayerSide/PlayerSPLabel
-@onready var player_ult_label:  Label        = $BattleArea/PlayerSide/UltLabel
+
 
 # ─── Node refs — Enemy side ───────────────────────────────────────────────────
 @onready var enemy_sprite:      Control      = $BattleArea/EnemySide/EnemySprite
 @onready var enemy_name_label:  Label        = $BattleArea/EnemySide/EnemyNameLabel
-@onready var enemy_hp_bar:      ProgressBar  = $BattleArea/EnemySide/EnemyHPBar
+@onready var enemy_hp_bar:      TextureProgressBar  = $BattleArea/EnemySide/EnemyHPBar
 @onready var enemy_hp_label:    Label        = $BattleArea/EnemySide/EnemyHPLabel
 
 # ─── Node refs — Bottom UI ────────────────────────────────────────────────────
@@ -87,9 +101,25 @@ func _ready() -> void:
 	_refresh_ui()
 	_begin_player_turn()
 
-
+	var player = DatabaseManager.get_player()
+	var current_points = player.get("current_ult_pts", 0)
+	var max_points = 2 
+	_update_ult_ui(current_points, max_points)
+	
+func _update_ult_ui(current_ult: int, max_ult: int) -> void:
+	print("--- UI UPDATE TRIGGERED | Points: ", current_ult, " ---")
+	
+	ult_label.text = "ULT %d / %d" % [current_ult, max_ult]
+	
+	match current_ult:
+		0:
+			ult_sprite.texture = ult_empty_tex
+		1:
+			ult_sprite.texture = ult_half_tex
+		2:
+			ult_sprite.texture = ult_full_tex
+	ult_sprite.show()
 # ─── Sprite setup ─────────────────────────────────────────────────────────────
-
 func _setup_sprites() -> void:
 	var player := DatabaseManager.get_player()
 	if player.is_empty():
@@ -98,40 +128,53 @@ func _setup_sprites() -> void:
 	# ── Player ────────────────────────────────────────────────────────────────
 	player_anim = AnimatedSprite2D.new()
 	player_anim.sprite_frames = _build_player_frames(player["player_class"])
-	player_anim.scale         = Vector2(0.75, 0.75)
+	player_anim.scale         = Vector2(player_sprite_scale, player_sprite_scale)
+	player_anim.z_index       = 5
 	player_anim.animation_finished.connect(func():
 		if is_instance_valid(player_anim):
 			player_anim.play("idle")
 	)
-	player_sprite.add_child(player_anim)
+	add_child(player_anim)  # Add to ROOT scene, not to the Control
 	player_anim.play("idle")
 
 	# ── Enemy ─────────────────────────────────────────────────────────────────
-	var mon_name: String  = combat_data["monster"]["mon_name"]
-	var e_scale: float    = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
-	var e_scale_final: float = e_scale  # captured for use after await
+	var mon_name: String = combat_data["monster"]["mon_name"]
+	var e_scale: float   = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
 
 	enemy_anim = AnimatedSprite2D.new()
 	enemy_anim.sprite_frames = _build_enemy_frames(mon_name)
 	enemy_anim.scale         = Vector2(e_scale, e_scale)
 	enemy_anim.flip_h        = _get_enemy_flip(mon_name)
+	enemy_anim.z_index       = 5
 	enemy_anim.animation_finished.connect(func():
 		if is_instance_valid(enemy_anim):
 			enemy_anim.play("idle")
 	)
-	enemy_sprite.add_child(enemy_anim)
+	add_child(enemy_anim)  # Add to ROOT scene, not to the Control
 	enemy_anim.play("idle")
 
-	# Wait one frame for layout to settle, then center + apply inspector offsets
-	await get_tree().process_frame
+	_reposition_sprites.call_deferred()
+
+
+func _reposition_sprites() -> void:
+	# Use the Control nodes only as position anchors — get their global position
+	print("PlayerSprite size: ", player_sprite.size)
+	print("PlayerSprite global_pos: ", player_sprite.global_position)
+	print("EnemySprite size: ", enemy_sprite.size)
+	print("EnemySprite global_pos: ", enemy_sprite.global_position)
+	
 	if is_instance_valid(player_anim):
-		player_anim.position = player_sprite.size / 2.0 + player_sprite_offset
-		player_anim.scale    = Vector2(player_sprite_scale, player_sprite_scale)
+		var anchor: Vector2 = player_sprite.global_position
+		var size: Vector2   = player_sprite.size
+		player_anim.position = anchor + size / 2.0 + player_sprite_offset
+
 	if is_instance_valid(enemy_anim):
-		enemy_anim.position = enemy_sprite.size / 2.0 + enemy_sprite_offset
-		enemy_anim.scale    = Vector2(e_scale_final, e_scale_final)
-
-
+		var anchor: Vector2 = enemy_sprite.global_position
+		var size: Vector2   = enemy_sprite.size
+		var mon_name: String = combat_data["monster"]["mon_name"]
+		var e_scale: float   = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
+		enemy_anim.position = anchor + size / 2.0 + enemy_sprite_offset
+		enemy_anim.scale    = Vector2(e_scale, e_scale)
 func _build_player_frames(player_class: String) -> SpriteFrames:
 	var frames := SpriteFrames.new()
 	frames.remove_animation("default")
@@ -595,6 +638,7 @@ func _on_use_potion_pressed() -> void:
 
 	var popup := Panel.new()
 	popup.name     = "PotionPicker"
+	popup.theme = load("res://assets/upgrade_theme.tres")
 	popup.size     = Vector2(250, 50 + inventory.size() * 50 + 50)
 	popup.position = (get_viewport_rect().size - popup.size) * 0.5
 	popup.z_index  = 10
@@ -808,8 +852,8 @@ func _refresh_ui() -> void:
 		player_sp_bar.max_value = int(player["max_sp"])
 		player_sp_bar.value     = int(player["current_sp"])
 		player_sp_label.text    = "SP  %d / %d" % [player["current_sp"], player["max_sp"]]
-		player_ult_label.text   = "ULT  %d / %d" % [player["current_ult_pts"], GameState.ULT_PTS_MAX]
-
+		_update_ult_ui(int(player["current_ult_pts"]), GameState.ULT_PTS_MAX)
+		#player_ult_label.text   = "ULT  %d / %d" % [player["current_ult_pts"], GameState.ULT_PTS_MAX]
 	if not monster.is_empty():
 		enemy_name_label.text  = "%s  [%s]" % [monster["mon_name"], monster["monster_type"]]
 		enemy_hp_bar.max_value = int(monster["max_hp"])
