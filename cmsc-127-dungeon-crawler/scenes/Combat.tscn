@@ -18,7 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource("4_bg")
 expand_mode = 1
-stretch_mode = 1
+stretch_mode = 0
 
 [node name="BattleArea" type="HBoxContainer" parent="." unique_id=428515140]
 layout_mode = 0
