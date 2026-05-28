@@ -632,6 +632,19 @@ func _on_skill_used(skill: Dictionary) -> void:
 		_play_effect_no_await("res://assets/Wizard/Effect_ElectricShield/30fps/Frames/Effect_ElectricShield_1/Effect_ElectricShield_1_%03d.png", 29, 0, 1.0)
 		await _play_effect("res://assets/Wizard/Effect_Explosion2/30fps/Frames/Effect_Explosion2_1/Effect_Explosion2_1_%03d.png", 29, 0, 1.0)
 		
+	if player["player_class"] == "ARCHER" and skill["atk_type"] == "NORMAL":
+		_play_effect_no_await("res://assets/Wizard/Effect_Impact/30fps/Frames/Effect_Impact_1/Effect_Impact_1_%03d.png", 29, 0, 1.0)
+		_play_effect_no_await("res://assets/Wizard/Effect_Hyperspeed/30fps/Frames/Effect_Hyperspeed_1/Effect_Hyperspeed_1_%03d.png", 29, 0, 1.0)
+		await _play_effect("res://assets/Wizard/Effect_BloodImpact/30fps/Frames/Effect_BloodImpact_1/Effect_BloodImpact_1_%03d.png", 29, 0, 1.0)
+		
+	if player["player_class"] == "ARCHER" and skill["atk_type"] == "SKILL":
+		_play_effect_no_await("res://assets/Wizard/Effect_Worm/30fps/Frames/Effect_Worm_1/Effect_Worm_1_%03d.png", 29, 0, 1.0)
+		await _play_effect("res://assets/Wizard/Effect_Wheel/30fps/Frames/Effect_Wheel_1/Effect_Wheel_1_%03d.png", 29, 0, 1.0)
+	
+	if player["player_class"] == "ARCHER" and skill["atk_type"] == "ULTIMATE":
+		_play_effect_no_await("res://assets/Wizard/Effect_PowerChords/30fps/Frames/Effect_PowerChords_1/Effect_PowerChords_1_%03d.png", 29, 0, 1.0)
+		_play_effect_no_await("res://assets/Wizard/Effect_Anima/30fps/Frames/Effect_Anima_1/Effect_Anima_1_%03d.png", 29, 0, 1.0)
+		await _play_effect("res://assets/Wizard/Effect_Kabooms/30fps/Frames/Effect_Kabooms_1/Effect_Kabooms_1_%03d.png", 29, 0, 1.0)
 	# Apply damage to enemy
 	enemy_current_hp -= damage
 	log_label.text = log_msg
