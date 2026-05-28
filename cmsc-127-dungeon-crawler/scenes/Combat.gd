@@ -19,10 +19,10 @@ extends Control
 signal replace_popup_closed
 
 # ─── Sprite position tweaks (edit in Inspector on the Combat node) ────────────
-@export var player_sprite_offset: Vector2 = Vector2(0, 0)
+@export var player_sprite_offset: Vector2 = Vector2(0, 70)   # push down onto left cliff
 @export var enemy_sprite_offset:  Vector2 = Vector2(0, 0)
-@export var player_sprite_scale:  float   = 0.75
-@export var enemy_sprite_scale:   float   = 1.8   # overrides _get_enemy_scale if > 0; set 0 to use per-monster scale
+@export var player_sprite_scale:  float   = 1.3              # big — Pokemon close-camera feel
+@export var enemy_sprite_scale:   float   = 0.0              # 0 = use per-monster scale below
 
 # ─── Combat state ─────────────────────────────────────────────────────────────
 var enemy_current_hp: int   = 0
@@ -324,24 +324,24 @@ func _build_enemy_frames(mon_name: String) -> SpriteFrames:
 
 
 func _get_enemy_scale(mon_name: String) -> float:
-	# All regular monsters match Nightmare's visual size.
-	# Demon source is much larger (256×176) so a lower scale still looks big.
+	# Enemies should feel threatening — bigger scales, Demon fills the screen.
 	match mon_name:
-		"Troll":         return 1.8
-		"Jumping Demon": return 1.8
-		"Dark Knight":   return 1.8
-		"Nightmare":     return 1.8
-		"Centaur":       return 1.8
-		"Demon":         return 1.1   # source ~256×176; 1.1 → ~282×194, visibly larger
-		_:               return 1.8
+		"Troll":         return 2.5   # source ~144×80  → 360×200 at 2.5
+		"Jumping Demon": return 2.5   # source ~101×98  → 252×245 at 2.5
+		"Dark Knight":   return 2.5   # source ~128×96  → 320×240 at 2.5
+		"Nightmare":     return 2.5   # source ~160×96  → 400×240 at 2.5
+		"Centaur":       return 2.2   # source ~112×144 → 246×317 at 2.2
+		"Demon":         return 1.5   # source ~256×176 → 384×264 at 1.5 — imposing boss
+		_:               return 2.5
 
 
 func _get_enemy_flip(mon_name: String) -> bool:
-	# true  = flip_h  → sprite faces LEFT  (toward player)
-	# false = no flip → sprite faces RIGHT (away from player, use for sprites already facing left)
+	# true  = flip_h → sprite faces LEFT (toward player)
+	# false = no flip (sprite already faces left in source)
 	match mon_name:
 		"Nightmare": return false  # source already faces left
 		"Centaur":   return false  # source already faces left
+		"Demon":     return false  # source already faces left
 		_:           return true
 
 
