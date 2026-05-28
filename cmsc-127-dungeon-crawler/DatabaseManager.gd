@@ -321,15 +321,24 @@ func _seed_potions() -> void:
 
 
 func _seed_dungeon_floor() -> void:
+	# Randomise which monsters appear each run so all 5 non-boss monsters can be encountered.
+	# NORMAL pool: Troll (1), Jumping Demon (2), Dark Knight (3) — pick 2 distinct ones
+	# ELITE  pool: Nightmare (4), Centaur (5) — pick 1
+	var normal_pool := [1, 2, 3]
+	normal_pool.shuffle()
+	var normal_1: int = normal_pool[0]
+	var normal_2: int = normal_pool[1]
+	var elite_id: int = randi_range(4, 5)
+
 	var nodes := [
 		{"node_id": 1, "stage_type": "START",  "is_cleared": 0},
-		{"node_id": 2, "stage_type": "NORMAL", "monster_id": 1, "is_cleared": 0},
+		{"node_id": 2, "stage_type": "NORMAL", "monster_id": normal_1, "is_cleared": 0},
 		{"node_id": 3, "stage_type": "EVENT",  "is_cleared": 0},
-		{"node_id": 4, "stage_type": "NORMAL", "monster_id": 3, "is_cleared": 0},
+		{"node_id": 4, "stage_type": "NORMAL", "monster_id": normal_2, "is_cleared": 0},
 		{"node_id": 5, "stage_type": "REST",   "is_cleared": 0},
-		{"node_id": 6, "stage_type": "ELITE",  "monster_id": 4, "is_cleared": 0},
+		{"node_id": 6, "stage_type": "ELITE",  "monster_id": elite_id,  "is_cleared": 0},
 		{"node_id": 7, "stage_type": "REST",   "is_cleared": 0},
-		{"node_id": 8, "stage_type": "BOSS",   "monster_id": 6, "is_cleared": 0},
+		{"node_id": 8, "stage_type": "BOSS",   "monster_id": 6,         "is_cleared": 0},
 	]
 	for row in nodes:
 		db.insert_row("Dungeon_Floor", row)
