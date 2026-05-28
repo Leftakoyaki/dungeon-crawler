@@ -3,12 +3,15 @@
 [ext_resource type="Script" uid="uid://u54obpmcjasr" path="res://scenes/UpgradeScreen.gd" id="1_upgrade"]
 [ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_j5hm1"]
 [ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_7fwh7"]
+[ext_resource type="Theme" uid="uid://cdob8vee7nbdm" path="res://assets/Upgrade_theme.tres" id="3_tbebc"]
 
 [node name="UpgradeScreen" type="Control" unique_id=1642836092]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_upgrade")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1216607594]
@@ -48,6 +51,7 @@ size_flags_vertical = 3
 [node name="SkillList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer" unique_id=662439322]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("3_tbebc")
 theme_override_constants/separation = 8
 
 [node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=331318017]
