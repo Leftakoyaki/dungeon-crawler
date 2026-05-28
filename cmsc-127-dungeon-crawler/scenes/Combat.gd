@@ -619,7 +619,7 @@ func _on_skill_used(skill: Dictionary) -> void:
 		
 	if player["player_class"] == "MAGE" and skill["atk_type"] == "NORMAL":
 		_play_effect_no_await("res://assets/Wizard/Effect_FastPixelFire/60fps/Frames/Effect_FastPixelFire_1/Effect_FastPixelFire_1_%03d.png", 59, 0, 1.0)
-		await _play_effect("res://assets/Wizard/Effect_DitheredFire/30fps/Frames/Effect_DitheredFire_1/Effect_DitheredFire_1_%03d.png", 29, 0, 1.0, Vector2(0, 50))
+		await _play_effect("res://assets/Wizard/Effect_DitheredFire/30fps/Frames/Effect_DitheredFire_1/Effect_DitheredFire_1_%03d.png", 29, 0, 0.5, Vector2(0, 50))
 	
 	if player["player_class"] == "MAGE" and skill["atk_type"] == "SKILL":
 		_play_effect_no_await("res://assets/Wizard/Effect_Impact/30fps/Frames/Effect_Impact_1/Effect_Impact_1_%03d.png", 29, 0, 1.0)
@@ -634,16 +634,13 @@ func _on_skill_used(skill: Dictionary) -> void:
 		
 	if player["player_class"] == "ARCHER" and skill["atk_type"] == "NORMAL":
 		_play_effect_no_await("res://assets/Wizard/Effect_Impact/30fps/Frames/Effect_Impact_1/Effect_Impact_1_%03d.png", 29, 0, 1.0)
-		_play_effect_no_await("res://assets/Wizard/Effect_Hyperspeed/30fps/Frames/Effect_Hyperspeed_1/Effect_Hyperspeed_1_%03d.png", 29, 0, 1.0)
 		await _play_effect("res://assets/Wizard/Effect_BloodImpact/30fps/Frames/Effect_BloodImpact_1/Effect_BloodImpact_1_%03d.png", 29, 0, 1.0)
 		
 	if player["player_class"] == "ARCHER" and skill["atk_type"] == "SKILL":
-		_play_effect_no_await("res://assets/Wizard/Effect_Worm/30fps/Frames/Effect_Worm_1/Effect_Worm_1_%03d.png", 29, 0, 1.0)
-		await _play_effect("res://assets/Wizard/Effect_Wheel/30fps/Frames/Effect_Wheel_1/Effect_Wheel_1_%03d.png", 29, 0, 1.0)
+		_play_effect("res://assets/Wizard/Effect_Wheel/30fps/Frames/Effect_Wheel_1/Effect_Wheel_1_%03d.png", 29, 0, 1.0)
 	
 	if player["player_class"] == "ARCHER" and skill["atk_type"] == "ULTIMATE":
-		_play_effect_no_await("res://assets/Wizard/Effect_PowerChords/30fps/Frames/Effect_PowerChords_1/Effect_PowerChords_1_%03d.png", 29, 0, 1.0)
-		_play_effect_no_await("res://assets/Wizard/Effect_Anima/30fps/Frames/Effect_Anima_1/Effect_Anima_1_%03d.png", 29, 0, 1.0)
+		_play_effect_no_await("res://assets/Wizard/Effect_PuffAndStars/30fps/Frames/Effect_PuffAndStars_1/Effect_PuffAndStars_1_%03d.png", 29, 0, 3.0)
 		await _play_effect("res://assets/Wizard/Effect_Kabooms/30fps/Frames/Effect_Kabooms_1/Effect_Kabooms_1_%03d.png", 29, 0, 1.0)
 	# Apply damage to enemy
 	enemy_current_hp -= damage
