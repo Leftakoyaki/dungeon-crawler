@@ -50,8 +50,8 @@ var enemy_anim:  AnimatedSprite2D = null
 @onready var enemy_hp_label:    Label        = $BattleArea/EnemySide/EnemyHPLabel
 
 # ─── Node refs — Bottom UI ────────────────────────────────────────────────────
-@onready var wave_label:      Label         = $LogPanel/VBox/WaveLabel
-@onready var log_label:       Label         = $LogPanel/VBox/LogLabel
+@onready var wave_label:      Label         = $WaveLabel
+@onready var log_label:       Label         = $LogLabel
 @onready var skill_container: HBoxContainer = $SkillContainer
 @onready var use_potion_btn:  Button        = $ActionRow/UsePotionButton
 @onready var flee_btn:        Button        = $ActionRow/FleeButton
