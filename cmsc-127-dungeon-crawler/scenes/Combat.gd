@@ -606,11 +606,11 @@ func _on_skill_used(skill: Dictionary) -> void:
 
 	# ── Skill effects ─────────────────────────────────────────────────────────
 	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "SKILL":
-		await _play_effect("res://assets/SwordOfJustice/Frames/SwordOfJustice_%02d.png", 13)
+		await _play_effect("res://assets/SwordOfJustice/Frames/SwordOfJustice_%02d.png", 130, 1.5)
 
 	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "ULTIMATE":
-		_play_effect_no_await("res://assets/HeavensFury/Frames/HeavensFury_%02d.png", 12)
-		await _play_effect("res://assets/HolyNova/Frames/HolyNova_%02d.png", 10)
+		_play_effect_no_await("res://assets/HeavensFury/Frames/HeavensFury_%02d.png", 12, 0, 3.0)
+		await _play_effect("res://assets/HolyNova/Frames/HolyNova_%02d.png", 10, 0, 3.0)
 	
 	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "NORMAL":
 		_play_effect_no_await("res://assets/HolySlash_A/Frames/HolySlash_A_%02d.png", 5)
