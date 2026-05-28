@@ -617,6 +617,7 @@ func _on_skill_used(skill: Dictionary) -> void:
 		_play_effect_no_await("res://assets/HolySlash_B/Frames/HolySlash_B_%02d.png", 4)
 		await _play_effect("res://assets/HolySlash_C/Frames/HolySlash_C_%02d.png", 7)
 		
+		
 	if player["player_class"] == "MAGE" and skill["atk_type"] == "NORMAL":
 		_play_effect_no_await("res://assets/Wizard/Effect_FastPixelFire/60fps/Frames/Effect_FastPixelFire_1/Effect_FastPixelFire_1_%03d.png", 59, 0, 1.0)
 		await _play_effect("res://assets/Wizard/Effect_DitheredFire/30fps/Frames/Effect_DitheredFire_1/Effect_DitheredFire_1_%03d.png", 29, 0, 0.5, Vector2(0, 50))
