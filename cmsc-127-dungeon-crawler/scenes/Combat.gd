@@ -45,13 +45,14 @@ func _setup_sp_textures() -> void:
 		at.region = Rect2(0, 0, 32, 16)
 		sp_textures[i] = at
 
+
 # Creates slots in the Inspector for your 3 images
 @export var ult_empty_tex: Texture2D
 @export var ult_half_tex: Texture2D
 @export var ult_full_tex: Texture2D
 # ─── Sprite position tweaks (edit in Inspector on the Combat node) ────────────
 @export var player_sprite_offset: Vector2 = Vector2(0, 70)   # push down onto left cliff
-@export var enemy_sprite_offset:  Vector2 = Vector2(0, 0)
+@export var enemy_sprite_offset:  Vector2 = Vector2(0, -50)
 @export var player_sprite_scale:  float   = 1.3              # big — Pokemon close-camera feel
 @export var enemy_sprite_scale:   float   = 0.0              # 0 = use per-monster scale below
 
@@ -140,7 +141,7 @@ func _update_ult_ui(current_ult: int, max_ult: int) -> void:
 			ult_sprite.texture = ult_full_tex
 	ult_sprite.show()
 func _update_sp_ui(current_sp: int) -> void:
-	print("SP UI update: ", current_sp, " texture: ", sp_textures.get(current_sp))
+
 	sp_sprite.texture = sp_textures.get(current_sp, sp_textures[0])
 # ─── Sprite setup ─────────────────────────────────────────────────────────────
 func _setup_sprites() -> void:
@@ -180,11 +181,7 @@ func _setup_sprites() -> void:
 
 
 func _reposition_sprites() -> void:
-	# Use the Control nodes only as position anchors — get their global position
-	print("PlayerSprite size: ", player_sprite.size)
-	print("PlayerSprite global_pos: ", player_sprite.global_position)
-	print("EnemySprite size: ", enemy_sprite.size)
-	print("EnemySprite global_pos: ", enemy_sprite.global_position)
+
 	
 	if is_instance_valid(player_anim):
 		var anchor: Vector2 = player_sprite.global_position
