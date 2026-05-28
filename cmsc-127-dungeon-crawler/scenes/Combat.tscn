@@ -30,11 +30,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="PlayerSprite" type="ColorRect" parent="BattleArea/PlayerSide" unique_id=1716756212]
+[node name="PlayerSprite" type="Control" parent="BattleArea/PlayerSide" unique_id=1716756212]
 custom_minimum_size = Vector2(130, 180)
 layout_mode = 2
 size_flags_vertical = 3
-color = Color(0.18, 0.32, 0.72, 0.85)
 
 [node name="PlayerNameLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1045863704]
 layout_mode = 2
@@ -82,11 +81,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="EnemySprite" type="ColorRect" parent="BattleArea/EnemySide" unique_id=1582070422]
-custom_minimum_size = Vector2(130, 180)
+[node name="EnemySprite" type="Control" parent="BattleArea/EnemySide" unique_id=1582070422]
+custom_minimum_size = Vector2(180, 220)
 layout_mode = 2
 size_flags_vertical = 3
-color = Color(0.72, 0.18, 0.18, 0.85)
 
 [node name="EnemyNameLabel" type="Label" parent="BattleArea/EnemySide" unique_id=824051631]
 layout_mode = 2

@@ -24,8 +24,12 @@ var combat_data: Dictionary = {}
 var waves_total: int        = 1
 var waves_done: int         = 0
 
+# ─── Sprite nodes (created at runtime) ───────────────────────────────────────
+var player_anim: AnimatedSprite2D = null
+var enemy_anim:  AnimatedSprite2D = null
+
 # ─── Node refs — Player side ──────────────────────────────────────────────────
-@onready var player_sprite:     ColorRect    = $BattleArea/PlayerSide/PlayerSprite
+@onready var player_sprite:     Control      = $BattleArea/PlayerSide/PlayerSprite
 @onready var player_name_label: Label        = $BattleArea/PlayerSide/PlayerNameLabel
 @onready var player_hp_bar:     ProgressBar  = $BattleArea/PlayerSide/PlayerHPBar
 @onready var player_hp_label:   Label        = $BattleArea/PlayerSide/PlayerHPLabel
@@ -34,7 +38,7 @@ var waves_done: int         = 0
 @onready var player_ult_label:  Label        = $BattleArea/PlayerSide/UltLabel
 
 # ─── Node refs — Enemy side ───────────────────────────────────────────────────
-@onready var enemy_sprite:      ColorRect    = $BattleArea/EnemySide/EnemySprite
+@onready var enemy_sprite:      Control      = $BattleArea/EnemySide/EnemySprite
 @onready var enemy_name_label:  Label        = $BattleArea/EnemySide/EnemyNameLabel
 @onready var enemy_hp_bar:      ProgressBar  = $BattleArea/EnemySide/EnemyHPBar
 @onready var enemy_hp_label:    Label        = $BattleArea/EnemySide/EnemyHPLabel
@@ -45,6 +49,7 @@ var waves_done: int         = 0
 @onready var skill_container: HBoxContainer = $SkillContainer
 @onready var use_potion_btn:  Button        = $ActionRow/UsePotionButton
 @onready var flee_btn:        Button        = $ActionRow/FleeButton
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		GameState.update_cursor(event.pressed)
@@ -66,6 +71,8 @@ func _ready() -> void:
 
 	enemy_current_hp = int(combat_data["monster"]["max_hp"])
 
+	_setup_sprites()
+
 	use_potion_btn.pressed.connect(_on_use_potion_pressed)
 	flee_btn.pressed.connect(_on_flee_pressed)
 
@@ -73,6 +80,242 @@ func _ready() -> void:
 	wave_label.text = "Wave 1 / %d" % waves_total
 	_refresh_ui()
 	_begin_player_turn()
+
+
+# ─── Sprite setup ─────────────────────────────────────────────────────────────
+
+func _setup_sprites() -> void:
+	var player := DatabaseManager.get_player()
+	if player.is_empty():
+		return
+
+	# ── Player ────────────────────────────────────────────────────────────────
+	player_anim = AnimatedSprite2D.new()
+	player_anim.sprite_frames = _build_player_frames(player["player_class"])
+	player_anim.position      = Vector2(65, 90)
+	player_anim.scale         = Vector2(0.75, 0.75)
+	player_anim.animation_finished.connect(func():
+		if is_instance_valid(player_anim):
+			player_anim.play("idle")
+	)
+	player_sprite.add_child(player_anim)
+	player_anim.play("idle")
+
+	# ── Enemy ─────────────────────────────────────────────────────────────────
+	var mon_name: String = combat_data["monster"]["mon_name"]
+	var e_scale: float   = _get_enemy_scale(mon_name)
+
+	enemy_anim = AnimatedSprite2D.new()
+	enemy_anim.sprite_frames = _build_enemy_frames(mon_name)
+	enemy_anim.position      = Vector2(90, 110)
+	enemy_anim.scale         = Vector2(e_scale, e_scale)
+	enemy_anim.flip_h        = true   # face left, toward player
+	enemy_anim.animation_finished.connect(func():
+		if is_instance_valid(enemy_anim):
+			enemy_anim.play("idle")
+	)
+	enemy_sprite.add_child(enemy_anim)
+	enemy_anim.play("idle")
+
+
+func _build_player_frames(player_class: String) -> SpriteFrames:
+	var frames := SpriteFrames.new()
+	frames.remove_animation("default")
+
+	var idle_path:  String
+	var idle_count: int
+	var atk_path:   String
+	var atk_count:  int
+
+	match player_class:
+		"MAGE":
+			idle_path  = "res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Monk/Idle.png"
+			idle_count = 6
+			atk_path   = "res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Monk/Run.png"
+			atk_count  = 4
+		"WARRIOR":
+			idle_path  = "res://assets/Tiny Swords (Free Pack)/Units/Red Units/Warrior/Warrior_Idle.png"
+			idle_count = 8
+			atk_path   = "res://assets/Tiny Swords (Free Pack)/Units/Red Units/Warrior/Warrior_Attack1.png"
+			atk_count  = 4
+		"ARCHER":
+			idle_path  = "res://assets/Tiny Swords (Free Pack)/Units/Yellow Units/Archer/Archer_Idle.png"
+			idle_count = 6
+			atk_path   = "res://assets/Tiny Swords (Free Pack)/Units/Yellow Units/Archer/Archer_Shoot.png"
+			atk_count  = 8
+		_:
+			idle_path  = "res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Monk/Idle.png"
+			idle_count = 6
+			atk_path   = "res://assets/Tiny Swords (Free Pack)/Units/Blue Units/Monk/Run.png"
+			atk_count  = 4
+
+	# Idle (looping)
+	frames.add_animation("idle")
+	frames.set_animation_loop("idle", true)
+	frames.set_animation_speed("idle", 8.0)
+	var idle_sheet := load(idle_path) as Texture2D
+	if idle_sheet:
+		for i in range(idle_count):
+			var at := AtlasTexture.new()
+			at.atlas  = idle_sheet
+			at.region = Rect2(i * 192, 0, 192, 192)
+			frames.add_frame("idle", at)
+
+	# Attack (one-shot — fires animation_finished when done)
+	frames.add_animation("attack")
+	frames.set_animation_loop("attack", false)
+	frames.set_animation_speed("attack", 12.0)
+	var atk_sheet := load(atk_path) as Texture2D
+	if atk_sheet:
+		for i in range(atk_count):
+			var at := AtlasTexture.new()
+			at.atlas  = atk_sheet
+			at.region = Rect2(i * 192, 0, 192, 192)
+			frames.add_frame("attack", at)
+
+	# Fallback: keep at least one frame so play() doesn't error
+	if frames.get_frame_count("idle") == 0:
+		frames.add_frame("idle", PlaceholderTexture2D.new())
+	if frames.get_frame_count("attack") == 0:
+		frames.add_frame("attack", PlaceholderTexture2D.new())
+
+	return frames
+
+
+func _build_enemy_frames(mon_name: String) -> SpriteFrames:
+	var frames := SpriteFrames.new()
+	frames.remove_animation("default")
+	frames.add_animation("idle")
+	frames.set_animation_loop("idle", true)
+	frames.set_animation_speed("idle", 8.0)
+	frames.add_animation("attack")
+	frames.set_animation_loop("attack", false)
+	frames.set_animation_speed("attack", 12.0)
+
+	var idle_paths: Array = []
+	var atk_paths:  Array = []
+
+	match mon_name:
+		"Troll":
+			idle_paths = [
+				"res://assets/Monsters/Troll_Idle/ogre-idle1.png",
+				"res://assets/Monsters/Troll_Idle/ogre-idle2.png",
+				"res://assets/Monsters/Troll_Idle/ogre-idle3.png",
+				"res://assets/Monsters/Troll_Idle/ogre-idle4.png",
+			]
+			atk_paths = [
+				"res://assets/Monsters/Troll_Attack/ogre-attack1.png",
+				"res://assets/Monsters/Troll_Attack/ogre-attack2.png",
+				"res://assets/Monsters/Troll_Attack/ogre-attack3.png",
+				"res://assets/Monsters/Troll_Attack/ogre-attack4.png",
+				"res://assets/Monsters/Troll_Attack/ogre-attack5.png",
+				"res://assets/Monsters/Troll_Attack/ogre-attack6.png",
+				"res://assets/Monsters/Troll_Attack/ogre-attack7.png",
+			]
+		"Jumping Demon":
+			idle_paths = [
+				"res://assets/Monsters/Jumping-Demon/Jumping-Demon1.png",
+				"res://assets/Monsters/Jumping-Demon/Jumping-Demon2.png",
+				"res://assets/Monsters/Jumping-Demon/Jumping-Demon3.png",
+				"res://assets/Monsters/Jumping-Demon/Jumping-Demon4.png",
+				"res://assets/Monsters/Jumping-Demon/Jumping-Demon5.png",
+				"res://assets/Monsters/Jumping-Demon/Jumping-Demon6.png",
+			]
+			atk_paths = idle_paths   # no separate attack folder
+		"Dark Knight":
+			idle_paths = [
+				"res://assets/Monsters/DarkKnight_Idle/frame1.png",
+				"res://assets/Monsters/DarkKnight_Idle/frame2.png",
+				"res://assets/Monsters/DarkKnight_Idle/frame3.png",
+				"res://assets/Monsters/DarkKnight_Idle/frame4.png",
+			]
+			atk_paths = [
+				"res://assets/Monsters/DarkKnight_Attack/AirSwordSlash-export1.png",
+				"res://assets/Monsters/DarkKnight_Attack/AirSwordSlash-export2.png",
+				"res://assets/Monsters/DarkKnight_Attack/AirSwordSlash-export3.png",
+				"res://assets/Monsters/DarkKnight_Attack/AirSwordSlash-export4.png",
+				"res://assets/Monsters/DarkKnight_Attack/AirSwordSlash-export5.png",
+				"res://assets/Monsters/DarkKnight_Attack/AirSwordSlash-export6.png",
+			]
+		"Nightmare":
+			idle_paths = [
+				"res://assets/Monsters/Nightmare_Idle/frame1.png",
+				"res://assets/Monsters/Nightmare_Idle/frame2.png",
+				"res://assets/Monsters/Nightmare_Idle/frame3.png",
+				"res://assets/Monsters/Nightmare_Idle/frame4.png",
+			]
+			atk_paths = [
+				"res://assets/Monsters/Nightmare_Attack/frame1.png",
+				"res://assets/Monsters/Nightmare_Attack/frame2.png",
+				"res://assets/Monsters/Nightmare_Attack/frame3.png",
+			]
+		"Centaur":
+			idle_paths = [
+				"res://assets/Monsters/Centaur_Idle/centaur1.png",
+				"res://assets/Monsters/Centaur_Idle/centaur2.png",
+				"res://assets/Monsters/Centaur_Idle/centaur3.png",
+				"res://assets/Monsters/Centaur_Idle/centaur4.png",
+			]
+			atk_paths = idle_paths   # attack files are GIFs; use idle as fallback
+		"Demon":
+			idle_paths = [
+				"res://assets/Monsters/Demon_Idle/frame_0_delay-0.2s.gif",
+				"res://assets/Monsters/Demon_Idle/frame_1_delay-0.2s.gif",
+				"res://assets/Monsters/Demon_Idle/frame_2_delay-0.2s.gif",
+				"res://assets/Monsters/Demon_Idle/frame_3_delay-0.2s.gif",
+				"res://assets/Monsters/Demon_Idle/frame_4_delay-0.2s.gif",
+				"res://assets/Monsters/Demon_Idle/frame_5_delay-0.2s.gif",
+			]
+			atk_paths = [
+				"res://assets/Monsters/Demon_Attack/frame_00_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_01_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_02_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_03_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_04_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_05_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_06_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_07_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_08_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_09_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_10_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_11_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_12_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_13_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_14_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_15_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_16_delay-0.1s.gif",
+				"res://assets/Monsters/Demon_Attack/frame_17_delay-0.2s.gif",
+			]
+
+	for path in idle_paths:
+		var tex := load(path) as Texture2D
+		if tex:
+			frames.add_frame("idle", tex)
+
+	for path in atk_paths:
+		var tex := load(path) as Texture2D
+		if tex:
+			frames.add_frame("attack", tex)
+
+	if frames.get_frame_count("idle") == 0:
+		frames.add_frame("idle", PlaceholderTexture2D.new())
+	if frames.get_frame_count("attack") == 0:
+		frames.add_frame("attack", PlaceholderTexture2D.new())
+
+	return frames
+
+
+func _get_enemy_scale(mon_name: String) -> float:
+	# Scale chosen so enemies appear noticeably larger than the player sprite
+	# (player: 192×192 Tiny Swords at 0.75 = ~144px)
+	match mon_name:
+		"Troll":         return 2.0   # source ~144×80 → 288×160 at 2.0
+		"Jumping Demon": return 2.0   # source ~101×98 → 202×196 at 2.0
+		"Dark Knight":   return 1.8   # source ~128×96 → 230×172 at 1.8
+		"Nightmare":     return 1.8   # source ~160×96 → 288×172 at 1.8
+		"Centaur":       return 1.5   # source ~112×144 → 168×216 at 1.5
+		"Demon":         return 0.85  # source ~256×176 → 217×149 at 0.85
+		_:               return 1.8
 
 
 # ─── Turn management ─────────────────────────────────────────────────────────
@@ -101,6 +344,16 @@ func _enemy_turn() -> void:
 	var new_hp: int = max(int(player["current_hp"]) - damage, 0)
 
 	log_label.text = "%s attacks for %d damage!" % [monster["mon_name"], damage]
+
+	# Enemy attack animation
+	if enemy_anim != null and enemy_anim.sprite_frames != null \
+			and enemy_anim.sprite_frames.has_animation("attack") \
+			and enemy_anim.sprite_frames.get_frame_count("attack") > 0:
+		enemy_anim.play("attack")
+		await enemy_anim.animation_finished
+		if is_instance_valid(enemy_anim):
+			enemy_anim.play("idle")
+
 	DatabaseManager.update_player_hp(new_hp)
 	_refresh_ui()
 
@@ -124,7 +377,7 @@ func _build_skill_buttons() -> void:
 	var player := DatabaseManager.get_player()
 	var class_data := DatabaseManager.get_class_data(player["player_class"])
 	var base_atk: int = int(class_data.get("base_atk", 10))
-	
+
 	for skill in skills:
 		var btn := Button.new()
 		var display_dmg: int = int(float(base_atk) * float(skill["dmg_multiplier"]))
@@ -152,7 +405,7 @@ func _set_skill_buttons_enabled(enabled: bool) -> void:
 func _on_skill_used(skill: Dictionary) -> void:
 	# Prevent double-firing while processing
 	_set_skill_buttons_enabled(false)
-	
+
 	var player := DatabaseManager.get_player()
 
 	var effective_sp_cost: int = int(skill["sp_cost"])
@@ -192,29 +445,37 @@ func _on_skill_used(skill: Dictionary) -> void:
 		var hp_ratio: float = float(player["current_hp"]) / float(player["max_hp"])
 		if hp_ratio <= 0.3:
 			log_msg = "Your Unyielding Spirit is showing! %s deals %d damage!" % [skill["skill_name"], damage]
-			
+
 	# ── Passive: ARCHER — Eagle Eye (25% double strike on NORMAL) ────────────
 	if player["player_class"] == "ARCHER" and (skill["atk_type"] == "NORMAL" or skill["atk_type"] == "SKILL") and randf() < 0.30:
 		damage *= 2
 		log_msg = "Eagle Eye! %s hits TWICE for %d damage!" % [skill["skill_name"], damage]
 
-	enemy_current_hp -= damage
-	log_label.text = log_msg
-
-	# Consume SP (effective cost respects MAGE passive)
+	# Consume SP and ULT before animation plays
 	DatabaseManager.update_player_sp(int(player["current_sp"]) - effective_sp_cost)
-
-	# Update ult points
 	var new_ult: int = clampi(int(player["current_ult_pts"]) + int(skill["ult_pts_mod"]), 0, GameState.ULT_PTS_MAX)
 	DatabaseManager.update_player_ult_pts(new_ult)
+	_refresh_ui()
 
+	# Player attack animation — await completion before applying damage
+	if player_anim != null and player_anim.sprite_frames != null \
+			and player_anim.sprite_frames.has_animation("attack") \
+			and player_anim.sprite_frames.get_frame_count("attack") > 0:
+		player_anim.play("attack")
+		await player_anim.animation_finished
+		if is_instance_valid(player_anim):
+			player_anim.play("idle")
+
+	# Apply damage to enemy
+	enemy_current_hp -= damage
+	log_label.text = log_msg
 	_refresh_ui()
 
 	if enemy_current_hp <= 0:
 		await get_tree().create_timer(0.5).timeout
 		_on_wave_cleared()
 		return
-		
+
 	# ── Check remaining SP — end turn only if out of SP ──────────────────────
 	var updated_player := DatabaseManager.get_player()
 	var can_still_act: bool = false
@@ -496,10 +757,10 @@ func _replace_item(slot_index: int) -> void:
 
 	pending_pot_id = -1
 	pending_pot_name = ""
-	
+
 	await get_tree().create_timer(1.0).timeout
 	log_label.text = ""
-	
+
 # ─── UI refresh ───────────────────────────────────────────────────────────────
 
 func _refresh_ui() -> void:
