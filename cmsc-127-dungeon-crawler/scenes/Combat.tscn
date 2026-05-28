@@ -1,61 +1,70 @@
 [gd_scene format=3 uid="uid://db6l1u0noj56s"]
 
 [ext_resource type="Script" uid="uid://dixbpi4sqmk3t" path="res://scenes/Combat.gd" id="1_combat"]
-[ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_hrlpu"]
-[ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_0qy8o"]
+[ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_font"]
+[ext_resource type="Texture2D" uid="uid://q4jp07crkxgv" path="res://assets/Backgrounds/Combat_Background.png" id="3_bg"]
 
 [node name="Combat" type="Control" unique_id=520126410]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_combat")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1118673826]
-layout_mode = 0
+[node name="Background" type="TextureRect" parent="." unique_id=1118673826]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.08, 0.08, 0.12, 1)
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+metadata/_edit_lock_ = true
 
 [node name="BattleArea" type="HBoxContainer" parent="." unique_id=428515140]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
 anchor_right = 1.0
-anchor_bottom = 0.55
-offset_left = 20.0
+anchor_bottom = 0.58
+offset_left = 15.0
+offset_top = 132.0
 offset_right = -20.0
+offset_bottom = 76.16
 theme_override_constants/separation = 0
 
 [node name="PlayerSide" type="VBoxContainer" parent="BattleArea" unique_id=1348269011]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
-[node name="PlayerSprite" type="ColorRect" parent="BattleArea/PlayerSide" unique_id=1716756212]
+[node name="PlayerSprite" type="Control" parent="BattleArea/PlayerSide" unique_id=1716756212]
 custom_minimum_size = Vector2(130, 180)
 layout_mode = 2
 size_flags_vertical = 3
-color = Color(0.18, 0.32, 0.72, 0.85)
 
 [node name="PlayerNameLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1045863704]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_hrlpu")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
 text = "PLAYER"
 
 [node name="PlayerHPBar" type="ProgressBar" parent="BattleArea/PlayerSide" unique_id=672754199]
-custom_minimum_size = Vector2(0, 18)
+custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 value = 100.0
 show_percentage = false
 
 [node name="PlayerHPLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=462652939]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_hrlpu")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
 text = "HP  -- / --"
 
 [node name="PlayerSPBar" type="ProgressBar" parent="BattleArea/PlayerSide" unique_id=1929142913]
-custom_minimum_size = Vector2(0, 18)
+custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 max_value = 4.0
 value = 4.0
@@ -63,14 +72,14 @@ show_percentage = false
 
 [node name="PlayerSPLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1233722275]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_hrlpu")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
 text = "SP  -- / --"
 
 [node name="UltLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1611326756]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_hrlpu")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
 text = "ULT  0 / 2"
 
 [node name="BattleSpacer" type="Control" parent="BattleArea" unique_id=342857783]
@@ -80,57 +89,61 @@ size_flags_horizontal = 3
 [node name="EnemySide" type="VBoxContainer" parent="BattleArea" unique_id=872093841]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
-[node name="EnemySprite" type="ColorRect" parent="BattleArea/EnemySide" unique_id=1582070422]
-custom_minimum_size = Vector2(130, 180)
+[node name="EnemySprite" type="Control" parent="BattleArea/EnemySide" unique_id=1582070422]
+custom_minimum_size = Vector2(180, 220)
 layout_mode = 2
 size_flags_vertical = 3
-color = Color(0.72, 0.18, 0.18, 0.85)
 
 [node name="EnemyNameLabel" type="Label" parent="BattleArea/EnemySide" unique_id=824051631]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_hrlpu")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
 text = "ENEMY"
 
 [node name="EnemyHPBar" type="ProgressBar" parent="BattleArea/EnemySide" unique_id=211590325]
-custom_minimum_size = Vector2(0, 18)
+custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 value = 100.0
 show_percentage = false
 
 [node name="EnemyHPLabel" type="Label" parent="BattleArea/EnemySide" unique_id=255089021]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_hrlpu")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
 text = "HP  -- / --"
 
-[node name="LogPanel" type="PanelContainer" parent="." unique_id=697454670]
-layout_mode = 0
-anchor_top = 0.55
+[node name="WaveLabel" type="Label" parent="." unique_id=1984936917]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.58
+anchor_right = 1.0
+anchor_bottom = 0.63
+offset_left = 13.0
+offset_top = -99.84
+offset_right = -27.0
+offset_bottom = -99.84
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+
+[node name="LogLabel" type="Label" parent="." unique_id=1764336199]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.63
 anchor_right = 1.0
 anchor_bottom = 0.7
-offset_left = 20.0
-offset_right = -20.0
-
-[node name="VBox" type="VBoxContainer" parent="LogPanel" unique_id=1257084607]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="WaveLabel" type="Label" parent="LogPanel/VBox" unique_id=1984936917]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("3_0qy8o")
-theme_override_font_sizes/font_size = 25
-
-[node name="LogLabel" type="Label" parent="LogPanel/VBox" unique_id=1764336199]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("3_0qy8o")
-theme_override_font_sizes/font_size = 35
+offset_left = 14.0
+offset_top = -210.23999
+offset_right = -26.0
+offset_bottom = -210.23999
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
 
 [node name="SkillContainer" type="HBoxContainer" parent="." unique_id=2055143110]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
 anchor_top = 0.7
 anchor_right = 1.0
 anchor_bottom = 0.87
@@ -151,13 +164,13 @@ theme_override_constants/separation = 16
 [node name="UsePotionButton" type="Button" parent="ActionRow" unique_id=738302309]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("3_0qy8o")
-theme_override_font_sizes/font_size = 35
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 28
 text = "Use Potion"
 
 [node name="FleeButton" type="Button" parent="ActionRow" unique_id=907525033]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("3_0qy8o")
-theme_override_font_sizes/font_size = 35
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 28
 text = "Flee"

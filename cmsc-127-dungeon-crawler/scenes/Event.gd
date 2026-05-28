@@ -51,8 +51,8 @@ func _roll_reward() -> void:
 			return
 
 		var pot_id: int = randi_range(1, 3)
-		var added: bool = DatabaseManager.add_to_inventory(pot_id)
-		if added:
+		var result := DatabaseManager.add_to_inventory(pot_id)
+		if result["success"]:
 			var potion: Dictionary = DatabaseManager.get_potion(pot_id)
 			result_label.text = "You found a %s!" % potion.get("pot_name", "Potion")
 		else:
