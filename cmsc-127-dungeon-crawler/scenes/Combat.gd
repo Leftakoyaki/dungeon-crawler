@@ -262,11 +262,11 @@ func _build_enemy_frames(mon_name: String) -> SpriteFrames:
 				"res://assets/Monsters/Centaur_Idle/centaur4.png",
 			]
 			atk_paths = [
-				"res://assets/Monsters/Centaur_Attack/frame_0.png",
-				"res://assets/Monsters/Centaur_Attack/frame_1.png",
-				"res://assets/Monsters/Centaur_Attack/frame_2.png",
-				"res://assets/Monsters/Centaur_Attack/frame_3.png",
-				"res://assets/Monsters/Centaur_Attack/frame_4.png",
+				"res://assets/Monsters/Centaur_Attack_/00_Untitled design (13).png",
+				"res://assets/Monsters/Centaur_Attack_/01_Untitled design (13).png",
+				"res://assets/Monsters/Centaur_Attack_/02_Untitled design (13).png",
+				"res://assets/Monsters/Centaur_Attack_/04_Untitled design (13).png",
+				"res://assets/Monsters/Centaur_Attack_/05_Untitled design (13).png",
 			]
 		"Demon":
 			idle_paths = [
