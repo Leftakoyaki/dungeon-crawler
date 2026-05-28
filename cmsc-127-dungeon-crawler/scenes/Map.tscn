@@ -45,6 +45,12 @@ theme_override_fonts/font = ExtResource("2_lajc7")
 theme_override_font_sizes/font_size = 35
 text = "ULT --/--"
 
+[node name="PotionLabel" type="Label" parent="StatsBar/HBoxContainer" unique_id=1950530009]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_lajc7")
+theme_override_font_sizes/font_size = 35
+text = "Potions --/--"
+
 [node name="UpgLabel" type="Label" parent="StatsBar/HBoxContainer" unique_id=1859963213]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_lajc7")
