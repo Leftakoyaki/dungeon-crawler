@@ -18,6 +18,12 @@ extends Control
 
 signal replace_popup_closed
 
+# ─── Sprite position tweaks (edit in Inspector on the Combat node) ────────────
+@export var player_sprite_offset: Vector2 = Vector2(0, 0)
+@export var enemy_sprite_offset:  Vector2 = Vector2(0, 0)
+@export var player_sprite_scale:  float   = 0.75
+@export var enemy_sprite_scale:   float   = 1.8   # overrides _get_enemy_scale if > 0; set 0 to use per-monster scale
+
 # ─── Combat state ─────────────────────────────────────────────────────────────
 var enemy_current_hp: int   = 0
 var combat_data: Dictionary = {}
@@ -102,7 +108,7 @@ func _setup_sprites() -> void:
 
 	# ── Enemy ─────────────────────────────────────────────────────────────────
 	var mon_name: String = combat_data["monster"]["mon_name"]
-	var e_scale: float   = _get_enemy_scale(mon_name)
+	var e_scale: float   = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
 
 	enemy_anim = AnimatedSprite2D.new()
 	enemy_anim.sprite_frames = _build_enemy_frames(mon_name)
@@ -115,12 +121,13 @@ func _setup_sprites() -> void:
 	enemy_sprite.add_child(enemy_anim)
 	enemy_anim.play("idle")
 
-	# Wait one frame for layout to settle, then center both sprites in their containers
+	# Wait one frame for layout to settle, then center + apply inspector offsets
 	await get_tree().process_frame
 	if is_instance_valid(player_anim):
-		player_anim.position = player_sprite.size / 2.0
+		player_anim.position = player_sprite.size / 2.0 + player_sprite_offset
+		player_anim.scale    = Vector2(player_sprite_scale, player_sprite_scale)
 	if is_instance_valid(enemy_anim):
-		enemy_anim.position = enemy_sprite.size / 2.0
+		enemy_anim.position = enemy_sprite.size / 2.0 + enemy_sprite_offset
 
 
 func _build_player_frames(player_class: String) -> SpriteFrames:
