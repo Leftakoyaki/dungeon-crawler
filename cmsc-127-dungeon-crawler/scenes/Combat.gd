@@ -333,7 +333,7 @@ func _get_enemy_scale(mon_name: String) -> float:
 		"Dark Knight":   return 2.5   # source ~128×96  → 320×240 at 2.5
 		"Nightmare":     return 2.5   # source ~160×96  → 400×240 at 2.5
 		"Centaur":       return 2.2   # source ~112×144 → 246×317 at 2.2
-		"Demon":         return 4.0   # source 256×176 but heavy transparent padding; 4.0 fills screen
+		"Demon":         return 3.0   # source 256×176 with transparent padding
 		_:               return 2.5
 
 
