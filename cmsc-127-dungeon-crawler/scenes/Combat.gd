@@ -405,6 +405,7 @@ func _build_skill_buttons() -> void:
 	var class_data := DatabaseManager.get_class_data(player["player_class"])
 	var base_atk: int = int(class_data.get("base_atk", 10))
 
+	var alagard := load("res://assets/alagardFont.ttf") as FontFile
 	for skill in skills:
 		var btn := Button.new()
 		var display_dmg: int = int(float(base_atk) * float(skill["dmg_multiplier"]))
@@ -417,6 +418,9 @@ func _build_skill_buttons() -> void:
 		]
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.custom_minimum_size   = Vector2(0, 70)
+		if alagard:
+			btn.add_theme_font_override("font", alagard)
+			btn.add_theme_font_size_override("font_size", 22)
 		# .bind() evaluates skill NOW (current loop value), avoiding closure-capture bug
 		btn.pressed.connect(_on_skill_used.bind(skill))
 		skill_container.add_child(btn)
