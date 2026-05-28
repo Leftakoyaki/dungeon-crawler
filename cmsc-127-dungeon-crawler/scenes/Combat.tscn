@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dixbpi4sqmk3t" path="res://scenes/Combat.gd" id="1_combat"]
 [ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_hrlpu"]
 [ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_0qy8o"]
+[ext_resource type="Texture2D" path="res://assets/Backgrounds/Combat_Background.png" id="4_bg"]
 
 [node name="Combat" type="Control" unique_id=520126410]
 layout_mode = 3
@@ -11,11 +12,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_combat")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1118673826]
+[node name="Background" type="TextureRect" parent="." unique_id=1118673826]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.08, 0.08, 0.12, 1)
+texture = ExtResource("4_bg")
+expand_mode = 1
+stretch_mode = 1
 
 [node name="BattleArea" type="HBoxContainer" parent="." unique_id=428515140]
 layout_mode = 0
