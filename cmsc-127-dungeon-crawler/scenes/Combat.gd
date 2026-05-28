@@ -92,7 +92,6 @@ func _setup_sprites() -> void:
 	# ── Player ────────────────────────────────────────────────────────────────
 	player_anim = AnimatedSprite2D.new()
 	player_anim.sprite_frames = _build_player_frames(player["player_class"])
-	player_anim.position      = Vector2(65, 90)
 	player_anim.scale         = Vector2(0.75, 0.75)
 	player_anim.animation_finished.connect(func():
 		if is_instance_valid(player_anim):
@@ -107,15 +106,21 @@ func _setup_sprites() -> void:
 
 	enemy_anim = AnimatedSprite2D.new()
 	enemy_anim.sprite_frames = _build_enemy_frames(mon_name)
-	enemy_anim.position      = Vector2(90, 110)
 	enemy_anim.scale         = Vector2(e_scale, e_scale)
-	enemy_anim.flip_h        = true   # face left, toward player
+	enemy_anim.flip_h        = _get_enemy_flip(mon_name)
 	enemy_anim.animation_finished.connect(func():
 		if is_instance_valid(enemy_anim):
 			enemy_anim.play("idle")
 	)
 	enemy_sprite.add_child(enemy_anim)
 	enemy_anim.play("idle")
+
+	# Wait one frame for layout to settle, then center both sprites in their containers
+	await get_tree().process_frame
+	if is_instance_valid(player_anim):
+		player_anim.position = player_sprite.size / 2.0
+	if is_instance_valid(enemy_anim):
+		enemy_anim.position = enemy_sprite.size / 2.0
 
 
 func _build_player_frames(player_class: String) -> SpriteFrames:
@@ -312,16 +317,25 @@ func _build_enemy_frames(mon_name: String) -> SpriteFrames:
 
 
 func _get_enemy_scale(mon_name: String) -> float:
-	# Scale chosen so enemies appear noticeably larger than the player sprite
-	# (player: 192×192 Tiny Swords at 0.75 = ~144px)
+	# All regular monsters match Nightmare's visual size.
+	# Demon source is much larger (256×176) so a lower scale still looks big.
 	match mon_name:
-		"Troll":         return 2.0   # source ~144×80 → 288×160 at 2.0
-		"Jumping Demon": return 2.0   # source ~101×98 → 202×196 at 2.0
-		"Dark Knight":   return 1.8   # source ~128×96 → 230×172 at 1.8
-		"Nightmare":     return 1.8   # source ~160×96 → 288×172 at 1.8
-		"Centaur":       return 1.5   # source ~112×144 → 168×216 at 1.5
-		"Demon":         return 0.85  # source ~256×176 → 217×149 at 0.85
+		"Troll":         return 1.8
+		"Jumping Demon": return 1.8
+		"Dark Knight":   return 1.8
+		"Nightmare":     return 1.8
+		"Centaur":       return 1.8
+		"Demon":         return 1.1   # source ~256×176; 1.1 → ~282×194, visibly larger
 		_:               return 1.8
+
+
+func _get_enemy_flip(mon_name: String) -> bool:
+	# true  = flip_h  → sprite faces LEFT  (toward player)
+	# false = no flip → sprite faces RIGHT (away from player, use for sprites already facing left)
+	match mon_name:
+		"Nightmare": return false  # source already faces left
+		"Centaur":   return false  # source already faces left
+		_:           return true
 
 
 # ─── Turn management ─────────────────────────────────────────────────────────
