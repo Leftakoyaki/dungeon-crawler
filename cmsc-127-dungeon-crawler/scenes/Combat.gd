@@ -19,7 +19,7 @@ extends Control
 signal replace_popup_closed
 # Sprite for the ULT
 @onready var ult_label = $BattleArea/PlayerSide/UltRow/UltLabel
-@onready var ult_sprite = $BattleArea/PlayerSide/UltRow/UltSprite
+@onready var ult_sprite: TextureRect = $UltSprite
 
 # Hardcode the textures so you don't have to use the Inspector
 # (Double-check that the res:// paths match your project structure)
@@ -27,6 +27,23 @@ var ult_emptyULT_tex = preload("res://SPBarBlank.png")
 var ult_halfULT_tex  = preload("res://SPBarBlank1.png")
 var ult_fullULT_tex  = preload("res://SPBarBlank2.png")
 
+@onready var sp_sprite: TextureRect = $SPSprite
+var sp_textures: Dictionary = {}
+
+func _setup_sp_textures() -> void:
+	var paths = {
+		0: "res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/SP0.png",
+		1: "res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/SP1.png",
+		2: "res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/SP2.png",
+		3: "res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/SP3.png",
+		4: "res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/SP4.png",
+		5: "res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/SP5.png",
+	}
+	for i in range(6):
+		var at := AtlasTexture.new()
+		at.atlas  = load(paths[i])
+		at.region = Rect2(0, 0, 32, 16)
+		sp_textures[i] = at
 
 # Creates slots in the Inspector for your 3 images
 @export var ult_empty_tex: Texture2D
@@ -53,7 +70,6 @@ var enemy_anim:  AnimatedSprite2D = null
 @onready var player_name_label: Label        = $BattleArea/PlayerSide/PlayerNameLabel
 @onready var player_hp_bar:     TextureProgressBar  = $BattleArea/PlayerSide/PlayerHPBar
 @onready var player_hp_label:   Label        = $BattleArea/PlayerSide/PlayerHPLabel
-@onready var player_sp_bar:     ProgressBar  = $BattleArea/PlayerSide/PlayerSPBar
 @onready var player_sp_label:   Label        = $BattleArea/PlayerSide/PlayerSPLabel
 
 
@@ -70,6 +86,7 @@ var enemy_anim:  AnimatedSprite2D = null
 @onready var use_potion_btn:  Button        = $ActionRow/UsePotionButton
 @onready var flee_btn:        Button        = $ActionRow/FleeButton
 
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		GameState.update_cursor(event.pressed)
@@ -77,7 +94,11 @@ func _input(event: InputEvent) -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	combat_data = DatabaseManager.get_combat_data(GameState.current_node_id)
-
+	_setup_sp_textures()
+	sp_sprite.position = Vector2(124, 398)
+	sp_sprite.stretch_mode = TextureRect.STRETCH_SCALE
+	sp_sprite.set_deferred("size", Vector2(90, 40))
+	
 	if combat_data.is_empty():
 		push_error("Combat: no combat data for node %d." % GameState.current_node_id)
 		return
@@ -107,7 +128,6 @@ func _ready() -> void:
 	_update_ult_ui(current_points, max_points)
 	
 func _update_ult_ui(current_ult: int, max_ult: int) -> void:
-	print("--- UI UPDATE TRIGGERED | Points: ", current_ult, " ---")
 	
 	ult_label.text = "ULT %d / %d" % [current_ult, max_ult]
 	
@@ -119,6 +139,9 @@ func _update_ult_ui(current_ult: int, max_ult: int) -> void:
 		2:
 			ult_sprite.texture = ult_full_tex
 	ult_sprite.show()
+func _update_sp_ui(current_sp: int) -> void:
+	print("SP UI update: ", current_sp, " texture: ", sp_textures.get(current_sp))
+	sp_sprite.texture = sp_textures.get(current_sp, sp_textures[0])
 # ─── Sprite setup ─────────────────────────────────────────────────────────────
 func _setup_sprites() -> void:
 	var player := DatabaseManager.get_player()
@@ -849,10 +872,10 @@ func _refresh_ui() -> void:
 		player_hp_bar.max_value = int(player["max_hp"])
 		player_hp_bar.value     = int(player["current_hp"])
 		player_hp_label.text    = "HP  %d / %d" % [player["current_hp"], player["max_hp"]]
-		player_sp_bar.max_value = int(player["max_sp"])
-		player_sp_bar.value     = int(player["current_sp"])
 		player_sp_label.text    = "SP  %d / %d" % [player["current_sp"], player["max_sp"]]
+		_update_sp_ui(int(player["current_sp"]))
 		_update_ult_ui(int(player["current_ult_pts"]), GameState.ULT_PTS_MAX)
+		
 		#player_ult_label.text   = "ULT  %d / %d" % [player["current_ult_pts"], GameState.ULT_PTS_MAX]
 	if not monster.is_empty():
 		enemy_name_label.text  = "%s  [%s]" % [monster["mon_name"], monster["monster_type"]]

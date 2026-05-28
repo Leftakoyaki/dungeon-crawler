@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bnahqf23fg4q1" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/HpBar.png" id="4_tp2sa"]
 [ext_resource type="Texture2D" uid="uid://1nyb76j72o82" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/BigBarspace (1).png" id="5_akg4l"]
 [ext_resource type="Texture2D" uid="uid://co1y6ypxc5kgm" path="res://SPBarBlank.png" id="6_akg4l"]
+[ext_resource type="Texture2D" uid="uid://bh4ftveojxm7w" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/SP5.png" id="9_3q7sh"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3q7sh"]
 atlas = ExtResource("6_akg4l")
@@ -33,7 +34,12 @@ region = Rect2(40, 8, 240, 48)
 atlas = ExtResource("6_akg4l")
 region = Rect2(-8, 176, 40, 16)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_felwx"]
+atlas = ExtResource("9_3q7sh")
+region = Rect2(0, 0, 32, 16)
+
 [node name="Combat" type="Control" unique_id=520126410]
+custom_minimum_size = Vector2(300, 50)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -99,13 +105,6 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 22
 text = "HP  -- / --"
-
-[node name="PlayerSPBar" type="ProgressBar" parent="BattleArea/PlayerSide" unique_id=1929142913]
-custom_minimum_size = Vector2(0, 14)
-layout_mode = 2
-max_value = 4.0
-value = 4.0
-show_percentage = false
 
 [node name="PlayerSPLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1233722275]
 layout_mode = 2
@@ -230,10 +229,21 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.054
 anchor_bottom = 0.5
-offset_left = 131.0
-offset_top = 458.0
-offset_right = 310.792
-offset_bottom = 174.0
+offset_left = 140.0
+offset_top = 425.0
+offset_right = 315.792
+offset_bottom = 137.0
 texture = SubResource("AtlasTexture_mak3c")
 expand_mode = 1
 stretch_mode = 4
+
+[node name="SPSprite" type="TextureRect" parent="." unique_id=2146795095]
+clip_contents = true
+custom_minimum_size = Vector2(90, 30)
+layout_mode = 0
+offset_left = 146.0
+offset_top = 398.0
+offset_right = 236.0
+offset_bottom = 438.0
+texture = SubResource("AtlasTexture_felwx")
+expand_mode = 1
