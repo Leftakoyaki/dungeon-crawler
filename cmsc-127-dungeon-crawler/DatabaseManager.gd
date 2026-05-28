@@ -298,12 +298,12 @@ func _seed_skill_upgrades() -> void:
 
 func _seed_monsters() -> void:
 	var rows := [
-		{"monster_id": 1, "mon_name": "Goblin",      "max_hp": 45,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
-		{"monster_id": 2, "mon_name": "Skeleton",    "max_hp": 35,  "attack_power": 12, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
-		{"monster_id": 3, "mon_name": "Imp",         "max_hp": 40,  "attack_power": 10, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
-		{"monster_id": 4, "mon_name": "Dark Knight", "max_hp": 110, "attack_power": 18, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
-		{"monster_id": 5, "mon_name": "Troll",       "max_hp": 85,  "attack_power": 24, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
-		{"monster_id": 6, "mon_name": "Dragon",      "max_hp": 200, "attack_power": 25, "monster_type": "BOSS",   "pot_drop_chance": 0.00, "upg_point_chance": 0.00},
+		{"monster_id": 1, "mon_name": "Troll",          "max_hp": 45,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
+		{"monster_id": 2, "mon_name": "Jumping Demon", "max_hp": 35,  "attack_power": 12, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
+		{"monster_id": 3, "mon_name": "Dark Knight",   "max_hp": 40,  "attack_power": 10, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
+		{"monster_id": 4, "mon_name": "Nightmare",     "max_hp": 110, "attack_power": 18, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
+		{"monster_id": 5, "mon_name": "Centaur",       "max_hp": 85,  "attack_power": 24, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
+		{"monster_id": 6, "mon_name": "Demon",         "max_hp": 200, "attack_power": 25, "monster_type": "BOSS",   "pot_drop_chance": 0.00, "upg_point_chance": 0.00},
 	]
 	for row in rows:
 		db.insert_row("Monsters", row)
