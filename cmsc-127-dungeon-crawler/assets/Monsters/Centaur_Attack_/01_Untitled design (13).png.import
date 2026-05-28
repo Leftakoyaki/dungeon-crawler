@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bxm5cpt2yij7x"
-path="res://.godot/imported/frame_2.png-30e1f21a9be0d9cd62e084a86cd831b6.ctex"
+uid="uid://drplgrftt4qpi"
+path="res://.godot/imported/01_Untitled design (13).png-706bc9b079fa60910919ca607de41243.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Monsters/Centaur_Attack/frame_2.png"
-dest_files=["res://.godot/imported/frame_2.png-30e1f21a9be0d9cd62e084a86cd831b6.ctex"]
+source_file="res://assets/Monsters/Centaur_Attack_/01_Untitled design (13).png"
+dest_files=["res://.godot/imported/01_Untitled design (13).png-706bc9b079fa60910919ca607de41243.ctex"]
 
 [params]
 
