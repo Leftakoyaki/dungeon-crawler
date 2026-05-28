@@ -191,28 +191,25 @@ func _reposition_sprites() -> void:
 		var e_scale: float   = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
 		enemy_anim.position = anchor + size / 2.0 + enemy_sprite_offset
 		enemy_anim.scale    = Vector2(e_scale, e_scale)
-
-
-func _play_effect(path_pattern: String, frame_count: int) -> void:
+		
+		
+func _play_effect(path_pattern: String, frame_count: int, start_index: int = 1, scale_factor: float = 3.0, offset: Vector2 = Vector2.ZERO) -> void:
 	var effect := AnimatedSprite2D.new()
 	var frames := SpriteFrames.new()
 	frames.remove_animation("default")
 	frames.add_animation("play")
 	frames.set_animation_loop("play", false)
 	frames.set_animation_speed("play", 12.0)
-
-	for i in range(1, frame_count + 1):
+	for i in range(start_index, frame_count + start_index):
 		var tex := load(path_pattern % i) as Texture2D
 		if tex:
 			frames.add_frame("play", tex)
-
 	if frames.get_frame_count("play") == 0:
 		push_error("_play_effect: No frames loaded from %s" % path_pattern)
 		return
-
 	effect.sprite_frames = frames
-	effect.position = enemy_anim.global_position if is_instance_valid(enemy_anim) else Vector2(800, 300)
-	effect.scale = Vector2(3.0, 3.0)
+	effect.position = (enemy_anim.global_position if is_instance_valid(enemy_anim) else Vector2(800, 300)) + offset
+	effect.scale = Vector2(scale_factor, scale_factor)
 	effect.z_index = 10
 	add_child(effect)
 	effect.play("play")
@@ -220,26 +217,23 @@ func _play_effect(path_pattern: String, frame_count: int) -> void:
 	effect.queue_free()
 
 
-func _play_effect_no_await(path_pattern: String, frame_count: int) -> void:
+func _play_effect_no_await(path_pattern: String, frame_count: int, start_index: int = 1, scale_factor: float = 3.0, offset: Vector2 = Vector2.ZERO) -> void:
 	var effect := AnimatedSprite2D.new()
 	var frames := SpriteFrames.new()
 	frames.remove_animation("default")
 	frames.add_animation("play")
 	frames.set_animation_loop("play", false)
 	frames.set_animation_speed("play", 12.0)
-
-	for i in range(1, frame_count + 1):
+	for i in range(start_index, frame_count + start_index):
 		var tex := load(path_pattern % i) as Texture2D
 		if tex:
 			frames.add_frame("play", tex)
-
 	if frames.get_frame_count("play") == 0:
 		push_error("_play_effect_no_await: No frames loaded from %s" % path_pattern)
 		return
-
 	effect.sprite_frames = frames
-	effect.position = enemy_anim.global_position if is_instance_valid(enemy_anim) else Vector2(800, 300)
-	effect.scale = Vector2(3.0, 3.0)
+	effect.position = (enemy_anim.global_position if is_instance_valid(enemy_anim) else Vector2(800, 300)) + offset
+	effect.scale = Vector2(scale_factor, scale_factor)
 	effect.z_index = 10
 	add_child(effect)
 	effect.play("play")
@@ -622,6 +616,21 @@ func _on_skill_used(skill: Dictionary) -> void:
 		_play_effect_no_await("res://assets/HolySlash_A/Frames/HolySlash_A_%02d.png", 5)
 		_play_effect_no_await("res://assets/HolySlash_B/Frames/HolySlash_B_%02d.png", 4)
 		await _play_effect("res://assets/HolySlash_C/Frames/HolySlash_C_%02d.png", 7)
+		
+	if player["player_class"] == "MAGE" and skill["atk_type"] == "NORMAL":
+		_play_effect_no_await("res://assets/Wizard/Effect_FastPixelFire/60fps/Frames/Effect_FastPixelFire_1/Effect_FastPixelFire_1_%03d.png", 59, 0, 1.0)
+		await _play_effect("res://assets/Wizard/Effect_DitheredFire/30fps/Frames/Effect_DitheredFire_1/Effect_DitheredFire_1_%03d.png", 29, 0, 1.0, Vector2(0, 50))
+	
+	if player["player_class"] == "MAGE" and skill["atk_type"] == "SKILL":
+		_play_effect_no_await("res://assets/Wizard/Effect_Impact/30fps/Frames/Effect_Impact_1/Effect_Impact_1_%03d.png", 29, 0, 1.0)
+		_play_effect_no_await("res://assets/Wizard/Effect_SmallHit/30fps/Frames/Effect_SmallHit_1/Effect_SmallHit_1_%03d.png", 29, 0, 1.0)
+		await _play_effect("res://assets/Wizard/Effect_PuffAndStars/30fps/Frames/Effect_PuffAndStars_1/Effect_PuffAndStars_1_%03d.png", 39, 0, 1.0)
+	
+	if player["player_class"] == "MAGE" and skill["atk_type"] == "ULTIMATE":
+		_play_effect_no_await("res://assets/Wizard/Effect_Constellation/30fps/Frames/Effect_Constellation_1/Effect_Constellation_1_%03d.png", 29, 0, 1.0)
+		_play_effect_no_await("res://assets/Wizard/Effect_TheVortex/30fps/Frames/Effect_TheVortex_1/Effect_TheVortex_1_%03d.png", 29, 0, 1.0)
+		_play_effect_no_await("res://assets/Wizard/Effect_ElectricShield/30fps/Frames/Effect_ElectricShield_1/Effect_ElectricShield_1_%03d.png", 29, 0, 1.0)
+		await _play_effect("res://assets/Wizard/Effect_Explosion2/30fps/Frames/Effect_Explosion2_1/Effect_Explosion2_1_%03d.png", 29, 0, 1.0)
 		
 	# Apply damage to enemy
 	enemy_current_hp -= damage
