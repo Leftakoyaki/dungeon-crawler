@@ -179,15 +179,11 @@ func _setup_sprites() -> void:
 
 	_reposition_sprites.call_deferred()
 
-
 func _reposition_sprites() -> void:
-
-	
 	if is_instance_valid(player_anim):
 		var anchor: Vector2 = player_sprite.global_position
 		var size: Vector2   = player_sprite.size
 		player_anim.position = anchor + size / 2.0 + player_sprite_offset
-
 	if is_instance_valid(enemy_anim):
 		var anchor: Vector2 = enemy_sprite.global_position
 		var size: Vector2   = enemy_sprite.size
@@ -195,6 +191,60 @@ func _reposition_sprites() -> void:
 		var e_scale: float   = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
 		enemy_anim.position = anchor + size / 2.0 + enemy_sprite_offset
 		enemy_anim.scale    = Vector2(e_scale, e_scale)
+
+
+func _play_effect(path_pattern: String, frame_count: int) -> void:
+	var effect := AnimatedSprite2D.new()
+	var frames := SpriteFrames.new()
+	frames.remove_animation("default")
+	frames.add_animation("play")
+	frames.set_animation_loop("play", false)
+	frames.set_animation_speed("play", 12.0)
+
+	for i in range(1, frame_count + 1):
+		var tex := load(path_pattern % i) as Texture2D
+		if tex:
+			frames.add_frame("play", tex)
+
+	if frames.get_frame_count("play") == 0:
+		push_error("_play_effect: No frames loaded from %s" % path_pattern)
+		return
+
+	effect.sprite_frames = frames
+	effect.position = enemy_anim.global_position if is_instance_valid(enemy_anim) else Vector2(800, 300)
+	effect.scale = Vector2(3.0, 3.0)
+	effect.z_index = 10
+	add_child(effect)
+	effect.play("play")
+	await effect.animation_finished
+	effect.queue_free()
+
+
+func _play_effect_no_await(path_pattern: String, frame_count: int) -> void:
+	var effect := AnimatedSprite2D.new()
+	var frames := SpriteFrames.new()
+	frames.remove_animation("default")
+	frames.add_animation("play")
+	frames.set_animation_loop("play", false)
+	frames.set_animation_speed("play", 12.0)
+
+	for i in range(1, frame_count + 1):
+		var tex := load(path_pattern % i) as Texture2D
+		if tex:
+			frames.add_frame("play", tex)
+
+	if frames.get_frame_count("play") == 0:
+		push_error("_play_effect_no_await: No frames loaded from %s" % path_pattern)
+		return
+
+	effect.sprite_frames = frames
+	effect.position = enemy_anim.global_position if is_instance_valid(enemy_anim) else Vector2(800, 300)
+	effect.scale = Vector2(3.0, 3.0)
+	effect.z_index = 10
+	add_child(effect)
+	effect.play("play")
+	effect.animation_finished.connect(effect.queue_free)
+
 func _build_player_frames(player_class: String) -> SpriteFrames:
 	var frames := SpriteFrames.new()
 	frames.remove_animation("default")
@@ -501,9 +551,7 @@ func _set_skill_buttons_enabled(enabled: bool) -> void:
 func _on_skill_used(skill: Dictionary) -> void:
 	# Prevent double-firing while processing
 	_set_skill_buttons_enabled(false)
-
 	var player := DatabaseManager.get_player()
-
 	var effective_sp_cost: int = int(skill["sp_cost"])
 
 	# Validation
@@ -520,7 +568,7 @@ func _on_skill_used(skill: Dictionary) -> void:
 	var class_data: Dictionary = DatabaseManager.get_class_data(player["player_class"])
 	var base_atk: int = int(class_data.get("base_atk", 10))
 
-	# ── Passive: WARRIOR — Unyielding Spirit (1.5x ATK boost at 30% HP) ─────────
+	# ── Passive: WARRIOR — Unyielding Spirit (1.5x ATK boost at 30% HP) ──────
 	if player["player_class"] == "WARRIOR":
 		var hp_ratio: float = float(player["current_hp"]) / float(player["max_hp"])
 		if hp_ratio <= 0.3:
@@ -536,7 +584,7 @@ func _on_skill_used(skill: Dictionary) -> void:
 
 	var log_msg: String = "You used %s for %d damage!" % [skill["skill_name"], damage]
 
-# ── Override log if Warrior Bloodlust is active ───────────────────────────
+	# ── Override log if Warrior Unyielding Spirit is active ───────────────────
 	if player["player_class"] == "WARRIOR":
 		var hp_ratio: float = float(player["current_hp"]) / float(player["max_hp"])
 		if hp_ratio <= 0.3:
@@ -553,7 +601,7 @@ func _on_skill_used(skill: Dictionary) -> void:
 	DatabaseManager.update_player_ult_pts(new_ult)
 	_refresh_ui()
 
-	# Player attack animation — await completion before applying damage
+	# Player attack animation
 	if player_anim != null and player_anim.sprite_frames != null \
 			and player_anim.sprite_frames.has_animation("attack") \
 			and player_anim.sprite_frames.get_frame_count("attack") > 0:
@@ -562,6 +610,19 @@ func _on_skill_used(skill: Dictionary) -> void:
 		if is_instance_valid(player_anim):
 			player_anim.play("idle")
 
+	# ── Skill effects ─────────────────────────────────────────────────────────
+	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "SKILL":
+		await _play_effect("res://assets/SwordOfJustice/Frames/SwordOfJustice_%02d.png", 13)
+
+	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "ULTIMATE":
+		_play_effect_no_await("res://assets/HeavensFury/Frames/HeavensFury_%02d.png", 12)
+		await _play_effect("res://assets/HolyNova/Frames/HolyNova_%02d.png", 10)
+	
+	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "NORMAL":
+		_play_effect_no_await("res://assets/HolySlash_A/Frames/HolySlash_A_%02d.png", 5)
+		_play_effect_no_await("res://assets/HolySlash_B/Frames/HolySlash_B_%02d.png", 4)
+		await _play_effect("res://assets/HolySlash_C/Frames/HolySlash_C_%02d.png", 7)
+		
 	# Apply damage to enemy
 	enemy_current_hp -= damage
 	log_label.text = log_msg
@@ -572,7 +633,7 @@ func _on_skill_used(skill: Dictionary) -> void:
 		_on_wave_cleared()
 		return
 
-	# ── Check remaining SP — end turn only if out of SP ──────────────────────
+	# ── Check remaining SP ────────────────────────────────────────────────────
 	var updated_player := DatabaseManager.get_player()
 	var can_still_act: bool = false
 	var current_skills := DatabaseManager.get_player_skills()
@@ -586,10 +647,9 @@ func _on_skill_used(skill: Dictionary) -> void:
 		DatabaseManager.reset_player_sp()
 		_end_player_turn()
 	else:
-		# Re-enable buttons only if player can still act
 		_set_skill_buttons_enabled(true)
 
-
+	
 # ─── Wave management ──────────────────────────────────────────────────────────
 
 func _on_wave_cleared() -> void:
