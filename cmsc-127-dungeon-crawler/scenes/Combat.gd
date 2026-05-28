@@ -107,8 +107,9 @@ func _setup_sprites() -> void:
 	player_anim.play("idle")
 
 	# ── Enemy ─────────────────────────────────────────────────────────────────
-	var mon_name: String = combat_data["monster"]["mon_name"]
-	var e_scale: float   = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
+	var mon_name: String  = combat_data["monster"]["mon_name"]
+	var e_scale: float    = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
+	var e_scale_final: float = e_scale  # captured for use after await
 
 	enemy_anim = AnimatedSprite2D.new()
 	enemy_anim.sprite_frames = _build_enemy_frames(mon_name)
@@ -128,6 +129,7 @@ func _setup_sprites() -> void:
 		player_anim.scale    = Vector2(player_sprite_scale, player_sprite_scale)
 	if is_instance_valid(enemy_anim):
 		enemy_anim.position = enemy_sprite.size / 2.0 + enemy_sprite_offset
+		enemy_anim.scale    = Vector2(e_scale_final, e_scale_final)
 
 
 func _build_player_frames(player_class: String) -> SpriteFrames:
@@ -331,7 +333,7 @@ func _get_enemy_scale(mon_name: String) -> float:
 		"Dark Knight":   return 2.5   # source ~128×96  → 320×240 at 2.5
 		"Nightmare":     return 2.5   # source ~160×96  → 400×240 at 2.5
 		"Centaur":       return 2.2   # source ~112×144 → 246×317 at 2.2
-		"Demon":         return 1.5   # source ~256×176 → 384×264 at 1.5 — imposing boss
+		"Demon":         return 4.0   # source 256×176 but heavy transparent padding; 4.0 fills screen
 		_:               return 2.5
 
 
