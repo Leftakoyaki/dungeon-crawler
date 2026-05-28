@@ -1,12 +1,17 @@
 [gd_scene format=3 uid="uid://dnyb67fp88g63"]
 
+[ext_resource type="Theme" uid="uid://cdob8vee7nbdm" path="res://assets/Upgrade_theme.tres" id="1_guyw0"]
 [ext_resource type="Script" uid="uid://dqe2f4p2crfm5" path="res://scenes/Rest.gd" id="1_rest"]
+[ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_guyw0"]
 
 [node name="Rest" type="Control" unique_id=1575958272]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_guyw0")
 script = ExtResource("1_rest")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1171162150]
@@ -24,6 +29,7 @@ theme_override_constants/separation = 20
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1390120058]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_guyw0")
 text = "Rest Site"
 horizontal_alignment = 1
 
