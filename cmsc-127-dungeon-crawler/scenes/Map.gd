@@ -226,7 +226,6 @@ func _stage_icon(stage: String) -> String:
 # ─── Draw connection lines ────────────────────────────────────────────────────
 # ─── Draw connection lines (Line2D Approach) ──────────────────────────────────
 # ─── Draw connection lines (Straight Line2D Approach) ─────────────────────────
-
 func _build_connection_lines() -> void:
 	var reachable: Array = _get_reachable_ids()
 
@@ -240,24 +239,37 @@ func _build_connection_lines() -> void:
 		var p0: Vector2 = node_positions[a]
 		var p3: Vector2 = node_positions[b]
 		
-		# Check if this is an active path available to the player
 		var is_active = (a == GameState.current_node_id and b in reachable)
 		
-		# Set colors based on your original logic
 		var line_color: Color = Color(0.95, 0.85, 0.10, 1.0) if is_active else Color(0.32, 0.32, 0.32, 1.0)
 		var line_width: float = 3.0 if is_active else 2.0
 
-		_create_straight_line2d(p0, p3, line_color, line_width)
+		_create_bezier_line2d(p0, p3, line_color, line_width)
 
 
-func _create_straight_line2d(start_pos: Vector2, end_pos: Vector2, color: Color, width: float) -> void:
+func _create_bezier_line2d(p0: Vector2, p3: Vector2, color: Color, width: float) -> void:
 	var line := Line2D.new()
 	line.width = width
 	line.default_color = color
-	
-	# For a straight line, just add the start and end points directly
-	line.add_point(start_pos)
-	line.add_point(end_pos)
+	# dont use z_index it puts the line behind the background
+
+	var dist: float = abs(p3.y - p0.y)
+	var pull: float = dist * 0.45
+
+	var p1: Vector2 = p0 + Vector2(0.0,  pull)
+	var p2: Vector2 = p3 + Vector2(0.0, -pull)
+
+	var steps: int = 20
+	for i in range(steps + 1):
+		var t: float = float(i) / float(steps)
+		var nt: float = 1.0 - t
+		var pt: Vector2 = (
+			nt * nt * nt        * p0 +
+			3.0 * nt * nt * t   * p1 +
+			3.0 * nt * t  * t   * p2 +
+			t  * t  * t         * p3
+		)
+		line.add_point(pt)
 		
 	add_child(line)
 
