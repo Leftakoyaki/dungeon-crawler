@@ -30,8 +30,16 @@ func _ready() -> void:
 	# Connect signals
 	new_game_btn.mouse_entered.connect(func(): is_hovering = true)
 	new_game_btn.mouse_exited.connect(_reset_button_position)
-	new_game_btn.button_down.connect(func(): is_pressing_new_game = true)
-	new_game_btn.button_up.connect(func(): is_pressing_new_game = false)
+	
+	# --- ADDED SCRAPE SOUND TRIGGERS HERE ---
+	new_game_btn.button_down.connect(func(): 
+		is_pressing_new_game = true
+		MusicManager.start_scrape()
+	)
+	new_game_btn.button_up.connect(func(): 
+		is_pressing_new_game = false
+		MusicManager.stop_scrape()
+	)
 	
 	_connect_press_scale(new_game_btn)
 	_connect_press_scale(continue_btn)
@@ -47,15 +55,17 @@ func _ready() -> void:
 	continue_btn.disabled = DatabaseManager.get_player().is_empty()
 
 func _connect_press_scale(btn: TextureButton) -> void:
-	btn.button_down.connect(func(): btn.scale = Vector2(1.2, 1.2))
+	# --- ADDED CLICK SOUND TRIGGER HERE ---
+	btn.button_down.connect(func(): 
+		btn.scale = Vector2(1.2, 1.2)
+		MusicManager.play_click()
+	)
 	btn.button_up.connect(func(): btn.scale = Vector2(1.0, 1.0))
+
 func _process(delta: float) -> void:
 	hover_time += delta
 	
 	# 1. Floating Logic (Always runs, even when dying!)
-	# We move this OUTSIDE the "is_dying" check
-	
-	# New Game button float logic (only if NOT pressing)
 	if not is_pressing_new_game:
 		if is_hovering:
 			new_game_btn.position.y = original_pos_new.y + (sin(hover_time * 5.0) * 10.0)
@@ -77,9 +87,15 @@ func _process(delta: float) -> void:
 			_play_death_sequence()
 	else:
 		new_game_btn.scale.x = 1.0
+
 func _play_death_sequence() -> void:
 	if is_dying: return
 	is_dying = true
+	
+	# --- ADDED DEATH SOUND AND STOPPED SCRAPE HERE ---
+	MusicManager.stop_scrape()
+	MusicManager.play_death()
+	
 	lancer.play("death")
 	
 	# Show the button and force its initial Y position to prevent a "jump"
@@ -103,8 +119,10 @@ func _on_quit_btn_mouse_entered() -> void:
 	quit_btn.position = Vector2(random_x, random_y)
 
 func _on_new_game_pressed() -> void: pass 
+
 func _on_continue_pressed() -> void:
 	GameState.sync_from_db()
 	get_tree().change_scene_to_file("res://scenes/Map.tscn")
+
 func _on_quit_pressed() -> void:
 	get_tree().quit()

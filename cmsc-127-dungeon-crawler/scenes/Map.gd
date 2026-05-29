@@ -43,9 +43,17 @@ func _ready() -> void:
 	_refresh_stats()
 	_build_connection_lines()
 	_build_node_buttons()
+	
 	upgrade_btn.pressed.connect(_on_upgrade_pressed)
+	
+	# --- ADDED: Hook up click sound to the upgrade button ---
+	_connect_click_sound(upgrade_btn)
+	
 	queue_redraw()
 
+# --- ADDED: Helper function to trigger click SFX ---
+func _connect_click_sound(btn: BaseButton) -> void:
+	btn.button_down.connect(func(): MusicManager.play_click())
 
 func _on_upgrade_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/UpgradeScreen.tscn")
@@ -174,7 +182,7 @@ func _build_node_buttons() -> void:
 		btn.position = pos - NODE_BTN_SIZE * 0.5
 
 
-# Create a Label to hold the emoji/number
+		# Create a Label to hold the emoji/number
 		var lbl := Label.new()
 		lbl.text = _node_label(node_id, stage, int(data.get("is_cleared", 0)) == 1)
 		
@@ -196,6 +204,10 @@ func _build_node_buttons() -> void:
 			btn.modulate = Color(0.3, 0.3, 0.3) # Disabled/Greyed out
 
 		btn.pressed.connect(func(): _travel_to(node_id))
+		
+		# --- ADDED: Hook up click sound to each map node dynamically ---
+		_connect_click_sound(btn)
+		
 		add_child(btn)
 
 

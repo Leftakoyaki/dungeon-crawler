@@ -27,11 +27,21 @@ func _input(event: InputEvent) -> void:
 
 
 func _ready() -> void:
+	# --- ADDED: Play Menu Music ---
+	MusicManager.play_menu()
+	
 	mage_btn.pressed.connect(func(): _select_class("MAGE"))
 	warrior_btn.pressed.connect(func(): _select_class("WARRIOR"))
 	archer_btn.pressed.connect(func(): _select_class("ARCHER"))
 	confirm_btn.pressed.connect(_on_confirm_pressed)
 	back_btn.pressed.connect(_on_back_pressed)
+	
+	# --- ADDED: Hook up click sounds to all buttons ---
+	_connect_click_sound(mage_btn)
+	_connect_click_sound(warrior_btn)
+	_connect_click_sound(archer_btn)
+	_connect_click_sound(confirm_btn)
+	_connect_click_sound(back_btn)
 
 	# Hover effects
 	mage_btn.mouse_entered.connect(func(): mage_btn.modulate = Color(0.5, 0.5, 0.5))
@@ -49,6 +59,11 @@ func _ready() -> void:
 	mage_sprite.play("idle")
 	warrior_sprite.play("idle")
 	archer_sprite.play("idle")
+
+
+# --- ADDED: Helper function to trigger click SFX ---
+func _connect_click_sound(btn: BaseButton) -> void:
+	btn.button_down.connect(func(): MusicManager.play_click())
 
 
 func _select_class(cls: String) -> void:
