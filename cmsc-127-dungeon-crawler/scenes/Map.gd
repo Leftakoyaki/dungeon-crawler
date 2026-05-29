@@ -40,6 +40,7 @@ func _ready() -> void:
 	_calculate_positions()
 	_load_all_nodes()
 	_refresh_stats()
+	_build_connection_lines()
 	_build_node_buttons()
 	upgrade_btn.pressed.connect(_on_upgrade_pressed)
 	queue_redraw()
@@ -223,46 +224,42 @@ func _stage_icon(stage: String) -> String:
 
 
 # ─── Draw connection lines ────────────────────────────────────────────────────
+# ─── Draw connection lines (Line2D Approach) ──────────────────────────────────
+# ─── Draw connection lines (Straight Line2D Approach) ─────────────────────────
 
-func _draw() -> void:
+func _build_connection_lines() -> void:
 	var reachable: Array = _get_reachable_ids()
 
 	for conn in CONNECTIONS:
 		var a: int = conn[0]
 		var b: int = conn[1]
+		
 		if not (node_positions.has(a) and node_positions.has(b)):
 			continue
 
 		var p0: Vector2 = node_positions[a]
 		var p3: Vector2 = node_positions[b]
+		
+		# Check if this is an active path available to the player
+		var is_active = (a == GameState.current_node_id and b in reachable)
+		
+		# Set colors based on your original logic
+		var line_color: Color = Color(0.95, 0.85, 0.10, 1.0) if is_active else Color(0.32, 0.32, 0.32, 1.0)
+		var line_width: float = 3.0 if is_active else 2.0
 
-		if a == GameState.current_node_id and b in reachable:
-			_draw_bezier_cubic(p0, p3, Color(0.95, 0.85, 0.10, 1.0), 3.0)
-		else:
-			_draw_bezier_cubic(p0, p3, Color(0.32, 0.32, 0.32, 1.0), 2.0)
+		_create_straight_line2d(p0, p3, line_color, line_width)
 
 
-func _draw_bezier_cubic(p0: Vector2, p3: Vector2, color: Color, width: float) -> void:
-	var dist: float = abs(p3.y - p0.y)
-	var pull: float = dist * 0.45
-
-	var p1: Vector2 = p0 + Vector2(0.0,  pull)
-	var p2: Vector2 = p3 + Vector2(0.0, -pull)
-
-	var steps: int    = 20
-	var prev:  Vector2 = p0
-
-	for i in range(1, steps + 1):
-		var t:  float   = float(i) / float(steps)
-		var nt: float   = 1.0 - t
-		var pt: Vector2 = (
-			nt * nt * nt        * p0 +
-			3.0 * nt * nt * t   * p1 +
-			3.0 * nt * t  * t   * p2 +
-			t  * t  * t         * p3
-		)
-		draw_line(prev, pt, color, width)
-		prev = pt
+func _create_straight_line2d(start_pos: Vector2, end_pos: Vector2, color: Color, width: float) -> void:
+	var line := Line2D.new()
+	line.width = width
+	line.default_color = color
+	
+	# For a straight line, just add the start and end points directly
+	line.add_point(start_pos)
+	line.add_point(end_pos)
+		
+	add_child(line)
 
 
 # ─── Navigation ──────────────────────────────────────────────────────────────
