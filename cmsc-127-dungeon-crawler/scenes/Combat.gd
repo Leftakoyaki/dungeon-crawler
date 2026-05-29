@@ -95,6 +95,7 @@ func _input(event: InputEvent) -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	combat_data = DatabaseManager.get_combat_data(GameState.current_node_id)
+	
 	_setup_sp_textures()
 	sp_sprite.position = Vector2(124, 398)
 	sp_sprite.stretch_mode = TextureRect.STRETCH_SCALE
@@ -106,6 +107,12 @@ func _ready() -> void:
 
 	# Wave count from stage type
 	var stage: String = combat_data["node"]["stage_type"]
+	# check if boss or normal for music
+	if stage == "BOSS":
+		MusicManager.play_combat(true)
+	else:
+		MusicManager.play_combat(false)
+		
 	match stage:
 		"NORMAL": waves_total = 3
 		"ELITE":  waves_total = 2

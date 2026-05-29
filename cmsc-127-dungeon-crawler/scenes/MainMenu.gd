@@ -17,6 +17,7 @@ var is_dying: bool = false
 var hover_time: float = 0.0
 
 func _ready() -> void:
+	MusicManager.play_menu()
 	original_pos_new = new_game_btn.position
 	original_pos_quit = quit_btn.position
 	original_pos_orig = original_game_btn.position
