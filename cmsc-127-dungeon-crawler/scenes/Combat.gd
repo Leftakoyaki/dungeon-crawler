@@ -87,7 +87,9 @@ var enemy_anim:  AnimatedSprite2D = null
 @onready var use_potion_btn:  Button        = $ActionRow/UsePotionButton
 @onready var flee_btn:        Button        = $ActionRow/FleeButton
 
-
+func _connect_combat_click(btn: BaseButton) -> void:
+	btn.button_down.connect(func(): MusicManager.play_combat_click())
+	
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		GameState.update_cursor(event.pressed)
@@ -124,7 +126,10 @@ func _ready() -> void:
 
 	use_potion_btn.pressed.connect(_on_use_potion_pressed)
 	flee_btn.pressed.connect(_on_flee_pressed)
-
+	
+	_connect_combat_click(use_potion_btn)
+	_connect_combat_click(flee_btn)
+	
 	_build_skill_buttons()
 	wave_label.text = "Wave 1 / %d" % waves_total
 	_refresh_ui()
@@ -539,6 +544,7 @@ func _build_skill_buttons() -> void:
 			btn.add_theme_font_size_override("font_size", 22)
 		# .bind() evaluates skill NOW (current loop value), avoiding closure-capture bug
 		btn.pressed.connect(_on_skill_used.bind(skill))
+		_connect_combat_click(btn)
 		skill_container.add_child(btn)
 
 
@@ -774,12 +780,13 @@ func _on_use_potion_pressed() -> void:
 			flee_btn.disabled = false
 			_use_potion(captured_item)
 		)
-
+		_connect_combat_click(btn)
 		vbox.add_child(btn)
 
 	var cancel_btn := Button.new()
 	cancel_btn.text = "Cancel"
 	cancel_btn.custom_minimum_size = Vector2(0, 40)
+	_connect_combat_click(cancel_btn)
 	cancel_btn.pressed.connect(func():
 		popup.queue_free()
 		_set_skill_buttons_enabled(true)
@@ -854,7 +861,6 @@ func _roll_drops() -> void:
 
 
 # ─── Replace UI (dynamic popup) ──────────────────────────────────────────────
-
 func _open_replace_inventory_ui(pot_id: int) -> void:
 	var inventory := DatabaseManager.get_inventory()
 	inventory.sort_custom(func(a, b): return int(a["inv_id"]) < int(b["inv_id"]))
@@ -897,6 +903,9 @@ func _open_replace_inventory_ui(pot_id: int) -> void:
 			_replace_item(captured_inv_id)  # ← call new function
 			replace_popup_closed.emit()
 		)
+		
+		# --- ADDED: Click sound for the replace buttons! ---
+		_connect_combat_click(btn)
 
 		vbox.add_child(btn)
 
@@ -913,6 +922,9 @@ func _open_replace_inventory_ui(pot_id: int) -> void:
 		log_label.text += "\nDiscarded %s." % pending_pot_name
 		replace_popup_closed.emit()
 	)
+	
+	# --- ADDED: Click sound for the discard button! ---
+	_connect_combat_click(discard_btn)
 
 	vbox.add_child(discard_btn)
 

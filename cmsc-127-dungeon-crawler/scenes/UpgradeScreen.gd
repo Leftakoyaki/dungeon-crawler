@@ -19,8 +19,19 @@ func _get_max_tier(skill_id: int) -> int:
 	return 3
 
 func _ready() -> void:
+	# --- ADDED: Keep Map Music going seamlessly ---
+	MusicManager.play_map()
+	
 	back_btn.pressed.connect(_on_back_pressed)
+	
+	# --- ADDED: Click sound for back button ---
+	_connect_click_sound(back_btn)
+	
 	_refresh()
+
+# --- ADDED: Helper function for button clicks ---
+func _connect_click_sound(btn: BaseButton) -> void:
+	btn.button_down.connect(func(): MusicManager.play_click())
 
 
 func _refresh() -> void:
@@ -92,6 +103,9 @@ func _build_skill_row(skill: Dictionary, upg_pts: int) -> void:
 		btn.disabled = upg_pts < 1
 		var sid: int = int(skill["skill_id"])
 		btn.pressed.connect(func(): _on_upgrade_pressed(sid))
+		
+		# --- ADDED: Wire the click sound to every dynamically created Upgrade button ---
+		_connect_click_sound(btn)
 
 	row.add_child(btn)
 	skill_list.add_child(row)
