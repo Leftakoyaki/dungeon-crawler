@@ -37,6 +37,7 @@ var all_nodes:      Dictionary = {}
 @onready var potion_label:  Label  = $StatsBar/HBoxContainer/PotionLabel
 
 func _ready() -> void:
+	MusicManager.play_map()
 	_calculate_positions()
 	_load_all_nodes()
 	_refresh_stats()
