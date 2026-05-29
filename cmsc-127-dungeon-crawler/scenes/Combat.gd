@@ -730,7 +730,8 @@ func _on_use_potion_pressed() -> void:
 	if inventory.is_empty():
 		log_label.text = "No potions!"
 		return
-
+	
+	inventory.sort_custom(func(a, b): return int(a["inv_id"]) < int(b["inv_id"])) # sort based on inv_id
 	# Always show picker (even if 1 item)
 	_set_skill_buttons_enabled(false)
 	use_potion_btn.disabled = true
@@ -849,7 +850,7 @@ func _roll_drops() -> void:
 
 func _open_replace_inventory_ui(pot_id: int) -> void:
 	var inventory := DatabaseManager.get_inventory()
-
+	inventory.sort_custom(func(a, b): return int(a["inv_id"]) < int(b["inv_id"]))
 	_set_skill_buttons_enabled(false)
 	use_potion_btn.disabled = true
 	flee_btn.disabled = true
@@ -880,13 +881,13 @@ func _open_replace_inventory_ui(pot_id: int) -> void:
 		btn.text = "Replace: " + item["pot_name"]
 		btn.custom_minimum_size = Vector2(0, 40)
 
-		var captured_index: int = i
+		var captured_inv_id: int = int(item["inv_id"])  # ← capture inv_id, not index
 		btn.pressed.connect(func():
 			popup.queue_free()
 			_set_skill_buttons_enabled(true)
 			use_potion_btn.disabled = false
 			flee_btn.disabled = false
-			_replace_item(captured_index)
+			_replace_item(captured_inv_id)  # ← call new function
 			replace_popup_closed.emit()
 		)
 
@@ -913,21 +914,25 @@ func _open_replace_inventory_ui(pot_id: int) -> void:
 
 # ─── Replace logic ───────────────────────────────────────────────────────────
 
-func _replace_item(slot_index: int) -> void:
+func _replace_item(inv_id: int) -> void:
 	var inv := DatabaseManager.get_inventory()
 
-	if slot_index >= inv.size():
+	var target: Dictionary = {}
+	for item in inv:
+		if int(item["inv_id"]) == inv_id:
+			target = item
+			break
+
+	if target.is_empty():
 		return
 
-	var inv_id: int = int(inv[slot_index]["inv_id"])
-
-	var old_potion := DatabaseManager.get_potion(inv[slot_index]["pot_id"])
+	var old_potion := DatabaseManager.get_potion(target["pot_id"])
 	var new_potion := DatabaseManager.get_potion(pending_pot_id)
 
 	DatabaseManager.remove_from_inventory(inv_id)
 	DatabaseManager.add_to_inventory(pending_pot_id)
-	log_label.text = ""
-	log_label.text += "Replaced %s with %s!" % [
+
+	log_label.text = "Replaced %s with %s!" % [
 		old_potion.get("pot_name", "Potion"),
 		new_potion.get("pot_name", "Potion")
 	]

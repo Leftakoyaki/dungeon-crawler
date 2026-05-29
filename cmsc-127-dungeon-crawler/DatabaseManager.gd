@@ -124,13 +124,20 @@ func _create_tables() -> void:
 		CREATE TABLE IF NOT EXISTS Dungeon_Floor (
 			node_id INTEGER PRIMARY KEY,
 			stage_type TEXT NOT NULL CHECK(stage_type IN ('START','NORMAL','ELITE','EVENT','REST','BOSS')),
-			monster_id INTEGER,
 			is_cleared INTEGER NOT NULL DEFAULT 0,
 			child_left_id INTEGER,
 			child_right_id INTEGER,
-			FOREIGN KEY (monster_id)      REFERENCES Monsters(monster_id),
 			FOREIGN KEY (child_left_id)   REFERENCES Dungeon_Floor(node_id),
 			FOREIGN KEY (child_right_id)  REFERENCES Dungeon_Floor(node_id)
+		);
+	""")
+	db.query("""
+		CREATE TABLE IF NOT EXISTS Hosts (
+			node_id INTEGER,
+			monster_id INTEGER,
+			PRIMARY KEY (node_id, monster_id)
+			FOREIGN KEY (node_id)   REFERENCES Dungeon_Floor(node_id),
+			FOREIGN KEY (monster_id)  REFERENCES Monsters(monster_id)
 		);
 	""")
 
@@ -166,13 +173,14 @@ func _create_tables() -> void:
 	""")
 
 	db.query("""
-		CREATE TABLE IF NOT EXISTS Player_Inventory (
-			inv_id INTEGER PRIMARY KEY AUTOINCREMENT,
-			player_id INTEGER NOT NULL,
-			pot_id INTEGER NOT NULL,
-			FOREIGN KEY (player_id) REFERENCES Player_Status(player_id),
-			FOREIGN KEY (pot_id)    REFERENCES Potions(pot_id)
-		);
+	    CREATE TABLE IF NOT EXISTS Player_Inventory (
+	        inv_id INTEGER NOT NULL CHECK(inv_id IN (1,2,3)),
+	        player_id INTEGER NOT NULL,
+	        pot_id INTEGER NOT NULL,
+	        PRIMARY KEY (inv_id, player_id),
+	        FOREIGN KEY (player_id) REFERENCES Player_Status(player_id),
+	        FOREIGN KEY (pot_id)    REFERENCES Potions(pot_id)
+	    );
 	""")
 
 	print("DatabaseManager: Tables created.")
@@ -298,9 +306,9 @@ func _seed_skill_upgrades() -> void:
 
 func _seed_monsters() -> void:
 	var rows := [
-		{"monster_id": 1, "mon_name": "Troll",          "max_hp": 45,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
-		{"monster_id": 2, "mon_name": "Jumping Demon", "max_hp": 35,  "attack_power": 12, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
-		{"monster_id": 3, "mon_name": "Dark Knight",   "max_hp": 40,  "attack_power": 10, "monster_type": "NORMAL", "pot_drop_chance": 0.40, "upg_point_chance": 0.05},
+		{"monster_id": 1, "mon_name": "Troll",          "max_hp": 45,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 1.00, "upg_point_chance": 0.05},
+		{"monster_id": 2, "mon_name": "Jumping Demon", "max_hp": 35,  "attack_power": 12, "monster_type": "NORMAL", "pot_drop_chance": 1.00, "upg_point_chance": 0.05},
+		{"monster_id": 3, "mon_name": "Dark Knight",   "max_hp": 40,  "attack_power": 10, "monster_type": "NORMAL", "pot_drop_chance": 1.00, "upg_point_chance": 0.05},
 		{"monster_id": 4, "mon_name": "Nightmare",     "max_hp": 110, "attack_power": 18, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
 		{"monster_id": 5, "mon_name": "Centaur",       "max_hp": 85,  "attack_power": 24, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
 		{"monster_id": 6, "mon_name": "Demon",         "max_hp": 200, "attack_power": 25, "monster_type": "BOSS",   "pot_drop_chance": 0.00, "upg_point_chance": 0.00},
@@ -332,13 +340,13 @@ func _seed_dungeon_floor() -> void:
 
 	var nodes := [
 		{"node_id": 1, "stage_type": "START",  "is_cleared": 0},
-		{"node_id": 2, "stage_type": "NORMAL", "monster_id": normal_1, "is_cleared": 0},
+		{"node_id": 2, "stage_type": "NORMAL", "is_cleared": 0},
 		{"node_id": 3, "stage_type": "EVENT",  "is_cleared": 0},
-		{"node_id": 4, "stage_type": "NORMAL", "monster_id": normal_2, "is_cleared": 0},
+		{"node_id": 4, "stage_type": "NORMAL", "is_cleared": 0},
 		{"node_id": 5, "stage_type": "REST",   "is_cleared": 0},
-		{"node_id": 6, "stage_type": "ELITE",  "monster_id": elite_id,  "is_cleared": 0},
+		{"node_id": 6, "stage_type": "ELITE",  "is_cleared": 0},
 		{"node_id": 7, "stage_type": "REST",   "is_cleared": 0},
-		{"node_id": 8, "stage_type": "BOSS",   "monster_id": 6,         "is_cleared": 0},
+		{"node_id": 8, "stage_type": "BOSS",   "is_cleared": 0},
 	]
 	for row in nodes:
 		db.insert_row("Dungeon_Floor", row)
@@ -357,6 +365,15 @@ func _seed_dungeon_floor() -> void:
 			"child_left_id":  p["left"],
 			"child_right_id": p["right"]
 		})
+		
+	var hosts := [
+		{"node_id": 2, "monster_id": normal_1},
+		{"node_id": 4, "monster_id": normal_2},
+		{"node_id": 6, "monster_id": elite_id},
+		{"node_id": 8, "monster_id": 6},
+	]
+	for row in hosts:
+		db.insert_row("Hosts", row)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -609,7 +626,22 @@ func add_to_inventory(pot_id: int) -> Dictionary:
 	if player["current_inv"] >= player["max_inv"]:
 		return {"success": false, "reason": "FULL"}
 
-	if not db.insert_row("Player_Inventory", {"player_id": 1, "pot_id": pot_id}):
+	# Find the first free slot (1, 2, or 3)
+	var used_slots: Array = []
+	var current_inv := get_inventory()
+	for item in current_inv:
+		used_slots.append(int(item["inv_id"]))
+
+	var free_slot: int = -1
+	for slot in [1, 2, 3]:
+		if slot not in used_slots:
+			free_slot = slot
+			break
+
+	if free_slot == -1:
+		return {"success": false, "reason": "FULL"}
+
+	if not db.insert_row("Player_Inventory", {"inv_id": free_slot, "player_id": 1, "pot_id": pot_id}):
 		return {"success": false, "reason": "DB_FAIL"}
 
 	var ok: bool = db.update_rows(
@@ -656,15 +688,19 @@ func get_dungeon_node(node_id: int) -> Dictionary:
 func get_available_paths(node_id: int) -> Array:
 	db.query("""
 		SELECT 'LEFT' AS direction,
-		       c.node_id, c.stage_type, c.is_cleared, c.monster_id
+		       c.node_id, c.stage_type, c.is_cleared,
+		       h.monster_id
 		FROM Dungeon_Floor p
 		JOIN Dungeon_Floor c ON c.node_id = p.child_left_id
+		LEFT JOIN Hosts h ON h.node_id = c.node_id
 		WHERE p.node_id = %d AND p.child_left_id IS NOT NULL
 		UNION ALL
 		SELECT 'RIGHT' AS direction,
-		       c.node_id, c.stage_type, c.is_cleared, c.monster_id
+		       c.node_id, c.stage_type, c.is_cleared,
+		       h.monster_id
 		FROM Dungeon_Floor p
 		JOIN Dungeon_Floor c ON c.node_id = p.child_right_id
+		LEFT JOIN Hosts h ON h.node_id = c.node_id
 		WHERE p.node_id = %d AND p.child_right_id IS NOT NULL;
 	""" % [node_id, node_id])
 	return db.query_result.duplicate()
@@ -708,10 +744,15 @@ func start_new_game(chosen_class: String) -> bool:
 
 func get_combat_data(node_id: int) -> Dictionary:
 	var node := get_dungeon_node(node_id)
-	if node.is_empty() or node.get("monster_id") == null:
+	if node.is_empty():
 		return {}
 
-	var monster := get_monster(node["monster_id"])
+	db.select_rows("Hosts", "node_id = %d" % node_id, ["monster_id"])
+	if db.query_result.is_empty():
+		return {}
+	var monster_id: int = int(db.query_result[0]["monster_id"])
+
+	var monster := get_monster(monster_id)
 	var player  := get_player()
 
 	if monster.is_empty() or player.is_empty():
