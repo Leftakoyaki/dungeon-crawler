@@ -237,8 +237,8 @@ func _seed_skills() -> void:
 	var rows := [
 		# ── MAGE ──────────────────────────────────────────────────────────
 		{"skill_id": 1, "skill_name": "Fireball",        "atk_type": "NORMAL",   "class_restriction": "MAGE",    "ult_pts_mod":  1},
-		{"skill_id": 2, "skill_name": "Meteor Strike",   "atk_type": "SKILL",    "class_restriction": "MAGE",    "ult_pts_mod":  1},
-		{"skill_id": 3, "skill_name": "Divine Light",    "atk_type": "ULTIMATE", "class_restriction": "MAGE",    "ult_pts_mod": -2},
+		{"skill_id": 2, "skill_name": "Infernal Blaze",  "atk_type": "SKILL",    "class_restriction": "MAGE",    "ult_pts_mod":  1},
+		{"skill_id": 3, "skill_name": "Supernova",       "atk_type": "ULTIMATE", "class_restriction": "MAGE",    "ult_pts_mod": -2},
 		# ── WARRIOR ───────────────────────────────────────────────────────
 		{"skill_id": 4, "skill_name": "Iron Cleave",     "atk_type": "NORMAL",   "class_restriction": "WARRIOR", "ult_pts_mod":  0},
 		{"skill_id": 5, "skill_name": "Crusader's Fury", "atk_type": "SKILL",    "class_restriction": "WARRIOR", "ult_pts_mod":  1},
@@ -306,9 +306,9 @@ func _seed_skill_upgrades() -> void:
 
 func _seed_monsters() -> void:
 	var rows := [
-		{"monster_id": 1, "mon_name": "Troll",          "max_hp": 45,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 1.00, "upg_point_chance": 0.05},
-		{"monster_id": 2, "mon_name": "Jumping Demon", "max_hp": 35,  "attack_power": 12, "monster_type": "NORMAL", "pot_drop_chance": 1.00, "upg_point_chance": 0.05},
-		{"monster_id": 3, "mon_name": "Dark Knight",   "max_hp": 40,  "attack_power": 10, "monster_type": "NORMAL", "pot_drop_chance": 1.00, "upg_point_chance": 0.05},
+		{"monster_id": 1, "mon_name": "Troll",          "max_hp": 45,  "attack_power": 8,  "monster_type": "NORMAL", "pot_drop_chance": 0.4, "upg_point_chance": 0.05},
+		{"monster_id": 2, "mon_name": "Jumping Demon", "max_hp": 35,  "attack_power": 12, "monster_type": "NORMAL", "pot_drop_chance": 0.4, "upg_point_chance": 0.05},
+		{"monster_id": 3, "mon_name": "Dark Knight",   "max_hp": 40,  "attack_power": 10, "monster_type": "NORMAL", "pot_drop_chance": 0.4, "upg_point_chance": 0.05},
 		{"monster_id": 4, "mon_name": "Nightmare",     "max_hp": 110, "attack_power": 18, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
 		{"monster_id": 5, "mon_name": "Centaur",       "max_hp": 85,  "attack_power": 24, "monster_type": "ELITE",  "pot_drop_chance": 0.20, "upg_point_chance": 0.60},
 		{"monster_id": 6, "mon_name": "Demon",         "max_hp": 200, "attack_power": 25, "monster_type": "BOSS",   "pot_drop_chance": 0.00, "upg_point_chance": 0.00},
@@ -708,8 +708,7 @@ func get_available_paths(node_id: int) -> Array:
 
 func mark_node_cleared(node_id: int) -> bool:
 	return db.update_rows("Dungeon_Floor", "node_id = %d" % node_id, {"is_cleared": 1})
-
-
+	
 func reset_floor() -> bool:
 	return db.query("UPDATE Dungeon_Floor SET is_cleared = 0;")
 

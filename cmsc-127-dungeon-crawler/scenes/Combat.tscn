@@ -78,11 +78,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="PlayerSprite" type="Control" parent="BattleArea/PlayerSide" unique_id=1716756212]
-custom_minimum_size = Vector2(130, 180)
-layout_mode = 2
-size_flags_vertical = 3
-
 [node name="PlayerNameLabel" type="Label" parent="BattleArea/PlayerSide" unique_id=1045863704]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_font")
@@ -121,6 +116,11 @@ theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 22
 text = "ULT  0 / 2"
 
+[node name="PlayerSprite" type="Control" parent="BattleArea/PlayerSide" unique_id=1716756212]
+custom_minimum_size = Vector2(130, 180)
+layout_mode = 2
+size_flags_vertical = 3
+
 [node name="BattleSpacer" type="Control" parent="BattleArea" unique_id=342857783]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -129,11 +129,6 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
-
-[node name="EnemySprite" type="Control" parent="BattleArea/EnemySide" unique_id=1582070422]
-custom_minimum_size = Vector2(180, 220)
-layout_mode = 2
-size_flags_vertical = 3
 
 [node name="EnemyNameLabel" type="Label" parent="BattleArea/EnemySide" unique_id=824051631]
 layout_mode = 2
@@ -156,6 +151,11 @@ theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 22
 text = "HP  -- / --"
 
+[node name="EnemySprite" type="Control" parent="BattleArea/EnemySide" unique_id=1582070422]
+custom_minimum_size = Vector2(180, 220)
+layout_mode = 2
+size_flags_vertical = 3
+
 [node name="WaveLabel" type="Label" parent="." unique_id=1984936917]
 layout_mode = 1
 anchors_preset = -1
@@ -175,10 +175,10 @@ anchors_preset = -1
 anchor_top = 0.63
 anchor_right = 1.0
 anchor_bottom = 0.7
-offset_left = 14.0
-offset_top = -210.23999
-offset_right = -26.0
-offset_bottom = -210.23999
+offset_left = 20.0
+offset_top = 21.76001
+offset_right = -20.0
+offset_bottom = 21.75998
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
@@ -229,10 +229,10 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.054
 anchor_bottom = 0.5
-offset_left = 140.0
-offset_top = 425.0
-offset_right = 315.792
-offset_bottom = 137.0
+offset_left = 54.0
+offset_top = 241.0
+offset_right = 229.79199
+offset_bottom = -47.0
 texture = SubResource("AtlasTexture_mak3c")
 expand_mode = 1
 stretch_mode = 4
@@ -241,9 +241,13 @@ stretch_mode = 4
 clip_contents = true
 custom_minimum_size = Vector2(90, 30)
 layout_mode = 0
-offset_left = 146.0
-offset_top = 398.0
-offset_right = 236.0
-offset_bottom = 438.0
+offset_left = 50.0
+offset_top = 213.0
+offset_right = 140.0
+offset_bottom = 253.0
 texture = SubResource("AtlasTexture_felwx")
 expand_mode = 1
+
+[node name="PlayerAura" type="AnimatedSprite2D" parent="." unique_id=1193872079]
+position = Vector2(179.99998, 265)
+scale = Vector2(100, 100)

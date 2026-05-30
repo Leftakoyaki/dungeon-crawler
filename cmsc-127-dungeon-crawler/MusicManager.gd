@@ -22,6 +22,11 @@ var win_sfx = preload("res://assets/Music/YouWin.mp3")
 var combat_click_sfx = preload("res://assets/Music/combatclick.mp3") # <-- New Track
 
 func _ready() -> void:
+	
+	menu_music.loop = true
+	map_music.loop = true
+	normal_combat.loop = true
+	boss_combat.loop = true
 	# Add Music player
 	add_child(player)
 	
