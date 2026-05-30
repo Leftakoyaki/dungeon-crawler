@@ -829,46 +829,72 @@ func _on_skill_used(skill: Dictionary) -> void:
 			and player_anim.sprite_frames.has_animation("attack") \
 			and player_anim.sprite_frames.get_frame_count("attack") > 0:
 		player_anim.play("attack")
-
-	# ── Skill effects ─────────────────────────────────────────────────────────
-	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "SKILL":
-		_play_effect("res://assets/SwordOfJustice/Frames/SwordOfJustice_%02d.png", 130)
-
-	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "ULTIMATE":
-		_play_effect_no_await("res://assets/HeavensFury/Frames/HeavensFury_%02d.png", 12, 0, 3.0)
-		_play_effect("res://assets/HolyNova/Frames/HolyNova_%02d.png", 10, 0, 3.0)
+# ── Dynamic SFX Setup ────────────────────────────────────────────────────
+	var p_class = player["player_class"].to_lower() # Gives us "warrior", "mage", "archer"
+	var type_suffix = ""
 	
-	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "NORMAL":
+	match skill["atk_type"]:
+		"NORMAL": type_suffix = "Normal"
+		"SKILL": type_suffix = "Skill"
+		"ULTIMATE": type_suffix = "Ult"
+		
+	var sfx_name = p_class + type_suffix
+	
+	# Handle the Archer's 3 random ultimate variants
+	if p_class == "archer" and skill["atk_type"] == "ULTIMATE":
+		var ult_sounds = ["archerUlt", "archerUlt2", "archerUlt3"]
+		sfx_name = ult_sounds.pick_random()
+		
+	# ⚠️ Quick Fix: If you haven't renamed 'magenNormal.mp3' yet, uncomment the line below:
+	# if sfx_name == "mageNormal": sfx_name = "magenNormal"
+	
+	# Start playing the sound effect and keep a reference to it
+	var skill_sfx_player = SFXManager.play_skill_sfx(sfx_name)
+
+	# ── Skill Effects & Animation Blocks ─────────────────────────────────────
+	# (Note: Using 'elif' keeps things optimized, and 'await' pauses execution until done)
+	if player["player_class"] == "WARRIOR" and skill["atk_type"] == "SKILL":
+		await _play_effect("res://assets/SwordOfJustice/Frames/SwordOfJustice_%02d.png", 130)
+
+	elif player["player_class"] == "WARRIOR" and skill["atk_type"] == "ULTIMATE":
+		_play_effect_no_await("res://assets/HeavensFury/Frames/HeavensFury_%02d.png", 12, 0, 3.0)
+		await _play_effect("res://assets/HolyNova/Frames/HolyNova_%02d.png", 10, 0, 3.0)
+	
+	elif player["player_class"] == "WARRIOR" and skill["atk_type"] == "NORMAL":
 		_play_effect_no_await("res://assets/HolySlash_A/Frames/HolySlash_A_%02d.png", 5)
 		_play_effect_no_await("res://assets/HolySlash_B/Frames/HolySlash_B_%02d.png", 4)
-		_play_effect("res://assets/HolySlash_C/Frames/HolySlash_C_%02d.png", 7)
+		await _play_effect("res://assets/HolySlash_C/Frames/HolySlash_C_%02d.png", 7)
 		
-		
-	if player["player_class"] == "MAGE" and skill["atk_type"] == "NORMAL":
+	elif player["player_class"] == "MAGE" and skill["atk_type"] == "NORMAL":
 		_play_effect_no_await("res://assets/Wizard/Effect_Impact/30fps/Frames/Effect_Impact_1/Effect_Impact_1_%03d.png", 29, 0, 1.0)
 		_play_effect_no_await("res://assets/Wizard/Effect_SmallHit/30fps/Frames/Effect_SmallHit_1/Effect_SmallHit_1_%03d.png", 29, 0, 1.0)
-		_play_effect("res://assets/Wizard/Effect_PuffAndStars/30fps/Frames/Effect_PuffAndStars_1/Effect_PuffAndStars_1_%03d.png", 39, 0, 1.0)
+		await _play_effect("res://assets/Wizard/Effect_PuffAndStars/30fps/Frames/Effect_PuffAndStars_1/Effect_PuffAndStars_1_%03d.png", 39, 0, 1.0)
 	
-	if player["player_class"] == "MAGE" and skill["atk_type"] == "SKILL":
+	elif player["player_class"] == "MAGE" and skill["atk_type"] == "SKILL":
 		_play_effect_no_await("res://assets/Wizard/Effect_FastPixelFire/60fps/Frames/Effect_FastPixelFire_1/Effect_FastPixelFire_1_%03d.png", 59, 0, 1.0, Vector2.ZERO, 12.0, 1)
-		_play_effect("res://assets/Wizard/Effect_DitheredFire/30fps/Frames/Effect_DitheredFire_1/Effect_DitheredFire_1_%03d.png", 29, 0, 0.5, Vector2(0, 50), 12.0, 1)
+		await _play_effect("res://assets/Wizard/Effect_DitheredFire/30fps/Frames/Effect_DitheredFire_1/Effect_DitheredFire_1_%03d.png", 29, 0, 0.5, Vector2(0, 50), 12.0, 1)
 	
-	if player["player_class"] == "MAGE" and skill["atk_type"] == "ULTIMATE":
+	elif player["player_class"] == "MAGE" and skill["atk_type"] == "ULTIMATE":
 		_play_effect_no_await("res://assets/Wizard/Effect_Constellation/30fps/Frames/Effect_Constellation_1/Effect_Constellation_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 1.5)
 		await _play_effect("res://assets/Wizard/Effect_TheVortex/30fps/Frames/Effect_TheVortex_1/Effect_TheVortex_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 1.5)
 		_play_effect_no_await("res://assets/Wizard/Effect_ElectricShield/30fps/Frames/Effect_ElectricShield_1/Effect_ElectricShield_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 1)
-		_play_effect("res://assets/Wizard/Effect_Explosion2/30fps/Frames/Effect_Explosion2_1/Effect_Explosion2_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 1)
+		await _play_effect("res://assets/Wizard/Effect_Explosion2/30fps/Frames/Effect_Explosion2_1/Effect_Explosion2_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 1)
 		
-	if player["player_class"] == "ARCHER" and skill["atk_type"] == "NORMAL":
+	elif player["player_class"] == "ARCHER" and skill["atk_type"] == "NORMAL":
 		_play_effect_no_await("res://assets/Wizard/Effect_Impact/30fps/Frames/Effect_Impact_1/Effect_Impact_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 24.0)
-		_play_effect("res://assets/Wizard/Effect_BloodImpact/30fps/Frames/Effect_BloodImpact_1/Effect_BloodImpact_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 0.5)
+		await _play_effect("res://assets/Wizard/Effect_BloodImpact/30fps/Frames/Effect_BloodImpact_1/Effect_BloodImpact_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 0.5)
 		
-	if player["player_class"] == "ARCHER" and skill["atk_type"] == "SKILL":
-		_play_effect("res://assets/Wizard/Effect_Wheel/30fps/Frames/Effect_Wheel_1/Effect_Wheel_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 1.0)
+	elif player["player_class"] == "ARCHER" and skill["atk_type"] == "SKILL":
+		await _play_effect("res://assets/Wizard/Effect_Wheel/30fps/Frames/Effect_Wheel_1/Effect_Wheel_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 1.0)
 	
-	if player["player_class"] == "ARCHER" and skill["atk_type"] == "ULTIMATE":
+	elif player["player_class"] == "ARCHER" and skill["atk_type"] == "ULTIMATE":
 		_play_effect_no_await("res://assets/Wizard/Effect_PuffAndStars/30fps/Frames/Effect_PuffAndStars_1/Effect_PuffAndStars_1_%03d.png", 29, 0, 3.0)
-		_play_effect("res://assets/Wizard/Effect_Kabooms/30fps/Frames/Effect_Kabooms_1/Effect_Kabooms_1_%03d.png", 29, 0, 1.0)
+		await _play_effect("res://assets/Wizard/Effect_Kabooms/30fps/Frames/Effect_Kabooms_1/Effect_Kabooms_1_%03d.png", 29, 0, 1.0)
+
+	# ── Clean Up SFX ─────────────────────────────────────────────────────────
+	# Execution only reaches this point after the active 'await' finishes.
+	SFXManager.stop_sfx(skill_sfx_player)
+	
 	# Apply damage to enemy
 	enemy_current_hp -= damage
 	log_label.text = log_msg

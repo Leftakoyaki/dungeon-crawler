@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GameState="*uid://bwanwq5pnfc5t"
 DatabaseManager="*uid://b40yqyp2hlq62"
 MusicManager="*uid://d0doxa55gdjbp"
+SFXManager="*uid://brctvvoslwbkb"
 
 [display]
 
