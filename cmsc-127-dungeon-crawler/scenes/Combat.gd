@@ -332,6 +332,7 @@ func _spawn_enemy() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var final_pos: Vector2 = enemy_sprite.global_position + enemy_sprite.size / 2.0 + enemy_sprite_offset
+	final_pos.y += _get_enemy_y_offset(mon_name)  # per-monster lift so big sprites don't clip the skill panel
 	enemy_anim.position = Vector2(get_viewport_rect().size.x + 200, final_pos.y)
 	var tween = create_tween()
 	tween.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
@@ -605,11 +606,20 @@ func _get_enemy_scale(mon_name: String) -> float:
 	match mon_name:
 		"Troll":         return 2.5   # source ~144×80  → 360×200 at 2.5
 		"Jumping Demon": return 2.5   # source ~101×98  → 252×245 at 2.5
-		"Dark Knight":   return 2.5   # source ~128×96  → 320×240 at 2.5
+		"Dark Knight":   return 3.5   # source ~128×96  → 448×336 at 3.5
 		"Nightmare":     return 2.5   # source ~160×96  → 400×240 at 2.5
 		"Centaur":       return 2.2   # source ~112×144 → 246×317 at 2.2
 		"Demon":         return 3.0   # source 256×176 with transparent padding
 		_:               return 2.5
+
+
+func _get_enemy_y_offset(mon_name: String) -> float:
+	# Upward nudge (negative = up) so taller-scaled sprites rest on the platform
+	# instead of clipping down into the skill panel. Center-anchored sprites grow
+	# both ways, so bigger scale needs more lift.
+	match mon_name:
+		"Dark Knight": return -70.0
+		_:             return 0.0
 
 
 func _get_enemy_flip(mon_name: String) -> bool:
@@ -850,7 +860,7 @@ func _on_skill_used(skill: Dictionary) -> void:
 		_play_effect("res://assets/Wizard/Effect_Explosion2/30fps/Frames/Effect_Explosion2_1/Effect_Explosion2_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 1)
 		
 	if player["player_class"] == "ARCHER" and skill["atk_type"] == "NORMAL":
-		_play_effect_no_await("res://assets/Wizard/Effect_Impact/30fps/Fraruns/Effect_Impact_1/Effect_Impact_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 24.0)
+		_play_effect_no_await("res://assets/Wizard/Effect_Impact/30fps/Frames/Effect_Impact_1/Effect_Impact_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 24.0)
 		_play_effect("res://assets/Wizard/Effect_BloodImpact/30fps/Frames/Effect_BloodImpact_1/Effect_BloodImpact_1_%03d.png", 29, 0, 1.0, Vector2.ZERO, 12.0, 0.5)
 		
 	if player["player_class"] == "ARCHER" and skill["atk_type"] == "SKILL":
