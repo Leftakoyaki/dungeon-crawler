@@ -329,14 +329,15 @@ func _seed_potions() -> void:
 
 
 func _seed_dungeon_floor() -> void:
-	# Randomise which monsters appear each run so all 5 non-boss monsters can be encountered.
-	# NORMAL pool: Troll (1), Jumping Demon (2), Dark Knight (3) — pick 2 distinct ones
-	# ELITE  pool: Nightmare (4), Centaur (5) — pick 1
 	var normal_pool := [1, 2, 3]
 	normal_pool.shuffle()
 	var normal_1: int = normal_pool[0]
 	var normal_2: int = normal_pool[1]
-	var elite_id: int = randi_range(4, 5)
+
+	var elite_pool := [4, 5]
+	elite_pool.shuffle()
+	var elite_1: int = elite_pool[0]
+	var elite_2: int = elite_pool[1]
 
 	var nodes := [
 		{"node_id": 1, "stage_type": "START",  "is_cleared": 0},
@@ -365,15 +366,20 @@ func _seed_dungeon_floor() -> void:
 			"child_left_id":  p["left"],
 			"child_right_id": p["right"]
 		})
-		
+
 	var hosts := [
 		{"node_id": 2, "monster_id": normal_1},
 		{"node_id": 4, "monster_id": normal_2},
-		{"node_id": 6, "monster_id": elite_id},
+		{"node_id": 6, "monster_id": elite_1},
+		{"node_id": 6, "monster_id": elite_2},
 		{"node_id": 8, "monster_id": 6},
 	]
 	for row in hosts:
 		db.insert_row("Hosts", row)
+
+	db.select_rows("Hosts", "node_id = 6", ["*"])
+
+	print("DatabaseManager: Dungeon floor seeded.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -749,12 +755,20 @@ func get_combat_data(node_id: int) -> Dictionary:
 	db.select_rows("Hosts", "node_id = %d" % node_id, ["monster_id"])
 	if db.query_result.is_empty():
 		return {}
-	var monster_id: int = int(db.query_result[0]["monster_id"])
+	
+	# Get all monsters for this node
+	var monster_ids: Array = []
+	for row in db.query_result:
+		monster_ids.append(int(row["monster_id"]))
 
-	var monster := get_monster(monster_id)
-	var player  := get_player()
+	var monsters: Array = []
+	for mid in monster_ids:
+		var m := get_monster(mid)
+		if not m.is_empty():
+			monsters.append(m)
 
-	if monster.is_empty() or player.is_empty():
+	var player := get_player()
+	if monsters.is_empty() or player.is_empty():
 		return {}
 
-	return {"node": node, "monster": monster, "player": player}
+	return {"node": node, "monsters": monsters, "player": player}
