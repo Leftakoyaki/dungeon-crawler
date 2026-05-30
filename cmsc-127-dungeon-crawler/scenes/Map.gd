@@ -1,5 +1,15 @@
 extends Control
+const STAGE_SPRITES: Dictionary = {
+	"START":  "res://assets/LEVEL SPRITES/START LEVEL.png",
+	"NORMAL": "res://assets/LEVEL SPRITES/NORMAL ENEMY LEVEL.png",
+	"ELITE":  "res://assets/LEVEL SPRITES/ELITE ENEMY LEVEL.png",
+	"EVENT":  "res://assets/LEVEL SPRITES/EVENT LEVEL.png",
+	"REST":   "res://assets/LEVEL SPRITES/REST LEVEL.png",
+	"BOSS":   "res://assets/LEVEL SPRITES/BOSS LEVEL.png"
+}
 
+func _get_sprite_for_stage(stage: String) -> Texture2D:
+	return load(STAGE_SPRITES.get(stage, "res://assets/LEVEL SPRITES/NORMAL ENEMY LEVEL.png"))
 # Hard-coded connections matching the new 8-node Dungeon_Floor seed data.
 const CONNECTIONS: Array = [
 	[1, 2], [1, 3],
@@ -27,13 +37,23 @@ var all_nodes:      Dictionary = {}
 @onready var potion_label:  Label  = $StatsBar/HBoxContainer/PotionLabel
 
 func _ready() -> void:
+	MusicManager.play_map()
 	_calculate_positions()
 	_load_all_nodes()
 	_refresh_stats()
+	_build_connection_lines()
 	_build_node_buttons()
+	
 	upgrade_btn.pressed.connect(_on_upgrade_pressed)
+	
+	# --- ADDED: Hook up click sound to the upgrade button ---
+	_connect_click_sound(upgrade_btn)
+	
 	queue_redraw()
 
+# --- ADDED: Helper function to trigger click SFX ---
+func _connect_click_sound(btn: BaseButton) -> void:
+	btn.button_down.connect(func(): MusicManager.play_click())
 
 func _on_upgrade_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/UpgradeScreen.tscn")
@@ -72,9 +92,12 @@ const Y_NUDGE: Dictionary = {
 	5: -0.010,
 	6:  0.000,
 	7:  0.000,
-	8:  0.000,
+	8:  -0.050,
 }
-
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		GameState.update_cursor(event.pressed)
+		
 func _calculate_positions() -> void:
 	var vp:     Vector2 = get_viewport_rect().size
 	var w:      float   = vp.x
@@ -138,10 +161,9 @@ func _refresh_stats() -> void:
 
 
 # ─── Build node buttons ───────────────────────────────────────────────────────
-
 func _build_node_buttons() -> void:
 	for child in get_children():
-		if child is Button:
+		if child is TextureButton: # Changed from Button
 			child.queue_free()
 
 	var reachable: Array = _get_reachable_ids()
@@ -149,34 +171,56 @@ func _build_node_buttons() -> void:
 	for node_id in node_positions.keys():
 		var pos:  Vector2    = node_positions[node_id]
 		var data: Dictionary = all_nodes.get(node_id, {})
-
-		var btn := Button.new()
+		
+		# Create a TextureButton
+		var btn := TextureButton.new()
+		var stage: String = data.get("stage_type", "NORMAL")
+		
+		btn.texture_normal = _get_sprite_for_stage(stage)
 		btn.custom_minimum_size = NODE_BTN_SIZE
-		btn.size = NODE_BTN_SIZE
+		btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		btn.position = pos - NODE_BTN_SIZE * 0.5
 
-		if data.is_empty():
-			btn.text = "?"
-		else:
-			var stage:   String = data.get("stage_type", "?")
-			var cleared: bool   = int(data.get("is_cleared", 0)) == 1
-			btn.text = _node_label(node_id, stage, cleared)
 
-		if node_id == GameState.current_node_id:
-			btn.modulate = Color(1.0, 1.0, 0.3)
+		# Create a Label to hold the emoji/number
+		var lbl := Label.new()
+		lbl.text = _node_label(node_id, stage, int(data.get("is_cleared", 0)) == 1)
+		
+		# Center the label inside the button area
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.size = NODE_BTN_SIZE
+		
+		# Add to button
+		btn.add_child(lbl)
 
+		# Logic for active/disabled
 		btn.disabled = not (node_id in reachable)
-		if not btn.disabled:
-			btn.modulate = Color(0.4, 1.0, 0.5)
-
 		if node_id == GameState.current_node_id:
-			btn.modulate = Color(1.0, 1.0, 0.3)
+			btn.modulate = Color(1.0, 1.0, 0.3) # Highlight current
+		elif not btn.disabled:
+			btn.modulate = Color(1.0, 1.0, 1.0) # Normal
+		else:
+			btn.modulate = Color(0.3, 0.3, 0.3) # Disabled/Greyed out
 
 		btn.pressed.connect(func(): _travel_to(node_id))
+		
+		# --- ADDED: Hook up click sound to each map node dynamically ---
+		_connect_click_sound(btn)
+		
 		add_child(btn)
 
 
 func _get_reachable_ids() -> Array:
+	var current_node: Dictionary = DatabaseManager.get_dungeon_node(GameState.current_node_id)
+	
+	# If current node is a combat node and not cleared, only allow re-entering it
+	if not current_node.is_empty():
+		var stage: String = current_node.get("stage_type", "")
+		var is_cleared: bool = int(current_node.get("is_cleared", 0)) == 1
+		if stage in ["NORMAL", "ELITE", "BOSS"] and not is_cleared:
+			return [GameState.current_node_id]  # ← only current node is reachable
+
 	var paths: Array = DatabaseManager.get_available_paths(GameState.current_node_id)
 	var ids:   Array = []
 	for path in paths:
@@ -202,46 +246,54 @@ func _stage_icon(stage: String) -> String:
 
 
 # ─── Draw connection lines ────────────────────────────────────────────────────
-
-func _draw() -> void:
+# ─── Draw connection lines (Line2D Approach) ──────────────────────────────────
+# ─── Draw connection lines (Straight Line2D Approach) ─────────────────────────
+func _build_connection_lines() -> void:
 	var reachable: Array = _get_reachable_ids()
 
 	for conn in CONNECTIONS:
 		var a: int = conn[0]
 		var b: int = conn[1]
+		
 		if not (node_positions.has(a) and node_positions.has(b)):
 			continue
 
 		var p0: Vector2 = node_positions[a]
 		var p3: Vector2 = node_positions[b]
+		
+		var is_active = (a == GameState.current_node_id and b in reachable)
+		
+		var line_color: Color = Color(0.95, 0.85, 0.10, 1.0) if is_active else Color(0.32, 0.32, 0.32, 1.0)
+		var line_width: float = 3.0 if is_active else 2.0
 
-		if a == GameState.current_node_id and b in reachable:
-			_draw_bezier_cubic(p0, p3, Color(0.95, 0.85, 0.10, 1.0), 3.0)
-		else:
-			_draw_bezier_cubic(p0, p3, Color(0.32, 0.32, 0.32, 1.0), 2.0)
+		_create_bezier_line2d(p0, p3, line_color, line_width)
 
 
-func _draw_bezier_cubic(p0: Vector2, p3: Vector2, color: Color, width: float) -> void:
+func _create_bezier_line2d(p0: Vector2, p3: Vector2, color: Color, width: float) -> void:
+	var line := Line2D.new()
+	line.width = width
+	line.default_color = color
+	# dont use z_index it puts the line behind the background
+
 	var dist: float = abs(p3.y - p0.y)
 	var pull: float = dist * 0.45
 
 	var p1: Vector2 = p0 + Vector2(0.0,  pull)
 	var p2: Vector2 = p3 + Vector2(0.0, -pull)
 
-	var steps: int    = 20
-	var prev:  Vector2 = p0
-
-	for i in range(1, steps + 1):
-		var t:  float   = float(i) / float(steps)
-		var nt: float   = 1.0 - t
+	var steps: int = 20
+	for i in range(steps + 1):
+		var t: float = float(i) / float(steps)
+		var nt: float = 1.0 - t
 		var pt: Vector2 = (
 			nt * nt * nt        * p0 +
 			3.0 * nt * nt * t   * p1 +
 			3.0 * nt * t  * t   * p2 +
 			t  * t  * t         * p3
 		)
-		draw_line(prev, pt, color, width)
-		prev = pt
+		line.add_point(pt)
+		
+	add_child(line)
 
 
 # ─── Navigation ──────────────────────────────────────────────────────────────

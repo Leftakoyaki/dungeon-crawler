@@ -1,35 +1,45 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://igvynjdpg0ae"]
 
-[ext_resource type="Script" path="res://scenes/GameOver.gd" id="1_gameover"]
+[ext_resource type="Script" uid="uid://btfvtu8qx32ba" path="res://scenes/GameOver.gd" id="1_gameover"]
+[ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_vuicl"]
+[ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_4noiy"]
 
-[node name="GameOver" type="Control"]
+[node name="GameOver" type="Control" unique_id=1239541462]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_gameover")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1840617692]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
-layout_mode = 2
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1368193029]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1589074232]
 layout_mode = 2
-horizontal_alignment = 1
+theme_override_fonts/font = ExtResource("2_vuicl")
+theme_override_font_sizes/font_size = 45
 text = "YOU DIED"
+horizontal_alignment = 1
 
-[node name="SubLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+[node name="SubLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1644234727]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_vuicl")
+theme_override_font_sizes/font_size = 45
 horizontal_alignment = 1
 autowrap_mode = 3
-text = ""
 
-[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBoxContainer" unique_id=1092158158]
 layout_mode = 2
 
-[node name="MenuButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="MenuButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=557065516]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_4noiy")
+theme_override_font_sizes/font_size = 55
 text = "Return to Menu"

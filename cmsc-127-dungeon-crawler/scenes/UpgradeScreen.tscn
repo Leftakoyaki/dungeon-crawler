@@ -1,13 +1,21 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://c1r8p53672mp"]
 
-[ext_resource type="Script" path="res://scenes/UpgradeScreen.gd" id="1_upgrade"]
+[ext_resource type="Script" uid="uid://u54obpmcjasr" path="res://scenes/UpgradeScreen.gd" id="1_upgrade"]
+[ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_j5hm1"]
+[ext_resource type="FontFile" uid="uid://c8fubluaekai1" path="res://assets/Silver.ttf" id="3_7fwh7"]
+[ext_resource type="Theme" uid="uid://cdob8vee7nbdm" path="res://assets/Upgrade_theme.tres" id="3_tbebc"]
 
-[node name="UpgradeScreen" type="Control"]
+[node name="UpgradeScreen" type="Control" unique_id=1642836092]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_upgrade")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1216607594]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/margin_left = 40
@@ -15,32 +23,39 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1438718245]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1478436165]
 layout_mode = 2
-horizontal_alignment = 1
+theme_override_fonts/font = ExtResource("2_j5hm1")
+theme_override_font_sizes/font_size = 45
 text = "⬆  Skill Upgrades"
-
-[node name="PtsLabel" type="Label" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
 horizontal_alignment = 1
-text = "Upgrade Points: --"
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="PtsLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1806957821]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_j5hm1")
+theme_override_font_sizes/font_size = 45
+text = "Upgrade Points: --"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=800848217]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer" unique_id=782001078]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="SkillList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="SkillList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer" unique_id=662439322]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("3_tbebc")
 theme_override_constants/separation = 8
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=331318017]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_7fwh7")
+theme_override_font_sizes/font_size = 55
 text = "← Back to Map"

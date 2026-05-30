@@ -16,10 +16,12 @@ const FORGE_POINTS: int = 2
 @onready var heal_label:   Label  = $MarginContainer/VBoxContainer/HealLabel
 @onready var hp_label:     Label  = $MarginContainer/VBoxContainer/HPLabel
 @onready var continue_btn: Button = $MarginContainer/VBoxContainer/ContinueButton
-
-# New buttons — add these to your scene under VBoxContainer
 @onready var campfire_btn: Button = $MarginContainer/VBoxContainer/CampfireButton
 @onready var forge_btn:    Button = $MarginContainer/VBoxContainer/ForgeButton
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		GameState.update_cursor(event.pressed)
 
 
 func _ready() -> void:
