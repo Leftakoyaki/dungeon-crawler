@@ -214,11 +214,12 @@ func _setup_sprites() -> void:
 	player_anim.sprite_frames = _build_player_frames(player["player_class"])
 	player_anim.scale         = Vector2(player_sprite_scale, player_sprite_scale)
 	player_anim.z_index       = 5
+	player_anim.position      = Vector2(-200, 0)  # ← set off-screen BEFORE add_child
 	player_anim.animation_finished.connect(func():
 		if is_instance_valid(player_anim):
 			player_anim.play("idle")
 	)
-	add_child(player_anim)
+	add_child(player_anim)  # ← now added off-screen
 	player_anim.play("idle")
 
 	_reposition_sprites.call_deferred()
@@ -320,11 +321,12 @@ func _spawn_enemy() -> void:
 	enemy_anim.scale         = Vector2(e_scale, e_scale)
 	enemy_anim.flip_h        = _get_enemy_flip(mon_name)
 	enemy_anim.z_index       = 5
+	enemy_anim.position      = Vector2(get_viewport_rect().size.x + 200, 0)  # ← set off-screen BEFORE add_child
 	enemy_anim.animation_finished.connect(func():
 		if is_instance_valid(enemy_anim):
 			enemy_anim.play("idle")
 	)
-	add_child(enemy_anim)
+	add_child(enemy_anim)  # ← now added off-screen
 	enemy_anim.play("idle")
 
 	await get_tree().process_frame
