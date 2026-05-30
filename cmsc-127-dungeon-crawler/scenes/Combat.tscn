@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dixbpi4sqmk3t" path="res://scenes/Combat.gd" id="1_combat"]
 [ext_resource type="FontFile" uid="uid://dfbtge8niyb7b" path="res://assets/alagardFont.ttf" id="2_font"]
-[ext_resource type="Texture2D" uid="uid://q4jp07crkxgv" path="res://assets/Backgrounds/Combat_Background.png" id="3_bg"]
+[ext_resource type="Texture2D" uid="uid://byugq0feidayx" path="res://assets/Backgrounds/bg2.png" id="3_bg"]
 [ext_resource type="Texture2D" uid="uid://dxp8dhbajcxn6" path="res://SPBarBlank1.png" id="3_mak3c"]
 [ext_resource type="Texture2D" uid="uid://byish52ow46wx" path="res://SPBarBlank2.png" id="4_3q7sh"]
 [ext_resource type="Texture2D" uid="uid://bnahqf23fg4q1" path="res://assets/Tiny Swords (Free Pack)/UI Elements/UI Elements/Bars/HpBar.png" id="4_tp2sa"]
