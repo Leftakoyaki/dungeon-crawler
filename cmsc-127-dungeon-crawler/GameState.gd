@@ -12,6 +12,13 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			update_cursor(event.pressed)
+	# F11 toggles true fullscreen ↔ maximized window
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F11:
+		var mode := DisplayServer.window_get_mode()
+		if mode == DisplayServer.WINDOW_MODE_FULLSCREEN or mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 # ─── Runtime Identity ────────────────────────────────────────────────────────
 var player_id: int       = 1  
 var player_class: String = ""
