@@ -212,6 +212,15 @@ func _build_node_buttons() -> void:
 
 
 func _get_reachable_ids() -> Array:
+	var current_node: Dictionary = DatabaseManager.get_dungeon_node(GameState.current_node_id)
+	
+	# If current node is a combat node and not cleared, only allow re-entering it
+	if not current_node.is_empty():
+		var stage: String = current_node.get("stage_type", "")
+		var is_cleared: bool = int(current_node.get("is_cleared", 0)) == 1
+		if stage in ["NORMAL", "ELITE", "BOSS"] and not is_cleared:
+			return [GameState.current_node_id]  # ← only current node is reachable
+
 	var paths: Array = DatabaseManager.get_available_paths(GameState.current_node_id)
 	var ids:   Array = []
 	for path in paths:
