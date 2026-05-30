@@ -25,7 +25,6 @@ MusicManager="*uid://d0doxa55gdjbp"
 
 window/size/mode=2
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [editor_plugins]
 

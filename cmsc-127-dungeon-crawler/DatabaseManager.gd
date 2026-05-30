@@ -539,9 +539,12 @@ func delete_player() -> void:
 	db.delete_rows("Player_Skills_Status", "player_id = 1")
 	db.delete_rows("Player_Inventory",     "player_id = 1")
 	db.delete_rows("Player_Status",        "player_id = 1")
-	db.query("UPDATE Dungeon_Floor SET is_cleared = 0;")
+	# Dungeon floor is reset separately in start_new_game()
 
-
+func _reset_dungeon_floor() -> void:
+	db.query("DELETE FROM Hosts;")
+	db.query("DELETE FROM Dungeon_Floor;")
+	_seed_dungeon_floor()
 # ─────────────────────────────────────────────────────────────────────────────
 # QUERY HELPERS — PLAYER SKILLS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -725,6 +728,7 @@ func reset_floor() -> bool:
 
 func start_new_game(chosen_class: String) -> bool:
 	delete_player()
+	_reset_dungeon_floor()
 
 	if not create_player(chosen_class):
 		push_error("DatabaseManager.start_new_game: create_player failed.")
