@@ -63,6 +63,7 @@ var combat_data: Dictionary = {}
 var waves_total: int        = 1
 var waves_done: int         = 0
 var entry_finished: bool = false
+var current_monster_index: int = 0
 
 # ─── Sprite nodes (created at runtime) ───────────────────────────────────────
 var player_anim: AnimatedSprite2D = null
@@ -142,6 +143,8 @@ func _input(event: InputEvent) -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	combat_data = DatabaseManager.get_combat_data(GameState.current_node_id)
+	for m in combat_data["monsters"]:
+		print(" - ", m["mon_name"])
 	_setup_sp_textures()
 	# sp_sprite.position = Vector2(100, 213)
 	sp_sprite.stretch_mode = TextureRect.STRETCH_SCALE
@@ -161,10 +164,10 @@ func _ready() -> void:
 		
 	match stage:
 		"NORMAL": waves_total = 3
-		"ELITE":  waves_total = 2
+		"ELITE":  waves_total = combat_data["monsters"].size()
 		"BOSS":   waves_total = 1
 
-	enemy_current_hp = int(combat_data["monster"]["max_hp"])
+	enemy_current_hp = int(combat_data["monsters"][0]["max_hp"])
 
 	_setup_sprites()
 	_setup_player_aura()
@@ -304,12 +307,12 @@ func _on_aura_outro_finished() -> void:
 		player_aura.visible = false
 
 func _spawn_enemy() -> void:
-	# Remove old enemy sprite if it exists
 	if is_instance_valid(enemy_anim):
 		enemy_anim.queue_free()
 		enemy_anim = null
 
-	var mon_name: String = combat_data["monster"]["mon_name"]
+	var monster: Dictionary = combat_data["monsters"][current_monster_index]
+	var mon_name: String = monster["mon_name"]
 	var e_scale: float   = enemy_sprite_scale if enemy_sprite_scale > 0.0 else _get_enemy_scale(mon_name)
 
 	enemy_anim = AnimatedSprite2D.new()
@@ -324,7 +327,6 @@ func _spawn_enemy() -> void:
 	add_child(enemy_anim)
 	enemy_anim.play("idle")
 
-	# Slide in from the right
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var final_pos: Vector2 = enemy_sprite.global_position + enemy_sprite.size / 2.0 + enemy_sprite_offset
@@ -639,7 +641,7 @@ func _end_player_turn() -> void:
 
 func _enemy_turn() -> void:
 	var player:  Dictionary = DatabaseManager.get_player()
-	var monster: Dictionary = combat_data["monster"]
+	var monster: Dictionary = combat_data["monsters"][current_monster_index]
 
 	var damage: int = int(monster["attack_power"])
 	var new_hp: int = max(int(player["current_hp"]) - damage, 0)
@@ -893,12 +895,19 @@ func _on_wave_cleared() -> void:
 	await _roll_drops()
 	await get_tree().create_timer(0.6).timeout
 	if waves_done < waves_total:
-		# More waves — reset enemy, update label, continue
 		var next_wave: int = waves_done + 1
-		log_label.text    = "Wave %d cleared! Next wave incoming..." % waves_done
-		wave_label.text   = "Wave %d / %d" % [next_wave, waves_total]
-		enemy_current_hp  = int(combat_data["monster"]["max_hp"])
+		log_label.text   = "Wave %d cleared! Next wave incoming..." % waves_done
+		wave_label.text  = "Wave %d / %d" % [next_wave, waves_total]
+
+		# Switch to next monster if we've finished all waves for current one
+		var waves_per_monster: int = waves_total / combat_data["monsters"].size()
+		if waves_done % waves_per_monster == 0:
+			current_monster_index += 1
+			log_label.text = "A new enemy appears!"
+
+		enemy_current_hp = int(combat_data["monsters"][current_monster_index]["max_hp"])
 		await _spawn_enemy()
+
 		var current_player := DatabaseManager.get_player()
 		if int(current_player["current_sp"]) <= 0:
 			DatabaseManager.reset_player_sp()
@@ -1027,7 +1036,7 @@ func _use_potion(item: Dictionary) -> void:
 # ─── Flee ─────────────────────────────────────────────────────────────────────
 
 func _on_flee_pressed() -> void:
-	var monster: Dictionary = combat_data["monster"]
+	var monster: Dictionary = combat_data["monsters"][current_monster_index]
 	var type = monster["monster_type"]
 	if randf() < 0.5 and type not in ["ELITE", "BOSS"]:
 		log_label.text = "You fled!"
@@ -1045,7 +1054,7 @@ var pending_pot_name: String = ""
 
 
 func _roll_drops() -> void:
-	var monster: Dictionary = combat_data["monster"]
+	var monster: Dictionary = combat_data["monsters"][current_monster_index]
 	if randf() < float(monster["pot_drop_chance"]):
 		var pot_id := randi_range(1, 4)
 		var result := DatabaseManager.add_to_inventory(pot_id)
@@ -1170,7 +1179,7 @@ func _replace_item(inv_id: int) -> void:
 
 func _refresh_ui() -> void:
 	var player:  Dictionary = DatabaseManager.get_player()
-	var monster: Dictionary = combat_data.get("monster", {})
+	var monster: Dictionary = combat_data["monsters"][current_monster_index] if not combat_data.get("monsters", []).is_empty() else {}
 
 	if not player.is_empty():
 		player_name_label.text = GameState.player_class
